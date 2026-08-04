@@ -9,7 +9,7 @@ version="$(cat "$VERSION_FILE")"
 
 # Upload a single .dSYM bundle to AppCenter (zip, request slot, PUT to blob, mark committed).
 # Called once per dSYM produced by the Release build:
-#   - AltTab.app.dSYM        host binary + everything statically linked (AppCenter, AppCenterCrashes, ShortcutRecorder)
+#   - Altab.app.dSYM         host binary + everything statically linked (AppCenter, AppCenterCrashes, ShortcutRecorder)
 #   - Sparkle.framework.dSYM Sparkle is the only .dynamic SPM product, so it has its own dSYM
 # CrashReporter.xcframework ships without dSYMs (PLCrashReporter is binary-only); AppCenter has
 # server-side symbols for it.

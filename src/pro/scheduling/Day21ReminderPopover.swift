@@ -11,7 +11,7 @@ class Day21ReminderPopover {
         let container = NSView()
         container.translatesAutoresizingMaskIntoConstraints = false
 
-        let title = NSTextField(labelWithString: NSLocalizedString("AltTab Pro is still available", comment: ""))
+        let title = NSTextField(labelWithString: NSLocalizedString("Altab Pro is still available", comment: ""))
         title.font = .systemFont(ofSize: 13, weight: .semibold)
         title.translatesAutoresizingMaskIntoConstraints = false
 

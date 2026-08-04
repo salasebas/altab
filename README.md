@@ -15,7 +15,7 @@ An independent, community-maintained fork of [AltTab for macOS](https://github.c
 
 Altab aims to preserve AltTab's fast AppKit window-switching experience while making every locally available user-facing feature usable without a paid feature gate.
 
-That goal is **not complete yet**. The current source still contains upstream product identity, licensing, update, signing, funding, and service integrations. Until the items in [FORK.md](FORK.md) are resolved, builds are for development and evaluation only and must not be presented as public Altab releases.
+That goal is **not complete yet**. The current source still contains upstream licensing, update, crash-reporting, release, and service integrations. Until the items in [FORK.md](FORK.md) are resolved, builds are for development and evaluation only and must not be presented as public Altab releases.
 
 ## Relationship with upstream
 
