@@ -44,11 +44,13 @@ Security-related upstream work receives priority, but there is no promise of imm
 
 ### Updates and external services
 
-- [ ] Disable Sparkle until a fork-owned feed, signing key, and tested update path exist; a fork build must never install an upstream AltTab release.
-- [ ] Remove or replace `alt-tab.app` domains, licensing APIs, cookies, release notes, and download URLs.
+- [x] Remove Sparkle until a fork-owned feed, signing key, and tested update path exist; a fork build cannot install an upstream AltTab release.
+- [x] Remove the appcast-only license cookie, upstream release notes, and upstream download URLs.
+- [ ] Remove or replace the remaining `alt-tab.app` licensing, checkout, and account endpoints.
 - [x] Remove upstream Developer ID and Team ID values from release configuration and CI.
-- [ ] Remove or replace upstream AppCenter/crash-reporting configuration and document the fork's privacy behavior.
-- [ ] Replace the inherited publish workflow with fork-owned validation and release workflows.
+- [x] Remove AppCenter/crash-reporting configuration and document that the fork sends no crash reports or analytics to AppCenter.
+- [x] Remove the inherited publish workflow and its upstream signing, appcast, AppCenter, and deployment dependencies.
+- [ ] Design fork-owned validation and release workflows.
 
 ### Free feature surface
 

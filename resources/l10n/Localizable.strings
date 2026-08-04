@@ -77,9 +77,6 @@
 "Alphabetical Order" = "Alphabetical Order";
 
 /* No comment provided by engineer. */
-"Altab crashed last time you used it. Sending a crash report will help get the issue fixed" = "Altab crashed last time you used it. Sending a crash report will help get the issue fixed";
-
-/* No comment provided by engineer. */
 "Altab is a free, open-source window switcher for macOS. Pro features are available with a 14-day free trial." = "Altab is a free, open-source window switcher for macOS. Pro features are available with a 14-day free trial.";
 
 /* Menubar callout. %@ is one or more feature names, e.g. Thumbnails */
@@ -108,9 +105,6 @@
 
 /* No comment provided by engineer. */
 "Always" = "Always";
-
-/* No comment provided by engineer. */
-"Always send crash reports" = "Always send crash reports";
 
 /* No comment provided by engineer. */
 "and press" = "and press";
@@ -164,16 +158,10 @@
 "Arrow keys already assigned to other actions:\n%@" = "Arrow keys already assigned to other actions:\n%@";
 
 /* No comment provided by engineer. */
-"Ask whether to send crash reports" = "Ask whether to send crash reports";
-
-/* No comment provided by engineer. */
 "Auto" = "Auto";
 
 /* No comment provided by engineer. */
 "Auto Size — larger previews with few windows, more at once with many" = "Auto Size — larger previews with few windows, more at once with many";
-
-/* No comment provided by engineer. */
-"Auto-install updates periodically" = "Auto-install updates periodically";
 
 /* No comment provided by engineer. */
 "Auto-sizing switcher" = "Auto-sizing switcher";
@@ -189,15 +177,6 @@
 
 /* No comment provided by engineer. */
 "Capture windows in the background" = "Capture windows in the background";
-
-/* No comment provided by engineer. */
-"Check for updates now…" = "Check for updates now…";
-
-/* No comment provided by engineer. */
-"Check for updates periodically" = "Check for updates periodically";
-
-/* Menubar option */
-"Check for updates…" = "Check for updates…";
 
 /* Menubar option */
 "Check permissions…" = "Check permissions…";
@@ -222,9 +201,6 @@
 
 /* No comment provided by engineer. */
 "Couldn't save your license to the macOS Keychain. Please share the details below with the developer." = "Couldn't save your license to the macOS Keychain. Please share the details below with the developer.";
-
-/* No comment provided by engineer. */
-"Crash reports policy" = "Crash reports policy";
 
 /* No comment provided by engineer. */
 "Cursor follows focus" = "Cursor follows focus";
@@ -267,12 +243,6 @@
 
 /* No comment provided by engineer. */
 "Done" = "Done";
-
-/* No comment provided by engineer. */
-"Don’t check for updates periodically" = "Don’t check for updates periodically";
-
-/* No comment provided by engineer. */
-"Don’t send" = "Don’t send";
 
 /* No comment provided by engineer. */
 "e.g. com.example.app" = "e.g. com.example.app";
@@ -446,9 +416,6 @@
 "Never" = "Never";
 
 /* No comment provided by engineer. */
-"Never send crash reports" = "Never send crash reports";
-
-/* No comment provided by engineer. */
 "No response from server." = "No response from server.";
 
 /* No comment provided by engineer. */
@@ -548,9 +515,6 @@
 "Reliable, fast window switching with high-quality thumbnails" = "Reliable, fast window switching with high-quality thumbnails";
 
 /* No comment provided by engineer. */
-"Remember my choice" = "Remember my choice";
-
-/* No comment provided by engineer. */
 "Reset settings and restart" = "Reset settings and restart";
 
 /* No comment provided by engineer. */
@@ -597,12 +561,6 @@
 
 /* No comment provided by engineer. */
 "Select windows using vim keys" = "Select windows using vim keys";
-
-/* No comment provided by engineer. */
-"Send" = "Send";
-
-/* No comment provided by engineer. */
-"Send a crash report?" = "Send a crash report?";
 
 /* Menubar option */
 "Send feedback…" = "Send feedback…";
@@ -798,9 +756,6 @@
 
 /* No comment provided by engineer. */
 "Up to 9 keyboard shortcuts" = "Up to 9 keyboard shortcuts";
-
-/* No comment provided by engineer. */
-"Updates policy" = "Updates policy";
 
 /* No comment provided by engineer. */
 "Usage" = "Usage";

@@ -2,5 +2,9 @@
 
 set -ex
 
-set -o pipefail && xcodebuild -project alt-tab-macos.xcodeproj -scheme Release -derivedDataPath DerivedData | scripts/xcbeautify
-file "$BUILD_DIR/$XCODE_BUILD_PATH/$APP_NAME.app/Contents/MacOS/$APP_NAME"
+derivedDataPath="DerivedData"
+appPath="$derivedDataPath/Build/Products/Release/Altab.app"
+
+set -o pipefail && xcodebuild -project alt-tab-macos.xcodeproj -scheme Release -derivedDataPath "$derivedDataPath" | scripts/xcbeautify
+file "$appPath/Contents/MacOS/Altab"
+scripts/check_service_isolation.sh "$appPath"

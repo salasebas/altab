@@ -1,10 +1,8 @@
 import Cocoa
 import Darwin
 import ShortcutRecorder
-import AppCenterCrashes
-import Sparkle
 
-class App: AppCenterApplication {
+class App: NSApplication {
     /// periphery:ignore
     static let activity = ProcessInfo.processInfo.beginActivity(options: .userInitiatedAllowingIdleSystemSleep,
         reason: "Prevent App Nap to preserve responsiveness")
@@ -29,11 +27,6 @@ class App: AppCenterApplication {
     private static var isVeryFirstSummon = true
     private static var pendingShowSettingsWindow = false
     private static var firstLaunchSettingsObserver: NSObjectProtocol?
-    // periphery:ignore
-    private static var appCenterDelegate: AppCenterCrash?
-    // periphery:ignore
-    static var sparkleDelegate: SparkleDelegate?
-    static var updaterController: SPUStandardUpdaterController?
     // don't queue multiple delayed rebuildUi() calls
     private static var delayedDisplayScheduled = 0
     private static let switcherUiRefreshThrottler = Throttler(delayInMs: 200)
@@ -98,10 +91,6 @@ class App: AppCenterApplication {
         let selectedWindow = Windows.selectedWindow()
         Logger.info { selectedWindow?.debugId }
         focusSelectedWindow(selectedWindow)
-    }
-
-    @objc static func checkForUpdatesNow(_ sender: NSMenuItem) {
-        GeneralTab.checkForUpdatesNow(sender)
     }
 
     @objc static func checkPermissions(_ sender: NSMenuItem) {
@@ -399,14 +388,6 @@ class App: AppCenterApplication {
         CursorEvents.observe()
         TrackpadEvents.observe()
         CliEvents.observe()
-        App.sparkleDelegate = SparkleDelegate()
-        App.updaterController = SPUStandardUpdaterController(
-            startingUpdater: false,
-            updaterDelegate: App.sparkleDelegate!,
-            userDriverDelegate: nil)
-        DispatchQueue.main.asyncAfter(deadline: .now() + 30) {
-            App.updaterController?.startUpdater()
-        }
         PreferencesEvents.initialize()
         BenchmarkRunner.startIfNeeded()
         showSettingsWindowOnFirstLaunchIfNeeded()
@@ -429,7 +410,6 @@ class App: AppCenterApplication {
 
 extension App: NSApplicationDelegate {
     func applicationDidFinishLaunching(_ aNotification: Notification) {
-        App.appCenterDelegate = AppCenterCrash()
         App.shared.disableRelaunchOnLogin()
         Logger.initialize()
         Logger.info { "Launching \(App.name) \(App.version)" }
@@ -459,7 +439,6 @@ extension App: NSApplicationDelegate {
         LicenseManager.shared.onBeforeProUnlock = { ProTransitionManager.shared.onProUnlocked() }
         LicenseManager.shared.onStateChanged = { state in
             Menubar.refreshLicenseMenuItems()
-            syncLicenseCookie(state: state)
             ProTransitionManager.shared.onLicenseStateChanged()
             UpgradeTab.refreshStatus()
             SettingsWindow.shared?.refreshUpgradeButton()

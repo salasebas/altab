@@ -5,8 +5,6 @@
 "30-day money-back guarantee" = "Soddisfatti o rimborsati entro 30 giorni";
 "4-finger Horizontal Swipe" = "Scorrimento orizzontale a 4 dita";
 "4-finger Vertical Swipe" = "Scorrimento verticale a 4 dita";
-"A debug profile (versions, settings, hardware) is attached to help diagnose the issue." = "È allegato un profilo di debug (versioni, impostazioni, hardware) per aiutare a diagnosticare il problema.";
-"A new version of Altab is available" = "È disponibile una nuova versione di Altab";
 "About %@" = "Informazioni su %@";
 "Accessibility" = "Accessibilità";
 "Activate" = "Attiva";
@@ -26,7 +24,6 @@
 "All Spaces" = "Tutti gli Spazi";
 "Allowed" = "Consentito";
 "Alphabetical Order" = "Ordine alfabetico";
-"Altab crashed last time you used it. Sending a crash report will help get the issue fixed" = "Altab si è arrestato in modo anomalo l'ultima volta che l'hai usato. L'invio di un resoconto di arresti anomali aiuterà a risolvere il problema";
 "Altab is a free, open-source window switcher for macOS. Pro features are available with a 14-day free trial." = "Altab è un selettore di finestre gratuito e open source per macOS. Le funzionalità Pro sono disponibili con una prova gratuita di 14 giorni.";
 "Altab is running without Screen Recording permissions. %@ won’t show." = "Altab è in esecuzione senza i permessi di Registrazione schermo. %@ non verranno mostrate.";
 "Altab needs some permissions" = "Altab richiede alcuni permessi";
@@ -37,7 +34,6 @@
 "Altab Pro is still available" = "Altab Pro è ancora disponibile";
 "Altab will show if the window is currently minimized or fullscreen with a status icon." = "Altab indicherà con un'icona di stato se la finestra è ridotta a icona o a tutto schermo.";
 "Always" = "Sempre";
-"Always send crash reports" = "Invia sempre i resoconti di arresti anomali";
 "and press" = "e premi";
 "Animations" = "Animazioni";
 "Animations…" = "Animazioni…";
@@ -55,10 +51,8 @@
 "Applies in other Appearances" = "Si applica negli altri Aspetti";
 "Arrow keys" = "Tasti freccia";
 "Arrow keys already assigned to other actions:\n%@" = "Tasti freccia già assegnati ad altre azioni:\n%@";
-"Ask whether to send crash reports" = "Chiedi se inviare i resoconti di arresti anomali";
 "Auto" = "Automatico";
 "Auto Size — larger previews with few windows, more at once with many" = "Dimensione automatica — anteprime più grandi con poche finestre, più contemporaneamente con molte";
-"Auto-install updates periodically" = "Installa automaticamente gli aggiornamenti";
 "Auto-sizing switcher" = "Selettore a dimensione automatica";
 "Automatic activation failed" = "Attivazione automatica non riuscita";
 "Brief description of the bug" = "Breve descrizione del bug";
@@ -66,9 +60,6 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "Annulla";
 "Capture windows in the background" = "Cattura finestre in background";
-"Check for updates now…" = "Cerca aggiornamenti ora…";
-"Check for updates periodically" = "Cerca aggiornamenti periodicamente";
-"Check for updates…" = "Cerca aggiornamenti…";
 "Check permissions…" = "Controlla i permessi…";
 "Close window" = "Chiudi finestra";
 "Conflicting shortcut" = "Scorciatoia in conflitto";
@@ -78,7 +69,6 @@
 "Couldn't deactivate that machine" = "Impossibile disattivare quel dispositivo";
 "Couldn't save your license to the macOS Keychain. Please share the details below with the developer." = "Impossibile salvare la tua licenza nel Portachiavi di macOS. Condividi i dettagli qui sotto con lo sviluppatore.";
 "Couldn't submit feedback" = "Impossibile inviare il feedback";
-"Crash reports policy" = "Politica dei resoconti di arresti anomali";
 "Create GitHub issue" = "Crea ticket GitHub";
 "Cursor follows focus" = "Il cursore segue il focus";
 "Customize more…" = "Personalizza di più…";
@@ -94,8 +84,6 @@
 "Do Not Move" = "Non spostare";
 "Don't hide" = "Non nascondere";
 "Done" = "Fine";
-"Don’t check for updates periodically" = "Non cercare aggiornamenti periodicamente";
-"Don’t send" = "Non inviare";
 "e.g. com.example.app" = "es. com.example.app";
 "e.g. Debug" = "es. Debug";
 "End" = "Fine";
@@ -156,7 +144,6 @@
 "Multiple screens" = "Più schermi";
 "My Account" = "Il mio account";
 "Never" = "Mai";
-"Never send crash reports" = "Non inviare mai i resoconti di arresti anomali";
 "No response from server." = "Nessuna risposta dal server.";
 "No thanks — don't ask again" = "No grazie — non chiedere più";
 "No Window" = "Nessuna finestra";
@@ -191,7 +178,6 @@
 "Recently Created First" = "Prima i creati di recente";
 "Recently Focused First" = "Prima i recentemente in focus";
 "Reliable, fast window switching with high-quality thumbnails" = "Cambio di finestra affidabile e veloce con miniature di alta qualità";
-"Remember my choice" = "Ricorda la mia scelta";
 "Report a bug" = "Segnala un bug";
 "Report on current version" = "Segnala sulla versione attuale";
 "Reset settings and restart" = "Ripristina impostazioni e riavvia";
@@ -210,8 +196,6 @@
 "Select windows on mouse hover" = "Seleziona la finestra al passaggio del mouse";
 "Select windows using arrow keys" = "Seleziona la finestra con i tasti freccia";
 "Select windows using vim keys" = "Seleziona la finestra con i tasti Vim";
-"Send" = "Invia";
-"Send a crash report?" = "Inviare un resoconto di arresti anomali?";
 "Send feedback" = "Invia feedback";
 "Send feedback…" = "Invia feedback…";
 "Sending…" = "Invio in corso…";
@@ -281,8 +265,6 @@
 "Unlock the App Icons style with Pro" = "Sblocca lo stile Icone delle app con Pro";
 "Unlock the Titles style with Pro" = "Sblocca lo stile Titoli con Pro";
 "Up to 9 keyboard shortcuts" = "Fino a 9 scorciatoie da tastiera";
-"Update now" = "Aggiorna ora";
-"Updates policy" = "Politica degli aggiornamenti";
 "Usage" = "Utilizzo";
 "Use the app without this permission. Thumbnails won’t show." = "Usa l'app senza questo permesso. Le miniature non verranno mostrate.";
 "Version" = "Versione";

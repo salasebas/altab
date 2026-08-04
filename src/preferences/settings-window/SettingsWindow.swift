@@ -369,7 +369,6 @@ class SettingsWindow: NSWindow {
         setupSidebar()
         setupContentPane()
         sectionDefinitions().forEach { addSection($0) }
-        refreshControlsFromSettings()
         // Publish each section's dynamic search content (its rebuilt-after-build sidebar rows) now
         // that the section objects exist. Uses `self` directly — `SettingsWindow.shared` isn't
         // assigned until `init` finishes, so ControlsTab's own refresh calls no-op until then.
@@ -1003,10 +1002,6 @@ class SettingsWindow: NSWindow {
         root.subviews.forEach {
             collectSearchStrings($0, &values)
         }
-    }
-
-    private func refreshControlsFromSettings() {
-        GeneralTab.refreshControlsFromPreferences()
     }
 
     func beginSheetWithSearchHighlight(_ sheet: SheetWindow) {

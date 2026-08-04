@@ -5,8 +5,6 @@
 "30-day money-back guarantee" = "אחריות החזר כספי ל-30 יום";
 "4-finger Horizontal Swipe" = "החלקה אופקית ב-4 אצבעות";
 "4-finger Vertical Swipe" = "החלקה אנכית ב-4 אצבעות";
-"A debug profile (versions, settings, hardware) is attached to help diagnose the issue." = "פרופיל איתור באגים (גרסאות, הגדרות, חומרה) מצורף כדי לסייע באבחון הבעיה.";
-"A new version of Altab is available" = "גרסה חדשה של Altab זמינה";
 "About %@" = "אודות %@";
 "Accessibility" = "נגישות";
 "Activate" = "הפעל";
@@ -26,7 +24,6 @@
 "All Spaces" = "כל המרחבים";
 "Allowed" = "מותר";
 "Alphabetical Order" = "סדר אלפביתי";
-"Altab crashed last time you used it. Sending a crash report will help get the issue fixed" = "Altab קרס בפעם האחרונה שהשתמשת בו. שליחת דיווח קריסה תסייע לתקן את הבעיה";
 "Altab is a free, open-source window switcher for macOS. Pro features are available with a 14-day free trial." = "Altab הוא מחליף חלונות חינמי בקוד פתוח עבור macOS. תכונות Pro זמינות עם תקופת ניסיון חינמית של 14 יום.";
 "Altab is running without Screen Recording permissions. %@ won’t show." = "Altab פועל ללא הרשאות הקלטת מסך. %@ לא יוצגו.";
 "Altab needs some permissions" = "Altab זקוק להרשאות מסוימות";
@@ -37,7 +34,6 @@
 "Altab Pro is still available" = "Altab Pro עדיין זמין";
 "Altab will show if the window is currently minimized or fullscreen with a status icon." = "Altab יציג באמצעות סמל מצב אם החלון ממוזער או במסך מלא.";
 "Always" = "תמיד";
-"Always send crash reports" = "שלח תמיד דיווחי קריסה";
 "and press" = "ולחץ על";
 "Animations" = "אנימציות";
 "Animations…" = "אנימציות…";
@@ -55,10 +51,8 @@
 "Applies in other Appearances" = "חל במראים אחרים";
 "Arrow keys" = "מקשי חצים";
 "Arrow keys already assigned to other actions:\n%@" = "מקשי חצים כבר משויכים לפעולות אחרות:\n%@";
-"Ask whether to send crash reports" = "שאל לפני שליחת דיווחי קריסה";
 "Auto" = "אוטומטי";
 "Auto Size — larger previews with few windows, more at once with many" = "גודל אוטומטי — תצוגות מקדימות גדולות יותר עם מעט חלונות, יותר בבת אחת עם רבים";
-"Auto-install updates periodically" = "התקן עדכונים אוטומטית מעת לעת";
 "Auto-sizing switcher" = "מחליף בגודל אוטומטי";
 "Automatic activation failed" = "ההפעלה האוטומטית נכשלה";
 "Brief description of the bug" = "תיאור קצר של הבאג";
@@ -66,9 +60,6 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "ביטול";
 "Capture windows in the background" = "לכוד חלונות ברקע";
-"Check for updates now…" = "חפש עדכונים כעת…";
-"Check for updates periodically" = "חפש עדכונים מעת לעת";
-"Check for updates…" = "חפש עדכונים…";
 "Check permissions…" = "בדוק הרשאות…";
 "Close window" = "סגור חלון";
 "Conflicting shortcut" = "קיצור דרך מתנגש";
@@ -78,7 +69,6 @@
 "Couldn't deactivate that machine" = "לא ניתן היה לבטל את הפעלת המכשיר הזה";
 "Couldn't save your license to the macOS Keychain. Please share the details below with the developer." = "לא ניתן היה לשמור את הרישיון שלך בצרור המפתחות של macOS. שתף את הפרטים שלהלן עם המפתח.";
 "Couldn't submit feedback" = "לא ניתן היה לשלוח משוב";
-"Crash reports policy" = "מדיניות דיווחי קריסה";
 "Create GitHub issue" = "צור issue ב-GitHub";
 "Cursor follows focus" = "הסמן עוקב אחר המיקוד";
 "Customize more…" = "התאמה אישית נוספת…";
@@ -94,8 +84,6 @@
 "Do Not Move" = "אל תעביר";
 "Don't hide" = "אל תסתיר";
 "Done" = "בוצע";
-"Don’t check for updates periodically" = "אל תחפש עדכונים מעת לעת";
-"Don’t send" = "אל תשלח";
 "e.g. com.example.app" = "לדוגמה: com.example.app";
 "e.g. Debug" = "לדוגמה: Debug";
 "End" = "סוף";
@@ -156,7 +144,6 @@
 "Multiple screens" = "מסכים מרובים";
 "My Account" = "החשבון שלי";
 "Never" = "אף פעם";
-"Never send crash reports" = "אל תשלח דיווחי קריסה אף פעם";
 "No response from server." = "אין תגובה מהשרת.";
 "No thanks — don't ask again" = "לא תודה — אל תשאל שוב";
 "No Window" = "אין חלון";
@@ -191,7 +178,6 @@
 "Recently Created First" = "האחרונים שנוצרו תחילה";
 "Recently Focused First" = "האחרונים שמוקדו תחילה";
 "Reliable, fast window switching with high-quality thumbnails" = "החלפת חלונות אמינה ומהירה עם תמונות ממוזערות באיכות גבוהה";
-"Remember my choice" = "זכור את הבחירה שלי";
 "Report a bug" = "דווח על באג";
 "Report on current version" = "דווח על הגרסה הנוכחית";
 "Reset settings and restart" = "אפס הגדרות והפעל מחדש";
@@ -210,8 +196,6 @@
 "Select windows on mouse hover" = "בחר חלונות בעת ריחוף עכבר";
 "Select windows using arrow keys" = "בחר חלונות באמצעות מקשי חצים";
 "Select windows using vim keys" = "בחר חלונות באמצעות מקשי Vim";
-"Send" = "שלח";
-"Send a crash report?" = "לשלוח דיווח קריסה?";
 "Send feedback" = "שלח משוב";
 "Send feedback…" = "שלח משוב…";
 "Sending…" = "שולח…";
@@ -281,8 +265,6 @@
 "Unlock the App Icons style with Pro" = "פתח את סגנון סמלי היישומים עם Pro";
 "Unlock the Titles style with Pro" = "פתח את סגנון הכותרות עם Pro";
 "Up to 9 keyboard shortcuts" = "עד 9 קיצורי מקלדת";
-"Update now" = "עדכן כעת";
-"Updates policy" = "מדיניות עדכונים";
 "Usage" = "שימוש";
 "Use the app without this permission. Thumbnails won’t show." = "השתמש ביישום ללא הרשאה זו. תמונות ממוזערות לא יוצגו.";
 "Version" = "גרסה";
