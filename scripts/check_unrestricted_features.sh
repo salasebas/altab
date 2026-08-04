@@ -19,6 +19,12 @@ reject_matches() {
   fi
 }
 
+require_production_wiring() {
+  local contract="$1"
+  local path="$2"
+  rg -q -F "$contract" "$path" || fail "$path no longer uses $contract"
+}
+
 check_source() {
   plutil -lint Info.plist >/dev/null
   plutil -lint alt-tab-macos.xcodeproj/project.pbxproj >/dev/null
@@ -45,6 +51,13 @@ check_source() {
   for path in "${removedPaths[@]}"; do
     [[ ! -e "$path" ]] || fail "$path still exists"
   done
+  require_production_wiring 'Preferences.effectiveShortcutStyle(shortcutIndex) == .searchOnRelease' src/App.swift
+  require_production_wiring 'TilesView.startSearchSession(shouldStartInSearchMode)' src/App.swift
+  require_production_wiring 'Preferences.effectiveAppearanceSize(SwitcherSession.activeShortcutIndex) == .auto' src/switcher/main-window/TilesView.swift
+  require_production_wiring 'Preferences.effectiveAppearanceStyle(SwitcherSession.activeShortcutIndex)' src/switcher/Appearance.swift
+  require_production_wiring 'Preferences.effectiveAppearanceStyle(SwitcherSession.activeShortcutIndex)' src/switcher/main-window/TileView.swift
+  require_production_wiring 'Preferences.shortcutRegistrationPlan' src/preferences/settings-window/tabs/controls/ControlsTab.swift
+  require_production_wiring 'Preferences.canAddShortcut' src/preferences/settings-window/tabs/controls/ControlsTab.swift
 }
 
 check_bundle() {

@@ -19,11 +19,38 @@ final class IncludedFeaturesTests: XCTestCase {
     }
 
     override func tearDown() {
+        SwitcherSession.current = nil
+        App.resetShortcutActionCalls()
+        ControlsTab.shortcutsActionsTriggered = []
         isolatedDefaults.removePersistentDomain(forName: isolatedDefaultsDomainName)
         Preferences.defaults = originalDefaults
         Preferences.defaultsDomainName = originalDefaultsDomainName
         Preferences.invalidateAllCache()
         super.tearDown()
+    }
+
+    func testDefaultSchemaCollectsKeysWithoutMaterializingValues() {
+        var evaluations = 0
+        var schema = PreferenceDefaultsSchema()
+        schema.add("plain", "value")
+        schema.add("deferred", { evaluations += 1; return "built" }())
+        XCTAssertEqual(schema.keys, ["plain", "deferred"])
+        XCTAssertEqual(evaluations, 0)
+        let values = schema.values()
+        XCTAssertEqual(Set(values.keys), schema.keys)
+        XCTAssertEqual(values["deferred"] as? String, "built")
+        XCTAssertEqual(evaluations, 1)
+    }
+
+    func testProductionDefaultSchemaOwnsEveryIndexedPreferenceKey() {
+        let triggerKeys = Set(IncludedFeatures.keyboardShortcutIndices.flatMap { index in
+            IncludedFeatures.shortcutTriggerBaseNames.map { Preferences.indexToName($0, index) }
+        })
+        let configurationKeys = Set(IncludedFeatures.configurationIndices.flatMap { index in
+            IncludedFeatures.perShortcutPreferenceBaseNames.map { Preferences.indexToName($0, index) }
+        })
+        XCTAssertTrue(triggerKeys.isSubset(of: Preferences.ownedKeys))
+        XCTAssertTrue(configurationKeys.isSubset(of: Preferences.ownedKeys))
     }
 
     func testCompleteFeatureInventoryIsPinned() {
@@ -126,9 +153,43 @@ final class IncludedFeaturesTests: XCTestCase {
         XCTAssertNil(ShortcutActions.switcherAction("nextWindowShortcut0"))
     }
 
+    func testProductionShortcutExecutionRunsEveryDynamicRoute() {
+        for index in IncludedFeatures.keyboardShortcutIndices {
+            let session = SwitcherSession()
+            session.shortcutIndex = index
+            SwitcherSession.current = session
+            ShortcutActions.execute(Preferences.indexToName("holdShortcut", index))
+            XCTAssertEqual(App.focusedShortcutIndices.last, index)
+            XCTAssertNil(SwitcherSession.current)
+
+            ShortcutActions.execute(Preferences.indexToName("nextWindowShortcut", index))
+            XCTAssertEqual(App.shownShortcutIndices.last, index)
+            XCTAssertEqual(SwitcherSession.current?.shortcutIndex, index)
+        }
+        let focusedCount = App.focusedShortcutIndices.count
+        let shownCount = App.shownShortcutIndices.count
+        ShortcutActions.execute("holdShortcut10")
+        ShortcutActions.execute("nextWindowShortcut0")
+        XCTAssertEqual(App.focusedShortcutIndices.count, focusedCount)
+        XCTAssertEqual(App.shownShortcutIndices.count, shownCount)
+    }
+
     func testShortcutCapacityIncludesEveryAdditionalSlot() {
         XCTAssertEqual(Preferences.minShortcutCount, 1)
         XCTAssertEqual(Preferences.maxShortcutCount, 9)
+        let supportedKeys = IncludedFeatures.keyboardShortcutIndices.flatMap { index in
+            IncludedFeatures.shortcutTriggerBaseNames.map { Preferences.indexToName($0, index) }
+        }
+        for count in Preferences.minShortcutCount...Preferences.maxShortcutCount {
+            let plan = Preferences.shortcutRegistrationPlan(shortcutCount: count)
+            XCTAssertEqual(plan.supportedKeys, supportedKeys)
+            XCTAssertEqual(plan.activeKeys, Set(supportedKeys.prefix(count * IncludedFeatures.shortcutTriggerBaseNames.count)))
+        }
+        XCTAssertFalse(Preferences.canAddShortcut(0))
+        for count in Preferences.minShortcutCount..<Preferences.maxShortcutCount {
+            XCTAssertTrue(Preferences.canAddShortcut(count), "count \(count)")
+        }
+        XCTAssertFalse(Preferences.canAddShortcut(Preferences.maxShortcutCount))
     }
 
     func testSearchAlwaysEntersEditing() {

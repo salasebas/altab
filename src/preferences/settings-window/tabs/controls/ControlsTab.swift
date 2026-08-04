@@ -561,7 +561,7 @@ class ControlsTab {
 
     private static func addShortcutSlot() {
         let currentCount = Preferences.shortcutCount
-        guard currentCount >= Preferences.minShortcutCount && currentCount < Preferences.maxShortcutCount else { return }
+        guard Preferences.canAddShortcut(currentCount) else { return }
         resetShortcutPreferences(currentCount)
         setAddedShortcutTriggerDefaults(currentCount)
         selectedShortcutIndex = currentCount
@@ -721,9 +721,9 @@ class ControlsTab {
     // MARK: - Shortcut registry (global keyboard binding — unchanged from the old code)
 
     private static func applyActiveShortcutPreferences() {
-        let activeKeys = Set(Preferences.activeShortcutPreferenceKeys(shortcutCount: Preferences.shortcutCount))
-        Preferences.activeShortcutPreferenceKeys(shortcutCount: Preferences.maxShortcutCount).forEach { key in
-            if activeKeys.contains(key) {
+        let plan = Preferences.shortcutRegistrationPlan(shortcutCount: Preferences.shortcutCount)
+        plan.supportedKeys.forEach { key in
+            if plan.activeKeys.contains(key) {
                 applyShortcutPreference(key)
             } else {
                 removeShortcutIfExists(key)

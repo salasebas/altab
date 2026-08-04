@@ -139,6 +139,52 @@ class App {
     }
     static let app = AppMock()
     static let bundleIdentifier = "dev.salasebas.Altab"
+    static var cycleDirections = [Direction]()
+    static var focusedShortcutIndices = [Int]()
+    static var shownShortcutIndices = [Int]()
+
+    static func focusTarget() {
+        guard let session = SwitcherSession.current else { return }
+        focusedShortcutIndices.append(session.shortcutIndex)
+        ControlsTab.shortcutsActionsTriggered.append(Preferences.indexToName("holdShortcut", session.shortcutIndex))
+        SwitcherSession.current = nil
+    }
+
+    static func previousWindowShortcutWithRepeatingKey() {
+        ControlsTab.shortcutsActionsTriggered.append("previousWindowShortcut")
+    }
+
+    static func cycleSelection(_ direction: Direction, allowWrap: Bool = true) {
+        cycleDirections.append(direction)
+    }
+
+    static func hideUi(_ keepPreview: Bool = false) {
+        ControlsTab.shortcutsActionsTriggered.append("cancelShortcut")
+        SwitcherSession.current = nil
+    }
+
+    static func showUiOrCycleSelection(_ shortcutIndex: Int, _ forceDoNothingOnRelease: Bool) {
+        let session = SwitcherSession.current ?? SwitcherSession()
+        session.shortcutIndex = shortcutIndex
+        SwitcherSession.current = session
+        shownShortcutIndices.append(shortcutIndex)
+        ControlsTab.shortcutsActionsTriggered.append(Preferences.indexToName("nextWindowShortcut", shortcutIndex))
+    }
+
+    static func resetShortcutActionCalls() {
+        cycleDirections = []
+        focusedShortcutIndices = []
+        shownShortcutIndices = []
+    }
+}
+
+enum Direction {
+    case right
+    case left
+    case leading
+    case trailing
+    case up
+    case down
 }
 
 class PreferencesEvents {
@@ -154,6 +200,8 @@ class TilesPanel {
 }
 
 class TilesView {
+    static var searchMode = SearchMode.off
+
     static var isSearchEditing: Bool {
         get { App.app.tilesPanel.tilesView.isSearchEditing }
         set { App.app.tilesPanel.tilesView.isSearchEditing = newValue }
@@ -161,6 +209,48 @@ class TilesView {
 
     static func handleSearchEditingKeyDown(_ event: NSEvent) -> SearchKeyResult {
         return App.app.tilesPanel.tilesView.handleSearchEditingKeyDown(event)
+    }
+
+    static func disableSearchMode() {
+        searchMode = .off
+    }
+
+    static func toggleSearchModeFromShortcut() {
+        searchMode = searchMode == .off ? .editing : .off
+    }
+}
+
+final class WindowApplication {
+    func quit() {
+        ControlsTab.shortcutsActionsTriggered.append("quitAppShortcut")
+    }
+
+    func hideOrShow() {
+        ControlsTab.shortcutsActionsTriggered.append("hideShowAppShortcut")
+    }
+}
+
+final class Window {
+    let application = WindowApplication()
+
+    func close() {
+        ControlsTab.shortcutsActionsTriggered.append("closeWindowShortcut")
+    }
+
+    func minDemin() {
+        ControlsTab.shortcutsActionsTriggered.append("minDeminWindowShortcut")
+    }
+
+    func toggleFullscreen() {
+        ControlsTab.shortcutsActionsTriggered.append("toggleFullscreenWindowShortcut")
+    }
+}
+
+enum Windows {
+    static var window: Window? = Window()
+
+    static func selectedWindow() -> Window? {
+        window
     }
 }
 
@@ -214,12 +304,6 @@ class ControlsTab {
     }
 
     static var shortcutsActionsTriggered: [String] = []
-}
-
-enum ShortcutActions {
-    static func execute(_ id: String) {
-        ControlsTab.executeAction(id)
-    }
 }
 
 class KeyRepeatTimer {

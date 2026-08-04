@@ -2,6 +2,26 @@ import Cocoa
 import Carbon.HIToolbox.Events
 import ShortcutRecorder
 
+struct PreferenceDefaultsSchema {
+    private var entries = [String: () -> Any]()
+
+    mutating func add(_ key: String, _ value: @autoclosure @escaping () -> Any) {
+        precondition(entries[key] == nil, "Duplicate preference default: \(key)")
+        entries[key] = value
+    }
+
+    var keys: Set<String> { Set(entries.keys) }
+
+    func values() -> [String: Any] {
+        entries.mapValues { $0() }
+    }
+}
+
+struct ShortcutRegistrationPlan {
+    let activeKeys: Set<String>
+    let supportedKeys: [String]
+}
+
 class Preferences {
     #if TESTING
     private static let testDefaultsDomainName = "dev.salasebas.Altab.unit-tests"
@@ -11,74 +31,75 @@ class Preferences {
     fileprivate static let defaults = UserDefaults.standard
     fileprivate static let defaultsDomainName = App.bundleIdentifier
     #endif
-    static var defaultValues: [String: Any] = {
-        var values: [String: Any] = [
-            "shortcutCount": "2",
-            "nextWindowGesture": GesturePreference.disabled.indexAsString,
-            "focusWindowShortcut": defaultShortcut(returnKeyEquivalent()),
-            "previousWindowShortcut": defaultShortcut("⇧"),
-            "cancelShortcut": defaultShortcut("⎋"),
-            "closeWindowShortcut": defaultShortcut("W"),
-            "minDeminWindowShortcut": defaultShortcut("M"),
-            "toggleFullscreenWindowShortcut": defaultShortcut("F"),
-            "quitAppShortcut": defaultShortcut("Q"),
-            "hideShowAppShortcut": defaultShortcut("H"),
-            "searchShortcut": defaultShortcut("S"),
-            "arrowKeysEnabled": "true",
-            "vimKeysEnabled": "false",
-            "mouseHoverEnabled": "false",
-            "cursorFollowFocus": CursorFollowFocus.never.indexAsString,
-            "hideColoredCircles": "false",
-            "windowDisplayDelay": "100",
-            "appearanceStyle": AppearanceStylePreference.thumbnails.indexAsString,
-            "appearanceSize": AppearanceSizePreference.auto.indexAsString,
-            "appearanceTheme": AppearanceThemePreference.system.indexAsString,
-            "theme": ThemePreference.macOs.indexAsString,
-            "showOnScreen": ShowOnScreenPreference.active.indexAsString,
-            "titleTruncation": TitleTruncationPreference.end.indexAsString,
-            "showTitles": ShowTitlesPreference.windowTitle.indexAsString,
-            "fadeOutAnimation": "false",
-            "previewFadeInAnimation": "true",
-            "startAtLogin": "true",
-            "menubarIcon": MenubarIconPreference.outlined.indexAsString,
-            "menubarIconShown": "true",
-            "language": LanguagePreference.systemDefault.indexAsString,
-            "exceptions": defaultExceptions(),
-            "hideThumbnails": "false",
-            "hideSpaceNumberLabels": "false",
-            "hideStatusIcons": "false",
-            "previewFocusedWindow": "false",
-            "captureWindowsInBackground": "true",
-            "screenRecordingPermissionSkipped": "false",
-            "trackpadHapticFeedbackEnabled": "true",
-            "settingsWindowShownOnFirstLaunch": "false",
-        ]
-        (0..<maxShortcutCount).forEach { index in
-            values[indexToName("holdShortcut", index)] = defaultShortcut("⌥")
-            values[indexToName("nextWindowShortcut", index)] = defaultShortcut(index == 0 ? "⇥" : (index == 1 ? keyAboveTabDependingOnInputSource() : ""))
+    private static let defaultsSchema: PreferenceDefaultsSchema = {
+        var schema = PreferenceDefaultsSchema()
+        schema.add("shortcutCount", "2")
+        schema.add("nextWindowGesture", GesturePreference.disabled.indexAsString)
+        schema.add("focusWindowShortcut", defaultShortcut(returnKeyEquivalent()))
+        schema.add("previousWindowShortcut", defaultShortcut("⇧"))
+        schema.add("cancelShortcut", defaultShortcut("⎋"))
+        schema.add("closeWindowShortcut", defaultShortcut("W"))
+        schema.add("minDeminWindowShortcut", defaultShortcut("M"))
+        schema.add("toggleFullscreenWindowShortcut", defaultShortcut("F"))
+        schema.add("quitAppShortcut", defaultShortcut("Q"))
+        schema.add("hideShowAppShortcut", defaultShortcut("H"))
+        schema.add("searchShortcut", defaultShortcut("S"))
+        schema.add("arrowKeysEnabled", "true")
+        schema.add("vimKeysEnabled", "false")
+        schema.add("mouseHoverEnabled", "false")
+        schema.add("cursorFollowFocus", CursorFollowFocus.never.indexAsString)
+        schema.add("hideColoredCircles", "false")
+        schema.add("windowDisplayDelay", "100")
+        schema.add("appearanceStyle", AppearanceStylePreference.thumbnails.indexAsString)
+        schema.add("appearanceSize", AppearanceSizePreference.auto.indexAsString)
+        schema.add("appearanceTheme", AppearanceThemePreference.system.indexAsString)
+        schema.add("theme", ThemePreference.macOs.indexAsString)
+        schema.add("showOnScreen", ShowOnScreenPreference.active.indexAsString)
+        schema.add("titleTruncation", TitleTruncationPreference.end.indexAsString)
+        schema.add("showTitles", ShowTitlesPreference.windowTitle.indexAsString)
+        schema.add("fadeOutAnimation", "false")
+        schema.add("previewFadeInAnimation", "true")
+        schema.add("startAtLogin", "true")
+        schema.add("menubarIcon", MenubarIconPreference.outlined.indexAsString)
+        schema.add("menubarIconShown", "true")
+        schema.add("language", LanguagePreference.systemDefault.indexAsString)
+        schema.add("exceptions", defaultExceptions())
+        schema.add("hideThumbnails", "false")
+        schema.add("hideSpaceNumberLabels", "false")
+        schema.add("hideStatusIcons", "false")
+        schema.add("previewFocusedWindow", "false")
+        schema.add("captureWindowsInBackground", "true")
+        schema.add("screenRecordingPermissionSkipped", "false")
+        schema.add("trackpadHapticFeedbackEnabled", "true")
+        schema.add("settingsWindowShownOnFirstLaunch", "false")
+        for index in 0..<maxShortcutCount {
+            schema.add(indexToName("holdShortcut", index), defaultShortcut("⌥"))
+            schema.add(indexToName("nextWindowShortcut", index), defaultShortcut(index == 0 ? "⇥" : (index == 1 ? keyAboveTabDependingOnInputSource() : "")))
         }
-        (0...maxShortcutCount).forEach { index in
-            values[indexToName("appsToShow", index)] = index == 1 ? AppsToShowPreference.active.indexAsString : (index == 2 ? AppsToShowPreference.nonActive.indexAsString : AppsToShowPreference.all.indexAsString)
-            values[indexToName("spacesToShow", index)] = SpacesToShowPreference.all.indexAsString
-            values[indexToName("screensToShow", index)] = ScreensToShowPreference.all.indexAsString
-            values[indexToName("showMinimizedWindows", index)] = ShowHowPreference.show.indexAsString
-            values[indexToName("showHiddenWindows", index)] = ShowHowPreference.show.indexAsString
-            values[indexToName("showFullscreenWindows", index)] = ShowHowPreference.show.indexAsString
-            values[indexToName("showWindowlessApps", index)] = ShowHowPreference.showAtTheEnd.indexAsString
-            values[indexToName("windowOrder", index)] = WindowOrderPreference.recentlyFocused.indexAsString
-            values[indexToName("shortcutStyle", index)] = ShortcutStylePreference.focusOnRelease.indexAsString
-            values[indexToName("showAppsOrWindows", index)] = GroupAppsPreference.allWindows.indexAsString
-            values[indexToName("showTabsAsWindows", index)] = GroupTabsPreference.singleWindow.indexAsString
+        for index in 0...maxShortcutCount {
+            schema.add(indexToName("appsToShow", index), index == 1 ? AppsToShowPreference.active.indexAsString : (index == 2 ? AppsToShowPreference.nonActive.indexAsString : AppsToShowPreference.all.indexAsString))
+            schema.add(indexToName("spacesToShow", index), SpacesToShowPreference.all.indexAsString)
+            schema.add(indexToName("screensToShow", index), ScreensToShowPreference.all.indexAsString)
+            schema.add(indexToName("showMinimizedWindows", index), ShowHowPreference.show.indexAsString)
+            schema.add(indexToName("showHiddenWindows", index), ShowHowPreference.show.indexAsString)
+            schema.add(indexToName("showFullscreenWindows", index), ShowHowPreference.show.indexAsString)
+            schema.add(indexToName("showWindowlessApps", index), ShowHowPreference.showAtTheEnd.indexAsString)
+            schema.add(indexToName("windowOrder", index), WindowOrderPreference.recentlyFocused.indexAsString)
+            schema.add(indexToName("shortcutStyle", index), ShortcutStylePreference.focusOnRelease.indexAsString)
+            schema.add(indexToName("showAppsOrWindows", index), GroupAppsPreference.allWindows.indexAsString)
+            schema.add(indexToName("showTabsAsWindows", index), GroupTabsPreference.singleWindow.indexAsString)
             // `hasOverride(_:_:)` consults `persistentDomain` so these registered defaults don't
             // make an unset override look set.
-            values[indexToName("appearanceStyleOverride", index)] = AppearanceStylePreference.thumbnails.indexAsString
-            values[indexToName("appearanceSizeOverride", index)] = AppearanceSizePreference.medium.indexAsString
-            values[indexToName("appearanceThemeOverride", index)] = AppearanceThemePreference.system.indexAsString
-            values[indexToName("shortcutStyleOverride", index)] = ShortcutStylePreference.doNothingOnRelease.indexAsString
-            values[indexToName("previewFocusedWindowOverride", index)] = "false"
+            schema.add(indexToName("appearanceStyleOverride", index), AppearanceStylePreference.thumbnails.indexAsString)
+            schema.add(indexToName("appearanceSizeOverride", index), AppearanceSizePreference.medium.indexAsString)
+            schema.add(indexToName("appearanceThemeOverride", index), AppearanceThemePreference.system.indexAsString)
+            schema.add(indexToName("shortcutStyleOverride", index), ShortcutStylePreference.doNothingOnRelease.indexAsString)
+            schema.add(indexToName("previewFocusedWindowOverride", index), "false")
         }
-        return values
+        return schema
     }()
+    static let defaultValues = defaultsSchema.values()
+    static let ownedKeys = defaultsSchema.keys
 
     // system preferences
     static var finderShowsQuitMenuItem: Bool { UserDefaults(suiteName: "com.apple.Finder")?.bool(forKey: "QuitMenuItem") ?? false }
@@ -226,27 +247,6 @@ class Preferences {
             PreferencesEvents.preferenceChanged(key)
         }
     }
-
-    static let ownedKeys: Set<String> = {
-        var keys: Set<String> = [
-            "shortcutCount", "nextWindowGesture", "arrowKeysEnabled", "vimKeysEnabled",
-            "mouseHoverEnabled", "cursorFollowFocus", "hideColoredCircles", "windowDisplayDelay",
-            "appearanceStyle", "appearanceSize", "appearanceTheme", "theme", "showOnScreen",
-            "titleTruncation", "showTitles", "fadeOutAnimation", "previewFadeInAnimation",
-            "startAtLogin", "menubarIcon", "menubarIconShown", "language", "exceptions",
-            "hideThumbnails", "hideSpaceNumberLabels", "hideStatusIcons", "previewFocusedWindow",
-            "captureWindowsInBackground", "screenRecordingPermissionSkipped",
-            "trackpadHapticFeedbackEnabled", "settingsWindowShownOnFirstLaunch",
-        ]
-        keys.formUnion(staticShortcutKeys)
-        for index in IncludedFeatures.keyboardShortcutIndices {
-            keys.formUnion(IncludedFeatures.shortcutTriggerBaseNames.map { indexToName($0, index) })
-        }
-        for index in IncludedFeatures.configurationIndices {
-            keys.formUnion(IncludedFeatures.perShortcutPreferenceBaseNames.map { indexToName($0, index) })
-        }
-        return keys
-    }()
 
     /// `persistentDomain(forName:)` rebuilds a full snapshot dictionary on every call, which adds
     /// up: every `hasOverride` / `effectiveAppearanceStyle` consults `all`, and the switcher show
@@ -428,6 +428,15 @@ class Preferences {
         Array(0..<min(max(shortcutCount, 0), maxShortcutCount)).flatMap { index in
             IncludedFeatures.shortcutTriggerBaseNames.map { indexToName($0, index) }
         }
+    }
+
+    static func shortcutRegistrationPlan(shortcutCount: Int) -> ShortcutRegistrationPlan {
+        let supportedKeys = activeShortcutPreferenceKeys(shortcutCount: maxShortcutCount)
+        return ShortcutRegistrationPlan(activeKeys: Set(activeShortcutPreferenceKeys(shortcutCount: shortcutCount)), supportedKeys: supportedKeys)
+    }
+
+    static func canAddShortcut(_ currentCount: Int) -> Bool {
+        currentCount >= minShortcutCount && currentCount < maxShortcutCount
     }
 }
 

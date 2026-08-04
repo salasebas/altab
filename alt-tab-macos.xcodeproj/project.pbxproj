@@ -129,6 +129,7 @@
 		5F4700000000000000000101 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = D04BA9B93823398A542FF7A0 /* Preferences.swift */; };
 		5F4700000000000000000102 /* MacroPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8998862E0E04D60CACBC /* MacroPreferences.swift */; };
 		5F4700000000000000000103 /* ShortcutConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA001000000000000000020 /* ShortcutConfiguration.swift */; };
+		5F4800000000000000000011 /* ShortcutAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = D04BA00000000000C0DE0010 /* ShortcutAction.swift */; };
 		AA0C8A100000000000000001 /* AXCallScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0C8A000000000000000001 /* AXCallScheduler.swift */; };
 		AA0C8A1000000000000000B1 /* CGSCallScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0C8A0000000000000000B1 /* CGSCallScheduler.swift */; };
 		AA0C8A1000000000000000B2 /* ProcessCallScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0C8A0000000000000000B2 /* ProcessCallScheduler.swift */; };
@@ -1723,6 +1724,7 @@
 				5E5EA12C0000000000000102 /* SearchModeResolverTests.swift in Sources */,
 				5F46FE000000000000000003 /* IncludedFeatures.swift in Sources */,
 				5F46FE000000000000000102 /* IncludedFeaturesTests.swift in Sources */,
+				5F4800000000000000000011 /* ShortcutAction.swift in Sources */,
 				5F4700000000000000000003 /* ShortcutRouting.swift in Sources */,
 				5F4700000000000000000101 /* Preferences.swift in Sources */,
 				5F4700000000000000000102 /* MacroPreferences.swift in Sources */,
