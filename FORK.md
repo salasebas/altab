@@ -11,9 +11,9 @@ This file distinguishes current facts from the intended Altab product. Do not ma
 - License: GPL-3.0
 - Relationship: independent fork; no affiliation or endorsement
 
-## Product intention
+## Product model
 
-Altab is intended to provide the functionality present in this codebase without paid feature gates, licensing activation, upgrade prompts, or dependence on the upstream licensing service. This is a roadmap statement, not a description of the current build.
+Altab provides the locally implemented functionality in this codebase to every user. Feature behavior remains preference-driven, but availability never depends on a license, trial, account, purchase, elapsed time, or network response. There is no activation flow, paid-access state, upgrade prompt, checkout integration, or upstream licensing dependency.
 
 ## Relationship with the earlier MIT Altab codebase
 
@@ -46,7 +46,7 @@ Security-related upstream work receives priority, but there is no promise of imm
 
 - [x] Remove Sparkle until a fork-owned feed, signing key, and tested update path exist; a fork build cannot install an upstream AltTab release.
 - [x] Remove the appcast-only license cookie, upstream release notes, and upstream download URLs.
-- [ ] Remove or replace the remaining `alt-tab.app` licensing, checkout, and account endpoints.
+- [x] Remove the remaining `alt-tab.app` licensing, checkout, and account endpoints without adding a replacement service.
 - [x] Remove upstream Developer ID and Team ID values from release configuration and CI.
 - [x] Remove AppCenter/crash-reporting configuration and document that the fork sends no crash reports or analytics to AppCenter.
 - [x] Remove the inherited publish workflow and its upstream signing, appcast, AppCenter, and deployment dependencies.
@@ -54,10 +54,10 @@ Security-related upstream work receives priority, but there is no promise of imm
 
 ### Free feature surface
 
-- [ ] Inventory every Pro gate and write tests for the intended always-available behavior.
-- [ ] Remove activation, keychain license state, remote license calls, trials, conversion scheduling, upgrade prompts, and paid-tier copy without regressing preferences.
-- [ ] Preserve user settings when removing the paid-tier state machine.
-- [ ] Confirm that no packaged build contacts an upstream licensing or payment service.
+- [x] Inventory every formerly paid feature path and pin its unrestricted behavior in specs and tests.
+- [x] Remove activation, license Keychain state, remote license calls, trials, conversion scheduling, upgrade prompts, and paid-tier copy without regressing feature implementations.
+- [x] Preserve existing Altab user settings while removing the paid-access state machine and its forced fallback behavior.
+- [x] Guard source and packaged builds against upstream licensing/payment services, paid-access decisions, and upsell UI.
 
 ### Distribution and compliance
 

@@ -13,17 +13,15 @@ An independent, community-maintained fork of [AltTab for macOS](https://github.c
 
 ## Direction
 
-Altab aims to preserve AltTab's fast AppKit window-switching experience while making every locally available user-facing feature usable without a paid feature gate.
+Altab preserves AltTab's fast AppKit window-switching experience and includes every locally implemented user-facing feature. Search, Search on Release, Auto size, App Icons and Titles, additional shortcuts, and per-shortcut options are available to everyone while remaining controlled by each user's preferences.
 
-That goal is **not complete yet**. The current source still contains upstream licensing, trial, checkout, and account integrations. Until the remaining items in [FORK.md](FORK.md) are resolved, builds are for development and evaluation only and must not be presented as public Altab releases.
+Altab has no paid-access state, activation, trial, checkout, or account integration. The repository is still in the fork-bootstrap stage because signing, notarization, release validation, and a fork-owned update path remain incomplete. Until the remaining items in [FORK.md](FORK.md) are resolved, builds are for development and evaluation only and must not be presented as public Altab releases.
 
 ## Privacy and updates
 
 Altab does not bundle or initialize Sparkle, has no in-app updater, and cannot download or install an upstream AltTab release. Updates must be obtained and installed manually until a fork-owned update path is designed and validated.
 
-This build does not bundle or initialize AppCenter and does not send crash reports or analytics to AppCenter. No replacement crash-reporting, analytics, or telemetry service has been added. On-device usage counters remain part of the existing Pro experience and are not transmitted.
-
-The licensing, trial, checkout, and account migration is intentionally separate. Those inherited features and Pro gates remain active for now and may contact `alt-tab.app` services.
+This build does not bundle or initialize AppCenter and does not send crash reports or analytics to AppCenter. No replacement crash-reporting, analytics, or telemetry service has been added. It has no licensing, trial, checkout, or account network path and does not contact upstream services for feature access.
 
 ## Relationship with upstream
 

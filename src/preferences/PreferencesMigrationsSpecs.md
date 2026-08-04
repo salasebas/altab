@@ -15,6 +15,14 @@
 - **Idempotency**: `migrateExceptionsTitleArray` must be safe to re-run — already-migrated (array-form) data fails to decode into the legacy (`String?`) shape, triggering an early return that leaves data untouched.
 - **A quirk worth knowing** (pinned by a test): the global→per-shortcut grouping migration copies the global value into the indexed keys, but because index 0's key *is* the old global key, that key is removed at the end — so slot 0 ends up unset while slots 2…10 hold the value.
 - **Testability**: production reads/writes `UserDefaults.standard`; the tests inject an isolated suite via `PreferencesMigrations.defaults` (reset in `tearDown`) so they never touch the dev machine's real prefs.
+- **Included-feature recovery**: before normal version migrations, Altab checks the former
+  `dev.salasebas.Altab.license` defaults suite for the six valid remembered enum indices that an
+  older restricted build may have replaced in the main preferences domain. It restores global
+  Appearance Style, Appearance Size, Shortcut Style, and their shortcut-0 overrides only while the
+  main-domain value is still the exact replacement value. Removed overrides and later choices are
+  preserved. A marker
+  in the main domain makes the recovery one-shot, preserving every choice the user makes afterward;
+  absent and out-of-range values are ignored, and the legacy suite is left inert.
 - **Not covered** (documented gaps): `migrateShortcutPreferencesToSecureCoding` (needs the real NSKeyedArchiver/ShortcutRecorder codec, stubbed compile-only) and `migrateLoginItem` (mutates real Login Items via deprecated LaunchServices APIs).
 
 ---
@@ -22,6 +30,16 @@
 ## Test scenarios
 
 Mirrors `PreferencesMigrationsTests.swift` 1:1.
+
+### Included-feature preference recovery
+- **testIncludedFeatureRecoveryRestoresEveryValidRememberedSelection** — all six valid remembered
+  indices are restored to their main-domain preference keys.
+- **testIncludedFeatureRecoveryIgnoresAbsentAndInvalidRememberedSelections** — missing, non-integer,
+  negative, and out-of-range values never replace current preferences.
+- **testIncludedFeatureRecoveryRunsOnlyOnceAndPreservesLaterChoices** — after the first recovery,
+  changing a preference is permanent even if the legacy remembered value changes.
+- **testIncludedFeatureRecoveryPreservesLaterChoicesAndRemovedOverrides** — a current non-replacement
+  value and an absent override are preserved even when their remembered indices are valid.
 
 ### A. Version gating (`shouldRun`)
 - **testVersionGatingRunsForOlderStoredVersion** — stored `6.0.0` ≤ threshold `10.13.0` → runs.

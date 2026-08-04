@@ -66,9 +66,6 @@ check_source() {
   for path in "${removedPaths[@]}"; do
     [[ ! -e "$path" ]] || fail "$path still exists"
   done
-  rg -q 'static let checkoutUrl' src/api/Endpoints.swift || fail "checkout endpoint was removed"
-  rg -q 'static let accountUrl' src/api/Endpoints.swift || fail "account endpoint was removed"
-  rg -q 'static let licenseApiBaseUrl' src/api/Endpoints.swift || fail "license endpoint was removed"
 }
 
 check_bundle() {

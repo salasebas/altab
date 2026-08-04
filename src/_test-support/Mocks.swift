@@ -1,12 +1,10 @@
 import Cocoa
 import ShortcutRecorder
 
-// Stubs so ProBadgeView.swift compiles in the test target. The real Symbols
-// enum and NSImage.fromSymbol live in TileFontIconView.swift and
-// HelperExtensions.swift respectively, neither of which is in the test
-// target's source membership. Tests never actually render an icon, so a
-// minimal stub satisfying the signatures is enough — isTemplate = true
-// matches the production contract that ProBadgeViewSegmentTests asserts on.
+// Stubs for test-target sources that render symbol-backed controls. The real Symbols enum and
+// NSImage.fromSymbol live in TileFontIconView.swift and HelperExtensions.swift respectively, neither
+// of which is in the test target's source membership. Tests never render an icon, so a minimal stub
+// satisfying the signatures is enough.
 enum Symbols: String {
     case stub = ""
 }
@@ -226,17 +224,16 @@ class Preferences {
     static var shortcutStyle: ShortcutStylePreference = .focusOnRelease
     static var holdShortcut = ["⌥", "⌥", "⌥"]
     static let minShortcutCount = 1
-    static let maxShortcutCount = 9
+    static let maxShortcutCount = IncludedFeatures.keyboardShortcutCount
     // Matches `defaultShortcuts` (3 hold slots: holdShortcut / holdShortcut2 / holdShortcut3).
     static var shortcutCount = 3
 
     static func indexToName(_ baseName: String, _ index: Int) -> String {
-        return baseName + (index == 0 ? "" : String(index + 1))
+        IncludedFeatures.preferenceName(baseName, index)
     }
 
     static func nameToIndex(_ name: String) -> Int {
-        guard let number = name.last?.wholeNumberValue else { return 0 }
-        return number - 1
+        IncludedFeatures.preferenceIndex(name)
     }
 
     static func effectiveShortcutStyle(_ index: Int) -> ShortcutStylePreference {
@@ -248,6 +245,19 @@ enum ShortcutStylePreference: CaseIterable {
     case focusOnRelease
     case doNothingOnRelease
     case searchOnRelease
+}
+
+enum AppearanceStylePreference: CaseIterable {
+    case thumbnails
+    case appIcons
+    case titles
+}
+
+enum AppearanceSizePreference: CaseIterable {
+    case small
+    case medium
+    case large
+    case auto
 }
 
 class ModifierFlags {

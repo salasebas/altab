@@ -11,23 +11,88 @@ import XCTest
 /// the former needs the real NSKeyedArchiver/ShortcutRecorder codec (stubbed compile-only here), the
 /// latter mutates real Login Items via deprecated LaunchServices APIs.
 ///
-/// Groups: A version gating · B grouping→per-shortcut · C language remap · D/E/F exceptions ·
+/// Groups: included-feature recovery · A version gating · B grouping→per-shortcut · C language remap · D/E/F exceptions ·
 /// G/H show-windows dropdowns · I gestures · J cursor · K menubar · L/M sizes · N shortcuts · P dropdowns.
 final class PreferencesMigrationsTests: XCTestCase {
     var defaults: UserDefaults!
     var suiteName: String!
+    var legacyDefaults: UserDefaults!
+    var legacySuiteName: String!
 
     override func setUp() {
         super.setUp()
         suiteName = "test-migrations-\(UUID().uuidString)"
         defaults = UserDefaults(suiteName: suiteName)!
+        legacySuiteName = "test-legacy-feature-migrations-\(UUID().uuidString)"
+        legacyDefaults = UserDefaults(suiteName: legacySuiteName)!
         PreferencesMigrations.defaults = defaults
+        PreferencesMigrations.legacyIncludedFeaturesDefaults = legacyDefaults
     }
 
     override func tearDown() {
         PreferencesMigrations.defaults = .standard
+        PreferencesMigrations.legacyIncludedFeaturesDefaults = UserDefaults(suiteName: "\(App.bundleIdentifier).license")
         UserDefaults().removePersistentDomain(forName: suiteName)
+        UserDefaults().removePersistentDomain(forName: legacySuiteName)
         super.tearDown()
+    }
+
+    // MARK: - Included-feature preference recovery
+
+    func testIncludedFeatureRecoveryRestoresEveryValidRememberedSelection() {
+        let remembered = [
+            "rememberedAppearanceStyle": 2,
+            "rememberedAppearanceSize": 3,
+            "rememberedShortcutStyle": 2,
+            "rememberedAppearanceStyleOverride": 1,
+            "rememberedAppearanceSizeOverride": 3,
+            "rememberedShortcutStyleOverride": 2,
+        ]
+        remembered.forEach { legacyDefaults.set($0.value, forKey: "proTransition.\($0.key)") }
+        defaults.set("0", forKey: "appearanceStyle")
+        defaults.set("1", forKey: "appearanceSize")
+        defaults.set("1", forKey: "shortcutStyle")
+        defaults.set("0", forKey: "appearanceStyleOverride")
+        defaults.set("1", forKey: "appearanceSizeOverride")
+        defaults.set("1", forKey: "shortcutStyleOverride")
+        PreferencesMigrations.restoreIncludedFeaturePreferences()
+        XCTAssertEqual(defaults.string(forKey: "appearanceStyle"), "2")
+        XCTAssertEqual(defaults.string(forKey: "appearanceSize"), "3")
+        XCTAssertEqual(defaults.string(forKey: "shortcutStyle"), "2")
+        XCTAssertEqual(defaults.string(forKey: "appearanceStyleOverride"), "1")
+        XCTAssertEqual(defaults.string(forKey: "appearanceSizeOverride"), "3")
+        XCTAssertEqual(defaults.string(forKey: "shortcutStyleOverride"), "2")
+    }
+
+    func testIncludedFeatureRecoveryIgnoresAbsentAndInvalidRememberedSelections() {
+        defaults.set("1", forKey: "appearanceStyle")
+        legacyDefaults.set(99, forKey: "proTransition.rememberedAppearanceStyle")
+        legacyDefaults.set(-1, forKey: "proTransition.rememberedAppearanceSize")
+        legacyDefaults.set("2", forKey: "proTransition.rememberedShortcutStyle")
+        PreferencesMigrations.restoreIncludedFeaturePreferences()
+        XCTAssertEqual(defaults.string(forKey: "appearanceStyle"), "1")
+        XCTAssertNil(defaults.string(forKey: "appearanceSize"))
+        XCTAssertNil(defaults.string(forKey: "shortcutStyle"))
+    }
+
+    func testIncludedFeatureRecoveryRunsOnlyOnceAndPreservesLaterChoices() {
+        legacyDefaults.set(2, forKey: "proTransition.rememberedAppearanceStyle")
+        defaults.set("0", forKey: "appearanceStyle")
+        PreferencesMigrations.restoreIncludedFeaturePreferences()
+        XCTAssertEqual(defaults.string(forKey: "appearanceStyle"), "2")
+        defaults.set("1", forKey: "appearanceStyle")
+        legacyDefaults.set(0, forKey: "proTransition.rememberedAppearanceStyle")
+        PreferencesMigrations.restoreIncludedFeaturePreferences()
+        XCTAssertEqual(defaults.string(forKey: "appearanceStyle"), "1")
+    }
+
+    func testIncludedFeatureRecoveryPreservesLaterChoicesAndRemovedOverrides() {
+        legacyDefaults.set(2, forKey: "proTransition.rememberedAppearanceStyle")
+        legacyDefaults.set(3, forKey: "proTransition.rememberedAppearanceSizeOverride")
+        defaults.set("1", forKey: "appearanceStyle")
+        PreferencesMigrations.restoreIncludedFeaturePreferences()
+        XCTAssertEqual(defaults.string(forKey: "appearanceStyle"), "1")
+        XCTAssertNil(defaults.string(forKey: "appearanceSizeOverride"))
     }
 
     // MARK: - A. Version gating (shouldRun)
@@ -351,10 +416,6 @@ enum ShowHowPreference {
 
 extension App {
     static let version = "99.99.99"
-}
-
-enum ProTransitionState {
-    static func markFreshInstallIfUnknown(_ value: Bool) {}
 }
 
 enum AxError: Error {

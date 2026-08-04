@@ -1,7 +1,7 @@
 import Cocoa
 
 /// Side-effect dispatcher for preference changes. Each branch of `preferenceChanged(_:)`
-/// calls into a domain-specific owner (Menubar, TrackpadEvents, LoginItem, ProFeature) rather
+/// calls into a domain-specific owner (Menubar, TrackpadEvents, LoginItem) rather
 /// than implementing the side effect inline. Over time each call-site
 /// should subscribe directly to its own preference; this file is a transition scaffold.
 class PreferencesEvents {
@@ -18,7 +18,7 @@ class PreferencesEvents {
     /// when an override changes, so the switcher and Settings UI both pick up the new value.
     private static func isOverrideKey(_ key: String) -> Bool {
         for baseName in Preferences.appearanceOverrideBaseNames {
-            for i in 0...Preferences.maxShortcutCount {
+            for i in IncludedFeatures.configurationIndices {
                 if Preferences.indexToName(baseName, i) == key { return true }
             }
         }
@@ -30,7 +30,7 @@ class PreferencesEvents {
     /// same UI reset that the old global key used to trigger.
     private static func isPerShortcutGroupingKey(_ key: String) -> Bool {
         for baseName in ["showAppsOrWindows", "showTabsAsWindows"] {
-            for i in 0...Preferences.maxShortcutCount {
+            for i in IncludedFeatures.configurationIndices {
                 if Preferences.indexToName(baseName, i) == key { return true }
             }
         }
@@ -55,9 +55,6 @@ class PreferencesEvents {
                 }
             }
             return
-        }
-        if LicenseManager.shared.isProLocked && ProFeature.isStoredValuePro(preferenceKey: key) {
-            UpgradeTab.navigateToUpgradeTab()
         }
         ControlsTab.preferenceChanged(key)
         switch key {
