@@ -1,4 +1,24 @@
+# General
+
+- English first: all code, comments, identifiers, and internal docs in English.
+- Grow the system in layers. Start with the smallest end-to-end change that works, then add capabilities without leaving the product in a partially migrated state.
+- Keep components modular and concerns clearly separated.
+- Prefer established, well-maintained libraries when they reduce overall complexity or improve reliability.
+- Check existing dependencies, their documentation, and their types before reimplementing a capability or adding a package.
+- Make architectural decisions for the long term; do not introduce deliberate throwaway paths.
+- Study proven macOS products and platform conventions before inventing a new interaction or architecture.
+
+# Fork maintenance
+
+- This is an independent fork of `lwouis/alt-tab-macos`. Keep the official repository as the read-only `upstream` remote and never push to it.
+- Review upstream changes explicitly. Prefer cherry-picking self-contained fixes or porting understood changes; do not merge `upstream/master` wholesale by default.
+- Keep `UPSTREAM.md` current after every upstream review, including when changes are intentionally skipped.
+- Preserve upstream authorship, Git history, copyright notices, the GPL license, and third-party attributions.
+- Do not publish a build that uses upstream update feeds, licensing endpoints, signing identities, funding links, analytics credentials, or release infrastructure.
+- Do not claim automatic security updates or upstream parity. State the last reviewed upstream revision and validate every integrated change locally.
+
 # macOS development
+
 - Don't use xcode directly to develop
 - Use pure swift 5.8 code to make the app. No interface builder. No SwiftUI.
 - Aim for compact code. Within methods, don't have groups of statements separated with newlines. No inline comments for simple code. Instead, split statements into sub-methods.
@@ -8,9 +28,12 @@
 - Favor low latency and responsiveness. Reuse objects, avoid wasting memory or I/O. Use observer APIs; don't poll.
 
 # Workflow
+
 - Copy commands from ai/build.sh and run them, to confirm compilation works after you're done with implementing a change
 - Git commit messages must respect our pre-hook conventions, and must be clear and high-level, written for end-users (changelog)
 
 # License / Keychain invariant
-- The app's Developer ID, TeamID, and bundle ID must remain stable across builds. Keychain items are tied to the code signature; changing any of these orphans every user's stored license key and forces mass re-activation. If a rotation is unavoidable, plan a migration first (e.g., a backup-restore handler, or `kSecAttrAccessGroup` with a stable group identifier).
+
+- Before the first public fork release, replace the inherited upstream Developer ID, Team ID, and bundle ID with fork-owned values. Do not ship with upstream identity.
+- After the first public fork release, keep the Developer ID, Team ID, and bundle ID stable. macOS permissions, preferences, login items, updates, and Keychain access depend on that identity; plan and test a migration before any later rotation.
 - Do not introduce legacy `SecKeychain*` API or `kSecAccessControl` (biometric/PIN gating) into license code — both can trigger Keychain password prompts, which is bad UX for license activation.
