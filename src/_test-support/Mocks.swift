@@ -1,14 +1,22 @@
 import Cocoa
 import ShortcutRecorder
 
-// Stubs so ProBadgeView.swift compiles in the test target. The real Symbols
-// enum and NSImage.fromSymbol live in TileFontIconView.swift and
-// HelperExtensions.swift respectively, neither of which is in the test
-// target's source membership. Tests never actually render an icon, so a
-// minimal stub satisfying the signatures is enough — isTemplate = true
-// matches the production contract that ProBadgeViewSegmentTests asserts on.
+// Stubs for test-target sources that render symbol-backed controls. The real Symbols enum and
+// NSImage.fromSymbol live in TileFontIconView.swift and HelperExtensions.swift respectively, neither
+// of which is in the test target's source membership. Tests never render an icon, so a minimal stub
+// satisfying the signatures is enough.
 enum Symbols: String {
     case stub = ""
+    case cursorarrowRays
+    case laptopcomputer
+    case magnifyingglass
+    case moonFill
+    case moonphaseLastQuarterInverse
+    case moonphaseWaningCrescentInverse
+    case moonphaseWaningGibbousInverse
+    case pauseRectangle
+    case sparkles
+    case sunMax
 }
 
 extension NSImage {
@@ -131,6 +139,56 @@ class App {
     }
     static let app = AppMock()
     static let bundleIdentifier = "dev.salasebas.Altab"
+    static var cycleDirections = [Direction]()
+    static var focusedShortcutIndices = [Int]()
+    static var shownShortcutIndices = [Int]()
+
+    static func focusTarget() {
+        guard let session = SwitcherSession.current else { return }
+        focusedShortcutIndices.append(session.shortcutIndex)
+        ControlsTab.shortcutsActionsTriggered.append(Preferences.indexToName("holdShortcut", session.shortcutIndex))
+        SwitcherSession.current = nil
+    }
+
+    static func previousWindowShortcutWithRepeatingKey() {
+        ControlsTab.shortcutsActionsTriggered.append("previousWindowShortcut")
+    }
+
+    static func cycleSelection(_ direction: Direction, allowWrap: Bool = true) {
+        cycleDirections.append(direction)
+    }
+
+    static func hideUi(_ keepPreview: Bool = false) {
+        ControlsTab.shortcutsActionsTriggered.append("cancelShortcut")
+        SwitcherSession.current = nil
+    }
+
+    static func showUiOrCycleSelection(_ shortcutIndex: Int, _ forceDoNothingOnRelease: Bool) {
+        let session = SwitcherSession.current ?? SwitcherSession()
+        session.shortcutIndex = shortcutIndex
+        SwitcherSession.current = session
+        shownShortcutIndices.append(shortcutIndex)
+        ControlsTab.shortcutsActionsTriggered.append(Preferences.indexToName("nextWindowShortcut", shortcutIndex))
+    }
+
+    static func resetShortcutActionCalls() {
+        cycleDirections = []
+        focusedShortcutIndices = []
+        shownShortcutIndices = []
+    }
+}
+
+enum Direction {
+    case right
+    case left
+    case leading
+    case trailing
+    case up
+    case down
+}
+
+class PreferencesEvents {
+    static func preferenceChanged(_ key: String) {}
 }
 
 class TilesPanel {
@@ -142,6 +200,8 @@ class TilesPanel {
 }
 
 class TilesView {
+    static var searchMode = SearchMode.off
+
     static var isSearchEditing: Bool {
         get { App.app.tilesPanel.tilesView.isSearchEditing }
         set { App.app.tilesPanel.tilesView.isSearchEditing = newValue }
@@ -149,6 +209,48 @@ class TilesView {
 
     static func handleSearchEditingKeyDown(_ event: NSEvent) -> SearchKeyResult {
         return App.app.tilesPanel.tilesView.handleSearchEditingKeyDown(event)
+    }
+
+    static func disableSearchMode() {
+        searchMode = .off
+    }
+
+    static func toggleSearchModeFromShortcut() {
+        searchMode = searchMode == .off ? .editing : .off
+    }
+}
+
+final class WindowApplication {
+    func quit() {
+        ControlsTab.shortcutsActionsTriggered.append("quitAppShortcut")
+    }
+
+    func hideOrShow() {
+        ControlsTab.shortcutsActionsTriggered.append("hideShowAppShortcut")
+    }
+}
+
+final class Window {
+    let application = WindowApplication()
+
+    func close() {
+        ControlsTab.shortcutsActionsTriggered.append("closeWindowShortcut")
+    }
+
+    func minDemin() {
+        ControlsTab.shortcutsActionsTriggered.append("minDeminWindowShortcut")
+    }
+
+    func toggleFullscreen() {
+        ControlsTab.shortcutsActionsTriggered.append("toggleFullscreenWindowShortcut")
+    }
+}
+
+enum Windows {
+    static var window: Window? = Window()
+
+    static func selectedWindow() -> Window? {
+        window
     }
 }
 
@@ -204,12 +306,6 @@ class ControlsTab {
     static var shortcutsActionsTriggered: [String] = []
 }
 
-enum ShortcutActions {
-    static func execute(_ id: String) {
-        ControlsTab.executeAction(id)
-    }
-}
-
 class KeyRepeatTimer {
     static func stopTimerForRepeatingKey(_ shortcutName: String) {
     }
@@ -222,34 +318,34 @@ class Logger {
     static func error(_ message: @escaping () -> Any?, file: String = #file, function: String = #function, line: Int = #line, context: Any? = nil) {}
 }
 
-class Preferences {
-    static var shortcutStyle: ShortcutStylePreference = .focusOnRelease
-    static var holdShortcut = ["⌥", "⌥", "⌥"]
-    static let minShortcutCount = 1
-    static let maxShortcutCount = 9
-    // Matches `defaultShortcuts` (3 hold slots: holdShortcut / holdShortcut2 / holdShortcut3).
-    static var shortcutCount = 3
-
-    static func indexToName(_ baseName: String, _ index: Int) -> String {
-        return baseName + (index == 0 ? "" : String(index + 1))
-    }
-
-    static func nameToIndex(_ name: String) -> Int {
-        guard let number = name.last?.wholeNumberValue else { return 0 }
-        return number - 1
-    }
-
-    static func effectiveShortcutStyle(_ index: Int) -> ShortcutStylePreference {
-        return shortcutStyle
-    }
-}
-
-enum ShortcutStylePreference: CaseIterable {
-    case focusOnRelease
-    case doNothingOnRelease
-    case searchOnRelease
-}
-
 class ModifierFlags {
     static var current: NSEvent.ModifierFlags = []
+}
+
+extension Collection {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
+    }
+}
+
+extension CaseIterable where Self: Equatable {
+    var index: Int {
+        Self.allCases.distance(from: Self.allCases.startIndex, to: Self.allCases.firstIndex(of: self)!)
+    }
+
+    var indexAsString: String {
+        String(index)
+    }
+}
+
+final class ConcurrentMap<K: Hashable, V>: @unchecked Sendable {
+    private var map = [K: V]()
+    private let lock = NSLock()
+
+    @discardableResult
+    func withLock<T>(_ block: (inout [K: V]) -> T) -> T {
+        lock.lock()
+        defer { lock.unlock() }
+        return block(&map)
+    }
 }

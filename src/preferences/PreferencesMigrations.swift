@@ -1,9 +1,13 @@
 import Cocoa
 
 class PreferencesMigrations {
+    private static let includedFeaturesRestorationKey = "includedFeaturesPreferencesRestored"
+    private static let legacyIncludedFeaturesSuiteName = "\(App.bundleIdentifier).license"
+
     /// Injectable so tests can run migrations against an isolated `UserDefaults` suite.
     /// Production keeps `.standard`; behavior is unchanged.
     static var defaults = UserDefaults.standard
+    static var legacyIncludedFeaturesDefaults = UserDefaults(suiteName: legacyIncludedFeaturesSuiteName)
 
     static func removeCorruptedPreferences() {
         // from v5.1.0+, there are crash reports of users somehow having their hold shortcuts set to ""
@@ -17,13 +21,36 @@ class PreferencesMigrations {
     static func migratePreferences() {
         let preferencesKey = "preferencesVersion"
         let existingVersion = Self.defaults.string(forKey: preferencesKey)
-        ProTransitionState.markFreshInstallIfUnknown(existingVersion == nil)
+        restoreIncludedFeaturePreferences()
         if let versionInPlist = existingVersion {
             if versionInPlist != "#VERSION#" && versionInPlist.compare(App.version, options: .numeric) != .orderedDescending {
                 updateToNewPreferences(versionInPlist)
             }
         }
         Self.defaults.set(App.version, forKey: preferencesKey)
+    }
+
+    /// Older builds could replace six selected values with restricted defaults and remember the
+    /// user's real selections in a separate defaults suite. Restore those values exactly once so
+    /// the unrestricted build starts with the user's choices, then leave the old suite inert.
+    static func restoreIncludedFeaturePreferences() {
+        guard !Self.defaults.bool(forKey: includedFeaturesRestorationKey) else { return }
+        defer { Self.defaults.set(true, forKey: includedFeaturesRestorationKey) }
+        guard let legacyDefaults = legacyIncludedFeaturesDefaults else { return }
+        let restorations = [
+            ("rememberedAppearanceStyle", "appearanceStyle", 0, AppearanceStylePreference.allCases.count),
+            ("rememberedAppearanceSize", "appearanceSize", 1, AppearanceSizePreference.allCases.count),
+            ("rememberedShortcutStyle", "shortcutStyle", 1, ShortcutStylePreference.allCases.count),
+            ("rememberedAppearanceStyleOverride", "appearanceStyleOverride", 0, AppearanceStylePreference.allCases.count),
+            ("rememberedAppearanceSizeOverride", "appearanceSizeOverride", 1, AppearanceSizePreference.allCases.count),
+            ("rememberedShortcutStyleOverride", "shortcutStyleOverride", 1, ShortcutStylePreference.allCases.count),
+        ]
+        for (rememberedKey, preferenceKey, replacedIndex, valueCount) in restorations {
+            guard let index = legacyDefaults.object(forKey: "proTransition.\(rememberedKey)") as? Int,
+                  (0..<valueCount).contains(index),
+                  Self.defaults.string(forKey: preferenceKey) == String(replacedIndex) else { continue }
+            Self.defaults.set(String(index), forKey: preferenceKey)
+        }
     }
 
     static func updateToNewPreferences(_ versionInPlist: String) {

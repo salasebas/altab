@@ -75,7 +75,7 @@ class TilesView {
     }
 
     static func enableSearchEditing() {
-        switch SearchModeResolver.enableEditing(mode: searchMode, canSearch: ProFeature.searchInSwitcher.attemptUse()) {
+        switch SearchModeResolver.enableEditing(mode: searchMode) {
             case .placeCaretOnly:
                 placeSearchCaretAtEnd()
             case .enterEditing:
@@ -163,7 +163,6 @@ class TilesView {
 
     private static func updateSearchQuery(_ query: String) {
         if (SwitcherSession.current?.searchQuery ?? "") == query { return }
-        if !query.isEmpty { UsageStats.recordSearchIfFirst() }
         clearHover()
         Windows.updateSearchQuery(query)
         stopKeyRepeatTimers()

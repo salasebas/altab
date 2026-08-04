@@ -32,8 +32,10 @@
 - Copy commands from ai/build.sh and run them, to confirm compilation works after you're done with implementing a change
 - Git commit messages must respect our pre-hook conventions, and must be clear and high-level, written for end-users (changelog)
 
-# License / Keychain invariant
+# Release identity and unrestricted features
 
 - Before the first public fork release, replace the inherited upstream Developer ID, Team ID, and bundle ID with fork-owned values. Do not ship with upstream identity.
-- After the first public fork release, keep the Developer ID, Team ID, and bundle ID stable. macOS permissions, preferences, login items, updates, and Keychain access depend on that identity; plan and test a migration before any later rotation.
-- Do not introduce legacy `SecKeychain*` API or `kSecAccessControl` (biometric/PIN gating) into license code — both can trigger Keychain password prompts, which is bad UX for license activation.
+- After the first public fork release, keep the Developer ID, Team ID, and bundle ID stable. macOS permissions, preferences, login items, and update continuity depend on that identity; plan and test a migration before any later rotation.
+- Every locally implemented user-facing feature must remain available without a license, trial, account, purchase, expiry, network response, or paid-access state.
+- Do not add access-based preference fallbacks, downgrades, resets, locks, badges, prompts, or telemetry. User preferences still decide how included features behave.
+- Do not delete legacy license Keychain items at runtime. They are inert historical data and are not part of Altab's active architecture.

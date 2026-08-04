@@ -1,4 +1,10 @@
-## Acknowledgments
+# Acknowledgments
+
+## Upstream lineage
+
+Altab is derived from [AltTab for macOS](https://github.com/lwouis/alt-tab-macos). Its Git history, GPL-3.0 license, copyright notices, and contributor authorship are retained. Altab is an independent fork and is not affiliated with or endorsed by the upstream maintainers.
+
+## Third-party libraries
 
 These third-party libraries are used:
 

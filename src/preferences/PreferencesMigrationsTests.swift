@@ -8,26 +8,91 @@ import XCTest
 /// `PreferencesMigrations.defaults`), runs ONE migration, and asserts the resulting keys + removals.
 ///
 /// `migrateShortcutPreferencesToSecureCoding` and `migrateLoginItem` are intentionally NOT covered:
-/// the former needs the real NSKeyedArchiver/ShortcutRecorder codec (stubbed compile-only here), the
-/// latter mutates real Login Items via deprecated LaunchServices APIs.
+/// the former is outside these key/value transform cases, while the latter mutates real Login Items
+/// via deprecated LaunchServices APIs.
 ///
-/// Groups: A version gating · B grouping→per-shortcut · C language remap · D/E/F exceptions ·
+/// Groups: included-feature recovery · A version gating · B grouping→per-shortcut · C language remap · D/E/F exceptions ·
 /// G/H show-windows dropdowns · I gestures · J cursor · K menubar · L/M sizes · N shortcuts · P dropdowns.
 final class PreferencesMigrationsTests: XCTestCase {
     var defaults: UserDefaults!
     var suiteName: String!
+    var legacyDefaults: UserDefaults!
+    var legacySuiteName: String!
 
     override func setUp() {
         super.setUp()
         suiteName = "test-migrations-\(UUID().uuidString)"
         defaults = UserDefaults(suiteName: suiteName)!
+        legacySuiteName = "test-legacy-feature-migrations-\(UUID().uuidString)"
+        legacyDefaults = UserDefaults(suiteName: legacySuiteName)!
         PreferencesMigrations.defaults = defaults
+        PreferencesMigrations.legacyIncludedFeaturesDefaults = legacyDefaults
     }
 
     override func tearDown() {
         PreferencesMigrations.defaults = .standard
+        PreferencesMigrations.legacyIncludedFeaturesDefaults = UserDefaults(suiteName: "\(App.bundleIdentifier).license")
         UserDefaults().removePersistentDomain(forName: suiteName)
+        UserDefaults().removePersistentDomain(forName: legacySuiteName)
         super.tearDown()
+    }
+
+    // MARK: - Included-feature preference recovery
+
+    func testIncludedFeatureRecoveryRestoresEveryValidRememberedSelection() {
+        let remembered = [
+            "rememberedAppearanceStyle": 2,
+            "rememberedAppearanceSize": 3,
+            "rememberedShortcutStyle": 2,
+            "rememberedAppearanceStyleOverride": 1,
+            "rememberedAppearanceSizeOverride": 3,
+            "rememberedShortcutStyleOverride": 2,
+        ]
+        remembered.forEach { legacyDefaults.set($0.value, forKey: "proTransition.\($0.key)") }
+        defaults.set("0", forKey: "appearanceStyle")
+        defaults.set("1", forKey: "appearanceSize")
+        defaults.set("1", forKey: "shortcutStyle")
+        defaults.set("0", forKey: "appearanceStyleOverride")
+        defaults.set("1", forKey: "appearanceSizeOverride")
+        defaults.set("1", forKey: "shortcutStyleOverride")
+        PreferencesMigrations.restoreIncludedFeaturePreferences()
+        XCTAssertEqual(defaults.string(forKey: "appearanceStyle"), "2")
+        XCTAssertEqual(defaults.string(forKey: "appearanceSize"), "3")
+        XCTAssertEqual(defaults.string(forKey: "shortcutStyle"), "2")
+        XCTAssertEqual(defaults.string(forKey: "appearanceStyleOverride"), "1")
+        XCTAssertEqual(defaults.string(forKey: "appearanceSizeOverride"), "3")
+        XCTAssertEqual(defaults.string(forKey: "shortcutStyleOverride"), "2")
+    }
+
+    func testIncludedFeatureRecoveryIgnoresAbsentAndInvalidRememberedSelections() {
+        defaults.set("1", forKey: "appearanceStyle")
+        legacyDefaults.set(99, forKey: "proTransition.rememberedAppearanceStyle")
+        legacyDefaults.set(-1, forKey: "proTransition.rememberedAppearanceSize")
+        legacyDefaults.set("2", forKey: "proTransition.rememberedShortcutStyle")
+        PreferencesMigrations.restoreIncludedFeaturePreferences()
+        XCTAssertEqual(defaults.string(forKey: "appearanceStyle"), "1")
+        XCTAssertNil(defaults.string(forKey: "appearanceSize"))
+        XCTAssertNil(defaults.string(forKey: "shortcutStyle"))
+    }
+
+    func testIncludedFeatureRecoveryRunsOnlyOnceAndPreservesLaterChoices() {
+        legacyDefaults.set(2, forKey: "proTransition.rememberedAppearanceStyle")
+        defaults.set("0", forKey: "appearanceStyle")
+        PreferencesMigrations.restoreIncludedFeaturePreferences()
+        XCTAssertEqual(defaults.string(forKey: "appearanceStyle"), "2")
+        defaults.set("1", forKey: "appearanceStyle")
+        legacyDefaults.set(0, forKey: "proTransition.rememberedAppearanceStyle")
+        PreferencesMigrations.restoreIncludedFeaturePreferences()
+        XCTAssertEqual(defaults.string(forKey: "appearanceStyle"), "1")
+    }
+
+    func testIncludedFeatureRecoveryPreservesLaterChoicesAndRemovedOverrides() {
+        legacyDefaults.set(2, forKey: "proTransition.rememberedAppearanceStyle")
+        legacyDefaults.set(3, forKey: "proTransition.rememberedAppearanceSizeOverride")
+        defaults.set("1", forKey: "appearanceStyle")
+        PreferencesMigrations.restoreIncludedFeaturePreferences()
+        XCTAssertEqual(defaults.string(forKey: "appearanceStyle"), "1")
+        XCTAssertNil(defaults.string(forKey: "appearanceSizeOverride"))
     }
 
     // MARK: - A. Version gating (shouldRun)
@@ -287,95 +352,11 @@ final class PreferencesMigrationsTests: XCTestCase {
     }
 }
 
-// MARK: - Test-target stand-ins for app-only symbols
-//
-// `PreferencesMigrations.swift` is compiled into the test target so we can pin its UserDefaults
-// transforms; the regular `Preferences.swift` / `MacroPreferences.swift` aren't (they drag in the
-// whole prefs/AppKit graph). The declarations below stand in for the symbols those files supply.
-//
-// FAITHFUL stubs (behavior matches production, so the migrations that use them are tested for real):
-//   - ExceptionEntry + ExceptionHide/IgnorePreference: same fields + same String rawValues, so the
-//     JSON produced by `jsonEncode` is byte-identical to production.
-//   - ShowHowPreference.indexAsString: same case order / index values.
-//   - Preferences.jsonEncode: the real JSONEncoder round-trip.
-// COMPILE-ONLY stubs (the migration that uses them is intentionally NOT covered — noted in the spec):
-//   - the shortcut-codec helpers (decode/unarchive/store/fromKeyEquivalent) + allShortcutPreferenceKeys,
-//     used only by `migrateShortcutPreferencesToSecureCoding`.
-
-// Faithful: exceptions model (matches src/preferences/Preferences.swift + MacroPreferences.swift)
-
-enum ExceptionHidePreference: String, Codable, CaseIterable {
-    case none = "0"
-    case always = "1"
-    case whenNoOpenWindow = "2"
-    case windowTitleContains = "3"
-}
-
-enum ExceptionIgnorePreference: String, Codable, CaseIterable {
-    case none = "0"
-    case always = "1"
-    case whenFullscreen = "2"
-}
-
-struct ExceptionEntry: Codable, Equatable {
-    var bundleIdentifier: String
-    var hide: ExceptionHidePreference
-    var ignore: ExceptionIgnorePreference
-    var windowTitleContains: [String]?
-
-    init(bundleIdentifier: String, hide: ExceptionHidePreference, ignore: ExceptionIgnorePreference, windowTitleContains: [String]? = nil) {
-        self.bundleIdentifier = bundleIdentifier
-        self.hide = hide
-        self.ignore = ignore
-        self.windowTitleContains = windowTitleContains
-    }
-}
-
-// Faithful: ShowHowPreference index mapping (show=0, hide=1, showAtTheEnd=2)
-
-enum ShowHowPreference {
-    case show
-    case hide
-    case showAtTheEnd
-
-    var indexAsString: String {
-        switch self {
-            case .show: return "0"
-            case .hide: return "1"
-            case .showAtTheEnd: return "2"
-        }
-    }
-}
-
-// App-only singletons referenced by `migratePreferences()` (not exercised by the per-migration tests)
-
+// App-only singletons referenced by `migratePreferences()`.
 extension App {
     static let version = "99.99.99"
 }
 
-enum ProTransitionState {
-    static func markFreshInstallIfUnknown(_ value: Bool) {}
-}
-
 enum AxError: Error {
     case runtimeError
-}
-
-// Preferences codec surface used by the migrations
-
-extension Preferences {
-    /// Faithful: same JSONEncoder default behavior as production, so exceptions migrations are tested for real.
-    static func jsonEncode<T>(_ value: T) -> String where T: Encodable {
-        let data = try! JSONEncoder().encode(value)
-        return String(data: data, encoding: .utf8)!
-    }
-
-    // Compile-only: only `migrateShortcutPreferencesToSecureCoding` uses these, which is not covered
-    // by the test suite (it needs the real NSKeyedArchiver/ShortcutRecorder codec). Empty key list
-    // makes that migration a no-op here.
-    static var allShortcutPreferenceKeys: [String] { [] }
-    static func decodeShortcutStorage(_ value: Any) -> (Bool, Shortcut?) { (false, nil) }
-    static func shortcutStorage(_ shortcut: Shortcut?, _ stringRepresentation: String?) -> [String: Any] { [:] }
-    static func unarchiveShortcut(_ data: Data) -> (Bool, Shortcut?) { (false, nil) }
-    static func shortcutFromKeyEquivalent(_ keyEquivalent: String) -> Shortcut? { nil }
 }

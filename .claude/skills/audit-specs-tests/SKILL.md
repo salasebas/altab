@@ -7,7 +7,7 @@ description: Audit the AltTab test suite for spec/test/code consistency. For eve
 
 ## Project context
 
-AltTab co-locates tests and a living spec next to the source they cover. The convention (see the plan in `.claude/plans/` and `src/pro/license/` as a worked example) is a **triad** per concept:
+AltTab co-locates tests and a living spec next to the source they cover. The convention (see the plan in `.claude/plans/` and `src/switcher/state/` for worked examples) is a **triad** per concept:
 
 ```
 src/<feature>/
@@ -27,7 +27,7 @@ This skill's job is to keep the three in sync: every `func test…` ⇔ exactly 
 
 ## What counts as a triad
 
-Pair by base name in the **same folder**: `<Base>Tests.swift` ⇔ `<Base>Specs.md`. A `<Base>.swift` (or a kernel like `SelectionResolver.swift`, `SearchTestable.swift`) in the folder is the code under test, but a spec may legitimately cover several classes (e.g. `LicenseManagerSpecs.md` documents `Clock`/`Keychain`/`LicenseAPI` too) — so a missing same-name `.swift` is a note, not an error.
+Pair by base name in the **same folder**: `<Base>Tests.swift` ⇔ `<Base>Specs.md`. A `<Base>.swift` (or a kernel like `SelectionResolver.swift`, `SearchTestable.swift`) in the folder is the code under test, but a spec may legitimately cover several adjacent supporting types, so a missing same-name `.swift` is a note, not an error.
 
 ## Workflow
 
