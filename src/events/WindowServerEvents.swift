@@ -44,7 +44,9 @@ class WindowServerEvents {
     /// Space switches emit storms of transient animation/snapshot windows; ignore create/destroy briefly
     /// around a Space transition so they aren't mistaken for real windows (RE "transition noise").
     private static var spaceTransitionUntil: TimeInterval = 0
-    private static var inSpaceTransition: Bool { ProcessInfo.processInfo.systemUptime < spaceTransitionUntil }
+    /// Also read by the switcher's show path, which re-reads the topology while this holds — see
+    /// `Windows.updatesBeforeShowing`.
+    static var inSpaceTransition: Bool { ProcessInfo.processInfo.systemUptime < spaceTransitionUntil }
     /// debounces the 1329/1401 Space-change burst into one settled handler (replaces SpacesEvents)
     private static var spaceChangeWorkItem: DispatchWorkItem?
     /// The window AltTab itself just focused (switcher selection / CLI --focus), consumed by the next
@@ -149,7 +151,13 @@ class WindowServerEvents {
         guard let n = WsEventRouting.notification(event) else { return }
         switch n {
         case .activeSpaceChanged, .spaceCurrentChanged:
+            // The same clock that mutes the transition's window storm also names the burst's LEADING edge:
+            // "not already in a transition" is the first 1329/1401 of this switch. That edge gets the cheap
+            // half of the reaction (`WindowEventReducer.spaceTransitionStarted`); `route` below debounces
+            // the expensive half to the trailing edge, as it always has.
+            let isLeadingEdge = !inSpaceTransition
             spaceTransitionUntil = ProcessInfo.processInfo.systemUptime + 0.5
+            if isLeadingEdge { TrackedWindowStateBridge.dispatch(.spaceTransitionStarted) }
         case .windowCreated:
             // the brand-new / lastCreated bookkeeping lives in the reducer (`.windowCreated`); the tap keeps
             // the opt-in and the recycling edge — this number is now a DIFFERENT window than the one any
@@ -247,6 +255,8 @@ class WindowServerEvents {
         case .spaceTransition:
             // 1329/1401 fire during the transition (manuallyRefreshAllWindows above stays muted ~0.5s to
             // ignore the create/destroy storm). Debounce, then refresh topology + reconcile once it settles.
+            // The half of that reaction a summon can't wait 250ms for already ran on the leading edge, in
+            // `handle` above.
             Logger.debug { "WS \(n) space=\(space)" }
             scheduleSpaceChangeHandling()
         }

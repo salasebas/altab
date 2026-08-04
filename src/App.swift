@@ -238,6 +238,7 @@ class App: NSApplication {
         guard SwitcherSession.isActive else { return }
         let preservedScrollOrigin = preserveScrollPosition ? TilesView.currentScrollOrigin() : nil
         Windows.updateSelectedWindow()
+        Windows.logTileDump("refreshUi")
         guard SwitcherSession.isActive else { return }
         TilesPanel.shared.updateContents(preservedScrollOrigin)
         guard SwitcherSession.isActive else { return }

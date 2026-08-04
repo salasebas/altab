@@ -147,7 +147,7 @@ final class TestReducerRunner {
         case .scheduleHoldReleaseCheck, .scheduleDragOutCheck:
             pendingTimers.append(effect)
         case .discoverWindow, .probeWindowLiveness, .readTitleAndTabs, .queryWindowServerState,
-             .discoverInactiveTabs, .refreshSpacesTopologyAndSync:
+             .discoverInactiveTabs, .refreshSpacesTopology, .refreshSpacesTopologyAndSync:
             pendingRequests.append(effect)
         case .log(let line):
             trace.append("[\(stepIndex)] \(line)")

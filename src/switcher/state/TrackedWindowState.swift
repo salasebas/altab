@@ -661,6 +661,7 @@ enum ReducerInput: Equatable {
     case windowFocused(wid: CGWindowID, now: TimeInterval)                                   // 808
     case spaceMembershipChanged(wid: CGWindowID, spaceId: UInt64, added: Bool,
                                 now: TimeInterval, inSpaceTransition: Bool)                  // 1325/1326
+    case spaceTransitionStarted                                                              // 1329/1401, leading edge
     case spaceChangeSettled                                                                  // 1329/1401, debounced
     /// NSWorkspace didActivateApplication (no WS equivalent). `altTabTargetWid` = a fresh AltTab-initiated
     /// focus of this app, when known.
@@ -739,6 +740,9 @@ enum ReducerEffect: Equatable {
     case scheduleHoldReleaseCheck(wid: CGWindowID, attempt: Int)
     /// re-arm the drag-out re-check (`checkDragOut`'s 0.4s timer)
     case scheduleDragOutCheck(wid: CGWindowID, previousRepWid: CGWindowID, attempt: Int)
+    /// re-read the Space topology alone (`Spaces.refresh` — one CGS round-trip, 0.1ms p50), so the switcher
+    /// filters and sorts against the Space being ARRIVED on. Fires on the leading edge of a transition.
+    case refreshSpacesTopology
     /// refresh Space topology + per-window membership after a Space change settles (`Spaces.refresh` +
     /// `Applications.syncSpacesState`); feeds back `spacesSynced`
     case refreshSpacesTopologyAndSync

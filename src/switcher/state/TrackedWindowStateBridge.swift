@@ -51,7 +51,8 @@ class TrackedWindowStateBridge {
     private static func isWindowServerEvent(_ input: ReducerInput) -> Bool {
         switch input {
         case .windowCreated, .windowDestroyed, .windowMovedOrResized, .windowOrderedIn, .windowOrderedOut,
-             .windowFocused, .spaceMembershipChanged, .spaceChangeSettled, .appActivated:
+             .windowFocused, .spaceMembershipChanged, .spaceTransitionStarted, .spaceChangeSettled,
+             .appActivated:
             return true
         case .discoveryLanded, .titleAndTabsRead, .windowServerStateRead, .spacesSynced,
              .axFocusedWindowRead, .livenessConfirmedDead, .cgsWindowListsRead, .zOrderRead,
@@ -225,6 +226,8 @@ class TrackedWindowStateBridge {
                 WindowServerEvents.armHoldReleaseCheck(wid, attempt: attempt)
             case .scheduleDragOutCheck(let wid, let previousRepWid, let attempt):
                 WindowServerEvents.armDragOutCheck(wid, previousRepWid: previousRepWid, attempt: attempt)
+            case .refreshSpacesTopology:
+                Spaces.refresh()
             case .refreshSpacesTopologyAndSync:
                 Spaces.refresh()
                 Applications.syncSpacesState()
