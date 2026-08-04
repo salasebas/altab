@@ -2,6 +2,13 @@ import XCTest
 import ShortcutRecorder
 
 final class CustomRecorderControlTests: XCTestCase {
+    override func setUp() {
+        super.setUp()
+        Preferences.defaults.removePersistentDomain(forName: Preferences.defaultsDomainName)
+        Preferences.invalidateAllCache()
+        Preferences.set("shortcutCount", "3", false)
+    }
+
     func testIsShortcutAcceptable_accepted() {
         XCTAssertEqual(CustomRecorderControlTestable.isShortcutAcceptable("previousWindowShortcut", Shortcut(keyEquivalent: "⇧⇥")!), .accepted)
         ControlsTab.shortcuts["holdShortcut"] = ATShortcut(Shortcut(keyEquivalent: "⌘⌥")!, "holdShortcut", .global, .up)
@@ -126,7 +133,7 @@ final class CustomRecorderControlTests: XCTestCase {
     /// `.accepted` and no dialog showed. `isWellFormedCandidateId` rejects exactly that shape — and a
     /// `#if DEBUG` assert in `isShortcutAcceptable` now trips loudly if such an id ever reaches it.
     func testIsWellFormedCandidateId() {
-        // hold/next ids must resolve to an in-range shortcut index (shortcutCount == 3 in the mock).
+        // hold/next ids must resolve to an in-range shortcut index (shortcutCount == 3 in this test domain).
         XCTAssertTrue(CustomRecorderControlTestable.isWellFormedCandidateId("holdShortcut"))         // index 0
         XCTAssertTrue(CustomRecorderControlTestable.isWellFormedCandidateId("nextWindowShortcut"))    // index 0
         XCTAssertTrue(CustomRecorderControlTestable.isWellFormedCandidateId("nextWindowShortcut2"))   // index 1

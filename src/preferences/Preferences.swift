@@ -3,6 +3,14 @@ import Carbon.HIToolbox.Events
 import ShortcutRecorder
 
 class Preferences {
+    #if TESTING
+    private static let testDefaultsDomainName = "dev.salasebas.Altab.unit-tests"
+    static var defaults = UserDefaults(suiteName: testDefaultsDomainName)!
+    static var defaultsDomainName = testDefaultsDomainName
+    #else
+    fileprivate static let defaults = UserDefaults.standard
+    fileprivate static let defaultsDomainName = App.bundleIdentifier
+    #endif
     static var defaultValues: [String: Any] = {
         var values: [String: Any] = [
             "shortcutCount": "2",
@@ -79,7 +87,7 @@ class Preferences {
         "minDeminWindowShortcut", "toggleFullscreenWindowShortcut", "quitAppShortcut", "hideShowAppShortcut", "searchShortcut",
     ]
     static var allShortcutPreferenceKeys: [String] {
-        staticShortcutKeys + IncludedFeatures.activeShortcutPreferenceKeys(shortcutCount: maxShortcutCount)
+        staticShortcutKeys + activeShortcutPreferenceKeys(shortcutCount: maxShortcutCount)
     }
     static let emptyShortcut = Shortcut(code: .none, modifierFlags: [], characters: nil, charactersIgnoringModifiers: nil)
     private static let shortcutStorageStringField = "string"
@@ -164,12 +172,12 @@ class Preferences {
     }
 
     static func resetAll() {
-        UserDefaults.standard.removePersistentDomain(forName: App.bundleIdentifier)
+        defaults.removePersistentDomain(forName: defaultsDomainName)
         invalidateAllCache()
     }
 
     static func registerDefaults() {
-        UserDefaults.standard.register(defaults: defaultValues)
+        defaults.register(defaults: defaultValues)
     }
 
     static func markSettingsWindowShownOnFirstLaunch() {
@@ -185,7 +193,7 @@ class Preferences {
     }
 
     static func setShortcut(_ key: String, _ shortcut: Shortcut?, stringRepresentation: String?, _ notify: Bool = true) {
-        UserDefaults.standard.set(shortcutStorage(shortcut, stringRepresentation), forKey: key)
+        defaults.set(shortcutStorage(shortcut, stringRepresentation), forKey: key)
         CachedUserDefaults.removeFromCache(key)
         invalidateAllCache()
         if notify {
@@ -202,7 +210,7 @@ class Preferences {
     }
 
     static func set<T>(_ key: String, _ value: T, _ notify: Bool = true) where T: Encodable {
-        UserDefaults.standard.set(key == "exceptions" ? jsonEncode(value) : value, forKey: key)
+        defaults.set(key == "exceptions" ? jsonEncode(value) : value, forKey: key)
         CachedUserDefaults.removeFromCache(key)
         invalidateAllCache()
         if notify {
@@ -211,7 +219,7 @@ class Preferences {
     }
 
     static func remove(_ key: String, _ notify: Bool = true) {
-        UserDefaults.standard.removeObject(forKey: key)
+        defaults.removeObject(forKey: key)
         CachedUserDefaults.removeFromCache(key)
         invalidateAllCache()
         if notify {
@@ -219,7 +227,26 @@ class Preferences {
         }
     }
 
-    static let ownedKeys: Set<String> = Set(defaultValues.keys)
+    static let ownedKeys: Set<String> = {
+        var keys: Set<String> = [
+            "shortcutCount", "nextWindowGesture", "arrowKeysEnabled", "vimKeysEnabled",
+            "mouseHoverEnabled", "cursorFollowFocus", "hideColoredCircles", "windowDisplayDelay",
+            "appearanceStyle", "appearanceSize", "appearanceTheme", "theme", "showOnScreen",
+            "titleTruncation", "showTitles", "fadeOutAnimation", "previewFadeInAnimation",
+            "startAtLogin", "menubarIcon", "menubarIconShown", "language", "exceptions",
+            "hideThumbnails", "hideSpaceNumberLabels", "hideStatusIcons", "previewFocusedWindow",
+            "captureWindowsInBackground", "screenRecordingPermissionSkipped",
+            "trackpadHapticFeedbackEnabled", "settingsWindowShownOnFirstLaunch",
+        ]
+        keys.formUnion(staticShortcutKeys)
+        for index in IncludedFeatures.keyboardShortcutIndices {
+            keys.formUnion(IncludedFeatures.shortcutTriggerBaseNames.map { indexToName($0, index) })
+        }
+        for index in IncludedFeatures.configurationIndices {
+            keys.formUnion(IncludedFeatures.perShortcutPreferenceBaseNames.map { indexToName($0, index) })
+        }
+        return keys
+    }()
 
     /// `persistentDomain(forName:)` rebuilds a full snapshot dictionary on every call, which adds
     /// up: every `hasOverride` / `effectiveAppearanceStyle` consults `all`, and the switcher show
@@ -229,7 +256,7 @@ class Preferences {
 
     static var all: [String: Any] {
         if let cachedAll { return cachedAll }
-        let domain = UserDefaults.standard.persistentDomain(forName: App.bundleIdentifier) ?? [:]
+        let domain = defaults.persistentDomain(forName: defaultsDomainName) ?? [:]
         let filtered = domain.filter { ownedKeys.contains($0.key) }
         cachedAll = filtered
         return filtered
@@ -272,7 +299,7 @@ class Preferences {
     /// Indices (0..shortcutCount) whose stored override value differs from the current global.
     /// Used to render "Overridden in Shortcut: 1, 3" labels in AppearanceTab.
     static func shortcutIndicesWithDifferentValue(_ baseName: String, globalKey: String) -> [Int] {
-        let globalValue = UserDefaults.standard.string(forKey: globalKey)
+        let globalValue = defaults.string(forKey: globalKey)
         return (0..<shortcutCount).filter { index in
             let key = indexToName(baseName, index)
             guard let overrideValue = all[key] as? String else { return false }
@@ -282,27 +309,27 @@ class Preferences {
 
     static func effectiveAppearanceStyle(_ index: Int) -> AppearanceStylePreference {
         let override = hasOverride("appearanceStyleOverride", index) ? CachedUserDefaults.macroPref(indexToName("appearanceStyleOverride", index), AppearanceStylePreference.allCases) : nil
-        return IncludedFeatures.effectiveValue(global: appearanceStyle, override: override)
+        return override ?? appearanceStyle
     }
 
     static func effectiveAppearanceSize(_ index: Int) -> AppearanceSizePreference {
         let override = hasOverride("appearanceSizeOverride", index) ? CachedUserDefaults.macroPref(indexToName("appearanceSizeOverride", index), AppearanceSizePreference.allCases) : nil
-        return IncludedFeatures.effectiveValue(global: appearanceSize, override: override)
+        return override ?? appearanceSize
     }
 
     static func effectiveAppearanceTheme(_ index: Int) -> AppearanceThemePreference {
         let override = hasOverride("appearanceThemeOverride", index) ? CachedUserDefaults.macroPref(indexToName("appearanceThemeOverride", index), AppearanceThemePreference.allCases) : nil
-        return IncludedFeatures.effectiveValue(global: appearanceTheme, override: override)
+        return override ?? appearanceTheme
     }
 
     static func effectiveShortcutStyle(_ index: Int) -> ShortcutStylePreference {
         let override = hasOverride("shortcutStyleOverride", index) ? CachedUserDefaults.macroPref(indexToName("shortcutStyleOverride", index), ShortcutStylePreference.allCases) : nil
-        return IncludedFeatures.effectiveValue(global: shortcutStyle, override: override)
+        return override ?? shortcutStyle
     }
 
     static func effectivePreviewSelectedWindow(_ index: Int) -> Bool {
         let override = hasOverride("previewFocusedWindowOverride", index) ? CachedUserDefaults.bool(indexToName("previewFocusedWindowOverride", index)) : nil
-        return IncludedFeatures.effectiveValue(global: previewSelectedWindow, override: override)
+        return override ?? previewSelectedWindow
     }
 
     /// Which Screen-Recording-dependent features any shortcut's effective settings rely on: the
@@ -388,11 +415,19 @@ class Preferences {
     }
 
     static func indexToName(_ baseName: String, _ index: Int) -> String {
-        IncludedFeatures.preferenceName(baseName, index)
+        baseName + (index == 0 ? "" : String(index + 1))
     }
 
     static func nameToIndex(_ name: String) -> Int {
-        IncludedFeatures.preferenceIndex(name)
+        let digits = String(name.reversed().prefix { $0.isNumber }.reversed())
+        guard !digits.isEmpty, let number = Int(digits) else { return 0 }
+        return number - 1
+    }
+
+    static func activeShortcutPreferenceKeys(shortcutCount: Int) -> [String] {
+        Array(0..<min(max(shortcutCount, 0), maxShortcutCount)).flatMap { index in
+            IncludedFeatures.shortcutTriggerBaseNames.map { indexToName($0, index) }
+        }
     }
 }
 
@@ -409,7 +444,7 @@ class CachedUserDefaults {
         if let cached = cache.withLock({ $0[key] }) {
             return cached as? String
         }
-        if let string = UserDefaults.standard.string(forKey: key) {
+        if let string = Preferences.defaults.string(forKey: key) {
             cache.withLock { $0[key] = string }
         }
         return nil
@@ -419,7 +454,7 @@ class CachedUserDefaults {
         if let cachedFinalValue = cache.withLock({ $0[key] }) {
             return cachedFinalValue as! String
         }
-        let finalValue = UserDefaults.standard.string(forKey: key)!
+        let finalValue = Preferences.defaults.string(forKey: key)!
         cache.withLock { $0[key] = finalValue }
         return finalValue
     }
@@ -428,7 +463,7 @@ class CachedUserDefaults {
         if let cachedFinalValue = cache.withLock({ $0[key] }) {
             return cachedFinalValue as? Shortcut
         }
-        guard let objectValue = UserDefaults.standard.object(forKey: key) else {
+        guard let objectValue = Preferences.defaults.object(forKey: key) else {
             cache.withLock { $0[key] = NSNull() }
             return nil
         }
@@ -437,7 +472,7 @@ class CachedUserDefaults {
             cache.withLock { $0[key] = finalValue ?? NSNull() }
             return finalValue
         }
-        UserDefaults.standard.removeObject(forKey: key)
+        Preferences.defaults.removeObject(forKey: key)
         return shortcut(key)
     }
 
@@ -471,14 +506,14 @@ class CachedUserDefaults {
         if let cachedFinalValue = cache.withLock({ $0[key] }) {
             return cachedFinalValue as! T
         }
-        let stringValue = UserDefaults.standard.string(forKey: key)!
+        let stringValue = Preferences.defaults.string(forKey: key)!
         if let finalValue = getterFn(stringValue) {
             cache.withLock { $0[key] = finalValue }
             return finalValue
         }
         // value couldn't be read properly; we remove it and work with the default
-        UserDefaults.standard.removeObject(forKey: key)
-        let defaultStringValue = UserDefaults.standard.string(forKey: key)!
+        Preferences.defaults.removeObject(forKey: key)
+        let defaultStringValue = Preferences.defaults.string(forKey: key)!
         let defaultFinalValue = getterFn(defaultStringValue)!
         cache.withLock { $0[key] = defaultFinalValue }
         return defaultFinalValue

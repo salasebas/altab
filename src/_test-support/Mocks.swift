@@ -7,6 +7,16 @@ import ShortcutRecorder
 // satisfying the signatures is enough.
 enum Symbols: String {
     case stub = ""
+    case cursorarrowRays
+    case laptopcomputer
+    case magnifyingglass
+    case moonFill
+    case moonphaseLastQuarterInverse
+    case moonphaseWaningCrescentInverse
+    case moonphaseWaningGibbousInverse
+    case pauseRectangle
+    case sparkles
+    case sunMax
 }
 
 extension NSImage {
@@ -131,6 +141,10 @@ class App {
     static let bundleIdentifier = "dev.salasebas.Altab"
 }
 
+class PreferencesEvents {
+    static func preferenceChanged(_ key: String) {}
+}
+
 class TilesPanel {
     static let shared = TilesPanel()
     var isKeyWindow: Bool {
@@ -220,46 +234,34 @@ class Logger {
     static func error(_ message: @escaping () -> Any?, file: String = #file, function: String = #function, line: Int = #line, context: Any? = nil) {}
 }
 
-class Preferences {
-    static var shortcutStyle: ShortcutStylePreference = .focusOnRelease
-    static var holdShortcut = ["⌥", "⌥", "⌥"]
-    static let minShortcutCount = 1
-    static let maxShortcutCount = IncludedFeatures.keyboardShortcutCount
-    // Matches `defaultShortcuts` (3 hold slots: holdShortcut / holdShortcut2 / holdShortcut3).
-    static var shortcutCount = 3
-
-    static func indexToName(_ baseName: String, _ index: Int) -> String {
-        IncludedFeatures.preferenceName(baseName, index)
-    }
-
-    static func nameToIndex(_ name: String) -> Int {
-        IncludedFeatures.preferenceIndex(name)
-    }
-
-    static func effectiveShortcutStyle(_ index: Int) -> ShortcutStylePreference {
-        return shortcutStyle
-    }
-}
-
-enum ShortcutStylePreference: CaseIterable {
-    case focusOnRelease
-    case doNothingOnRelease
-    case searchOnRelease
-}
-
-enum AppearanceStylePreference: CaseIterable {
-    case thumbnails
-    case appIcons
-    case titles
-}
-
-enum AppearanceSizePreference: CaseIterable {
-    case small
-    case medium
-    case large
-    case auto
-}
-
 class ModifierFlags {
     static var current: NSEvent.ModifierFlags = []
+}
+
+extension Collection {
+    subscript(safe index: Index) -> Element? {
+        indices.contains(index) ? self[index] : nil
+    }
+}
+
+extension CaseIterable where Self: Equatable {
+    var index: Int {
+        Self.allCases.distance(from: Self.allCases.startIndex, to: Self.allCases.firstIndex(of: self)!)
+    }
+
+    var indexAsString: String {
+        String(index)
+    }
+}
+
+final class ConcurrentMap<K: Hashable, V>: @unchecked Sendable {
+    private var map = [K: V]()
+    private let lock = NSLock()
+
+    @discardableResult
+    func withLock<T>(_ block: (inout [K: V]) -> T) -> T {
+        lock.lock()
+        defer { lock.unlock() }
+        return block(&map)
+    }
 }

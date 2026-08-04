@@ -2,6 +2,6 @@
 
 #include "test-base.xcconfig"
 
-SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG // for macro `#if DEBUG`
+SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG TESTING // for macros `#if DEBUG` / `#if TESTING`
 OTHER_SWIFT_FLAGS = -driver-time-compilation -Xfrontend -warn-long-function-bodies=250 -Xfrontend -warn-long-expression-type-checking=250 // find slow compilation areas
 SWIFT_COMPILATION_MODE = incremental

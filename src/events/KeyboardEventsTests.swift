@@ -113,7 +113,7 @@ final class KeyboardEventsUtilsTests: XCTestCase {
 
     func testOnReleaseDoNothing() throws {
         resetState()
-        Preferences.shortcutStyle = .doNothingOnRelease
+        Preferences.set("shortcutStyle", ShortcutStylePreference.doNothingOnRelease.indexAsString, false)
         ModifierFlags.current = [.option]
         handleKeyboardEvent(nil, nil, nil, [.option], false)
         XCTAssertEqual(ControlsTab.shortcutsActionsTriggered, [])
@@ -128,7 +128,7 @@ final class KeyboardEventsUtilsTests: XCTestCase {
 
     func testOnReleaseToggleSearchModeDoesNotFocus() throws {
         resetState()
-        Preferences.shortcutStyle = .searchOnRelease
+        Preferences.set("shortcutStyle", ShortcutStylePreference.searchOnRelease.indexAsString, false)
         ModifierFlags.current = [.option]
         handleKeyboardEvent(nil, nil, nil, [.option], false)
         XCTAssertEqual(ControlsTab.shortcutsActionsTriggered, [])
@@ -162,7 +162,10 @@ final class KeyboardEventsUtilsTests: XCTestCase {
 
     private func resetState() {
         SwitcherSession.current = nil
-        Preferences.shortcutStyle = .focusOnRelease
+        Preferences.defaults.removePersistentDomain(forName: Preferences.defaultsDomainName)
+        Preferences.invalidateAllCache()
+        Preferences.set("shortcutCount", "3", false)
+        Preferences.set("shortcutStyle", ShortcutStylePreference.focusOnRelease.indexAsString, false)
         ControlsTab.shortcuts.values.forEach { $0.state = .up }
         ControlsTab.shortcutsActionsTriggered = []
     }

@@ -124,6 +124,11 @@
 		5F46FE000000000000000002 /* IncludedFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F46FE000000000000000001 /* IncludedFeatures.swift */; };
 		5F46FE000000000000000003 /* IncludedFeatures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F46FE000000000000000001 /* IncludedFeatures.swift */; };
 		5F46FE000000000000000102 /* IncludedFeaturesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F46FE000000000000000101 /* IncludedFeaturesTests.swift */; };
+		5F4700000000000000000002 /* ShortcutRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4700000000000000000001 /* ShortcutRouting.swift */; };
+		5F4700000000000000000003 /* ShortcutRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F4700000000000000000001 /* ShortcutRouting.swift */; };
+		5F4700000000000000000101 /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = D04BA9B93823398A542FF7A0 /* Preferences.swift */; };
+		5F4700000000000000000102 /* MacroPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8998862E0E04D60CACBC /* MacroPreferences.swift */; };
+		5F4700000000000000000103 /* ShortcutConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FA001000000000000000020 /* ShortcutConfiguration.swift */; };
 		AA0C8A100000000000000001 /* AXCallScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0C8A000000000000000001 /* AXCallScheduler.swift */; };
 		AA0C8A1000000000000000B1 /* CGSCallScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0C8A0000000000000000B1 /* CGSCallScheduler.swift */; };
 		AA0C8A1000000000000000B2 /* ProcessCallScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0C8A0000000000000000B2 /* ProcessCallScheduler.swift */; };
@@ -407,6 +412,7 @@
 		5F46FE000000000000000001 /* IncludedFeatures.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncludedFeatures.swift; sourceTree = "<group>"; };
 		5F46FE000000000000000101 /* IncludedFeaturesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncludedFeaturesTests.swift; sourceTree = "<group>"; };
 		5F46FE000000000000000201 /* IncludedFeaturesSpecs.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = IncludedFeaturesSpecs.md; sourceTree = "<group>"; };
+		5F4700000000000000000001 /* ShortcutRouting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutRouting.swift; sourceTree = "<group>"; };
 		5FA1E0B12F50000100A1A1A1 /* PreferencesEvents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreferencesEvents.swift; sourceTree = "<group>"; };
 		5FB41C082F9D1EF900ECF3CF /* local.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = local.xcconfig; sourceTree = "<group>"; };
 		5FB41C092F9D1F4700ECF3CF /* icon_32x32@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon_32x32@2x.png"; sourceTree = "<group>"; };
@@ -1003,6 +1009,7 @@
 			children = (
 				BF0C8BA452332236D972C60E /* ATShortcut.swift */,
 				D04BA00000000000C0DE0010 /* ShortcutAction.swift */,
+				5F4700000000000000000001 /* ShortcutRouting.swift */,
 				D04BA00000000000C0DE0020 /* SwitcherSession.swift */,
 				1C961AC3633CD0C62CCE050E /* Appearance.swift */,
 				BF0C8D57C86AF492D43A576D /* AppearanceTestable.swift */,
@@ -1716,6 +1723,10 @@
 				5E5EA12C0000000000000102 /* SearchModeResolverTests.swift in Sources */,
 				5F46FE000000000000000003 /* IncludedFeatures.swift in Sources */,
 				5F46FE000000000000000102 /* IncludedFeaturesTests.swift in Sources */,
+				5F4700000000000000000003 /* ShortcutRouting.swift in Sources */,
+				5F4700000000000000000101 /* Preferences.swift in Sources */,
+				5F4700000000000000000102 /* MacroPreferences.swift in Sources */,
+				5F4700000000000000000103 /* ShortcutConfiguration.swift in Sources */,
 				5E5EA12D0000000000000003 /* ShortcutModifierResolver.swift in Sources */,
 				5E5EA12D0000000000000102 /* ShortcutModifierResolverTests.swift in Sources */,
 				5F117E40000000000000F003 /* WindowFilterResolver.swift in Sources */,
@@ -1865,6 +1876,7 @@
 				D04BAE2200000000ED005001 /* SettingsSectionSearchContent.swift in Sources */,
 				BF0C8CC5057406014FD612CC /* ATShortcut.swift in Sources */,
 				D04BA00000000000C0DE0012 /* ShortcutAction.swift in Sources */,
+				5F4700000000000000000002 /* ShortcutRouting.swift in Sources */,
 				D04BA00000000000C0DE0021 /* SwitcherSession.swift in Sources */,
 				D04BA00000000000C0DE0031 /* WindowThumbnails.swift in Sources */,
 				D04BA00000000000C0DE0041 /* Tooltips.swift in Sources */,

@@ -47,7 +47,7 @@ enum ShortcutActions {
             action.perform()
             return
         }
-        guard let action = IncludedFeatures.shortcutAction(id) else { return }
+        guard let action = switcherAction(id) else { return }
         switch action {
         case .focusTarget:
             App.focusTarget()

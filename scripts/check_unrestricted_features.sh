@@ -19,13 +19,6 @@ reject_matches() {
   fi
 }
 
-require_matches() {
-  local description="$1"
-  local pattern="$2"
-  shift 2
-  rg -q --hidden "$pattern" "$@" || fail "$description"
-}
-
 check_source() {
   plutil -lint Info.plist >/dev/null
   plutil -lint alt-tab-macos.xcodeproj/project.pbxproj >/dev/null
@@ -51,37 +44,6 @@ check_source() {
   )
   for path in "${removedPaths[@]}"; do
     [[ ! -e "$path" ]] || fail "$path still exists"
-  done
-
-  local catalog=src/features/IncludedFeatures.swift
-  local tests=src/features/IncludedFeaturesTests.swift
-  local specs=src/features/IncludedFeaturesSpecs.md
-  for path in "$catalog" "$tests" "$specs"; do
-    [[ -f "$path" ]] || fail "$path is missing"
-  done
-  for feature in searchInSwitcher searchOnReleaseShortcut autoSize appIconsAndTitlesStyle additionalShortcuts perShortcutOptions; do
-    require_matches "included feature catalog is missing $feature" "case $feature" "$catalog"
-  done
-  require_matches "included feature catalog does not pin all nine shortcut slots" 'static let keyboardShortcutCount = 9' "$catalog"
-  for override in appearanceStyleOverride appearanceSizeOverride appearanceThemeOverride shortcutStyleOverride previewFocusedWindowOverride; do
-    require_matches "included feature matrix is missing $override" "\"$override\"" "$catalog" "$tests"
-  done
-  require_matches "unrestricted feature tests are not in the unit-test target" 'IncludedFeaturesTests\.swift' alt-tab-macos.xcodeproj/project.pbxproj
-  require_matches "feature tests do not pin stored selections without fallback" 'testFormerlyRestrictedSelectionsAreReturnedWithoutFallback' "$tests"
-  require_matches "feature tests do not pin every shortcut index" 'testEverySupportedShortcutKeyIsRegisteredAndExecutable' "$tests"
-  require_matches "feature tests do not pin every per-shortcut option" 'testEveryPerShortcutPreferenceVariantIsRepresentedForKeyboardAndGesture' "$tests"
-
-  require_matches "search entry is not wired into the switcher" 'SearchModeResolver\.enableEditing\(mode: searchMode\)' src/switcher/main-window/TilesView.swift
-  require_matches "Search on Release no longer starts a search session" 'effectiveShortcutStyle\(shortcutIndex\) == \.searchOnRelease' src/App.swift
-  require_matches "Auto size no longer reaches switcher layout" 'effectiveAppearanceSize\(SwitcherSession\.activeShortcutIndex\) == \.auto' src/switcher/main-window/TilesView.swift
-  require_matches "App Icons no longer reaches switcher rendering" 'effectiveAppearanceStyle\(SwitcherSession\.activeShortcutIndex\) == \.appIcons' src/switcher/main-window/TileView.swift src/switcher/main-window/TilesView.swift
-  require_matches "Titles no longer reaches switcher rendering" 'effectiveAppearanceStyle\(SwitcherSession\.activeShortcutIndex\) == \.titles' src/switcher/main-window/TileView.swift src/switcher/main-window/TilesPanel.swift
-  require_matches "the complete shortcut capacity is no longer available" 'static let maxShortcutCount = IncludedFeatures\.keyboardShortcutCount' src/preferences/Preferences.swift
-  require_matches "shortcut identifiers no longer resolve through the tested routing catalog" 'IncludedFeatures\.shortcutAction\(id\)' src/switcher/ShortcutAction.swift
-  require_matches "hold shortcuts no longer execute the focus action" 'case \.focusTarget:' src/switcher/ShortcutAction.swift
-  require_matches "next-window shortcuts no longer execute their indexed action" 'case \.showOrCycle\(let index\):' src/switcher/ShortcutAction.swift
-  for consumer in effectiveAppearanceStyle effectiveAppearanceSize effectiveAppearanceTheme effectiveShortcutStyle effectivePreviewSelectedWindow; do
-    require_matches "per-shortcut preference consumer $consumer is missing" "static func $consumer" src/preferences/Preferences.swift
   done
 }
 

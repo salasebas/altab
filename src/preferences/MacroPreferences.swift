@@ -1,3 +1,5 @@
+import Cocoa
+
 enum MenubarIconPreference: CaseIterable, MacroPreference {
     case outlined
     case filled

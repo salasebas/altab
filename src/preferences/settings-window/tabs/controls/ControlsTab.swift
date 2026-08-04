@@ -561,7 +561,7 @@ class ControlsTab {
 
     private static func addShortcutSlot() {
         let currentCount = Preferences.shortcutCount
-        guard IncludedFeatures.canAddShortcut(currentCount: currentCount) else { return }
+        guard currentCount >= Preferences.minShortcutCount && currentCount < Preferences.maxShortcutCount else { return }
         resetShortcutPreferences(currentCount)
         setAddedShortcutTriggerDefaults(currentCount)
         selectedShortcutIndex = currentCount
@@ -715,14 +715,14 @@ class ControlsTab {
     }
 
     private static func isShortcutPreferenceKey(_ key: String) -> Bool {
-        IncludedFeatures.switcherShortcutIndex(key) != nil
+        ShortcutActions.switcherAction(key) != nil
     }
 
     // MARK: - Shortcut registry (global keyboard binding — unchanged from the old code)
 
     private static func applyActiveShortcutPreferences() {
-        let activeKeys = Set(IncludedFeatures.activeShortcutPreferenceKeys(shortcutCount: Preferences.shortcutCount))
-        IncludedFeatures.activeShortcutPreferenceKeys(shortcutCount: IncludedFeatures.keyboardShortcutCount).forEach { key in
+        let activeKeys = Set(Preferences.activeShortcutPreferenceKeys(shortcutCount: Preferences.shortcutCount))
+        Preferences.activeShortcutPreferenceKeys(shortcutCount: Preferences.maxShortcutCount).forEach { key in
             if activeKeys.contains(key) {
                 applyShortcutPreference(key)
             } else {
