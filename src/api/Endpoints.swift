@@ -1,13 +1,16 @@
 import Foundation
 
 enum Endpoints {
+    static let repository = "https://github.com/salasebas/altab"
+    static let website = repository
+    static let issuesUrl = "\(repository)/issues"
+    static let feedbackUrl = "\(issuesUrl)/new/choose"
+    static let supportUrl = "https://github.com/sponsors/salasebas"
     static let domain = Bundle.main.object(forInfoDictionaryKey: "Domain") as! String
     static let apiDomain = Bundle.main.object(forInfoDictionaryKey: "ApiDomain") as! String
-    static let website = "https://\(domain)"
-    static let appcastUrl = "\(website)/appcast.xml"
-    static let supportUrl = "\(website)/support"
-    static let checkoutUrl = "\(website)/pricing"
-    static let accountUrl = "\(website)/my-account"
+    static let serviceUrl = "https://\(domain)"
+    static let appcastUrl = "\(serviceUrl)/appcast.xml"
+    static let checkoutUrl = "\(serviceUrl)/pricing"
+    static let accountUrl = "\(serviceUrl)/my-account"
     static let licenseApiBaseUrl = "https://\(apiDomain)/v1/license"
-    static let feedbackUrl = "https://\(apiDomain)/v1/feedback"
 }

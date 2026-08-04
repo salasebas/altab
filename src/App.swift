@@ -13,7 +13,7 @@ class App: AppCenterApplication {
     static let name = Bundle.main.object(forInfoDictionaryKey: "CFBundleName") as! String
     static let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleVersion") as! String
     static let licence = Bundle.main.object(forInfoDictionaryKey: "NSHumanReadableCopyright") as! String
-    static let repository = "https://github.com/lwouis/alt-tab-macos"
+    static let repository = Endpoints.repository
     static let appIconReps = CGImage.allNamed("app.icns")
 
     static func appIcon(for size: NSSize) -> CGImage {
@@ -54,7 +54,7 @@ class App: AppCenterApplication {
 
     static func restart() {
         // we use -n to open a new instance, to avoid calling applicationShouldHandleReopen
-        // we use Bundle.main.bundlePath in case of multiple AltTab versions on the machine
+        // we use Bundle.main.bundlePath in case of multiple Altab versions on the machine
         printStackTrace()
         Process.launchedProcess(launchPath: "/usr/bin/open", arguments: ["-n", Bundle.main.bundlePath])
         App.shared.terminate(nil)
@@ -90,7 +90,6 @@ class App: AppCenterApplication {
         SettingsWindow.canBecomeKey_ = canBecomeKey_
         AboutWindow.canBecomeKey_ = canBecomeKey_
         PermissionsWindow.canBecomeKey_ = canBecomeKey_
-        FeedbackWindow.canBecomeKey_ = canBecomeKey_
         DebugWindow.canBecomeKey_ = canBecomeKey_
     }
 
@@ -122,12 +121,7 @@ class App: AppCenterApplication {
     }
 
     @objc static func showFeedbackPanel() {
-        let wasFresh = FeedbackWindow.shared == nil
-        initializeFeedbackWindowIfNeeded()
-        // Fresh init already runs reset(); skip the redundant second call so we don't
-        // double-fire the Sparkle preflight on the first ever open.
-        if !wasFresh { FeedbackWindow.shared?.reset() }
-        showSecondaryWindow(FeedbackWindow.shared!)
+        NSWorkspace.shared.open(URL(string: Endpoints.feedbackUrl)!)
     }
 
     @objc static func showDebugWindow() {
@@ -176,10 +170,6 @@ class App: AppCenterApplication {
 
     private static func initializeAboutWindowIfNeeded() {
         if AboutWindow.shared == nil { _ = AboutWindow() }
-    }
-
-    private static func initializeFeedbackWindowIfNeeded() {
-        if FeedbackWindow.shared == nil { _ = FeedbackWindow() }
     }
 
     private static func initializeDebugWindowIfNeeded() {
@@ -433,7 +423,7 @@ class App: AppCenterApplication {
         UsageStats.prune()
         ProTransitionManager.shared.onAction = { ProPromptHost.shared.dispatch($0) }
         ProTransitionManager.shared.onAppLaunchComplete()
-        Logger.info { "Finished launching AltTab" }
+        Logger.info { "Finished launching \(App.name)" }
     }
 }
 
@@ -442,7 +432,7 @@ extension App: NSApplicationDelegate {
         App.appCenterDelegate = AppCenterCrash()
         App.shared.disableRelaunchOnLogin()
         Logger.initialize()
-        Logger.info { "Launching AltTab \(App.version)" }
+        Logger.info { "Launching \(App.name) \(App.version)" }
         // Create the background queues first, before anything that can pump the main run loop re-entrantly
         // (the "move to /Applications" modal below, the WindowServer tap's discovery). Window.init reads
         // BackgroundWork.screenshotsQueue (an implicitly-unwrapped optional) via Application.fetchAppIcon, so
@@ -485,33 +475,6 @@ extension App: NSApplicationDelegate {
         #endif
         LicenseManager.shared.initialize()
         SystemPermissions.ensurePermissionsAreGranted()
-    }
-
-    func application(_ application: NSApplication, open urls: [URL]) {
-        for url in urls {
-            if url.scheme == App.bundleIdentifier {
-                handleCustomUrl(url)
-            }
-        }
-    }
-
-    private func handleCustomUrl(_ url: URL) {
-        guard url.host == "activate",
-              let components = URLComponents(url: url, resolvingAgainstBaseURL: false),
-              let licenseKey = components.queryItems?.first(where: { $0.name == "license_key" })?.value,
-              !licenseKey.isEmpty else {
-            return
-        }
-        UpgradeTab.showAutoActivating(licenseKey)
-        LicenseManager.shared.activate(licenseKey) { result in
-            switch result {
-            case .success:
-                UpgradeTab.showAutoActivationSuccess()
-                App.resetPreferencesDependentComponents()
-            case .failure:
-                UpgradeTab.showAutoActivationFailed(licenseKey)
-            }
-        }
     }
 
     func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {

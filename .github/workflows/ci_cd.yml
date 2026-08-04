@@ -16,7 +16,7 @@ env:
   BUILD_DIR: ${{ github.workspace }}
   XCODE_BUILD_PATH: DerivedData/Build/Products/Release
   VERSION_FILE: VERSION.txt
-  APP_NAME: AltTab
+  APP_NAME: Altab
 jobs:
   build:
     # The inherited job signs, publishes, and updates infrastructure owned by upstream.

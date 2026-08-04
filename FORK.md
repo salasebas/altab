@@ -38,15 +38,15 @@ Security-related upstream work receives priority, but there is no promise of imm
 
 - [x] Use [salasebas/altab](https://github.com/salasebas/altab) as the canonical fork and retain the earlier implementation as [salasebas/altab-archived](https://github.com/salasebas/altab-archived).
 - [x] Keep the fork as `origin`, the official project as read-only `upstream`, and the local branch tracking `origin/master`.
-- [ ] Choose the final app name, bundle ID, URL scheme, Team ID, and signing identity once, before the first public release; document any migration if users already exist.
-- [ ] Replace in-app repository, support, funding, About, and website links.
-- [ ] Replace the application and menu bar artwork with Altab-owned assets and retain their provenance.
+- [x] Establish stable Release and Debug app names and bundle IDs, remove the activation URL scheme, and keep Team ID and signing credentials fork-configurable before the first public release.
+- [x] Replace in-app repository, support, funding, About, feedback, and website links.
+- [x] Replace the application and menu bar artwork with Altab-owned assets and retain their provenance.
 
 ### Updates and external services
 
 - [ ] Disable Sparkle until a fork-owned feed, signing key, and tested update path exist; a fork build must never install an upstream AltTab release.
 - [ ] Remove or replace `alt-tab.app` domains, licensing APIs, cookies, release notes, and download URLs.
-- [ ] Remove upstream Developer ID and Team ID values from release configuration and CI.
+- [x] Remove upstream Developer ID and Team ID values from release configuration and CI.
 - [ ] Remove or replace upstream AppCenter/crash-reporting configuration and document the fork's privacy behavior.
 - [ ] Replace the inherited publish workflow with fork-owned validation and release workflows.
 
