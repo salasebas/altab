@@ -5,12 +5,6 @@ These third-party libraries are used:
 **ShortcutRecorder**
 [Website](https://github.com/Kentzo/ShortcutRecorder) - [CC 4.0 License](https://github.com/Kentzo/ShortcutRecorder/blob/master/LICENSE.txt)
 
-**Sparkle**
-[Website](https://github.com/sparkle-project/Sparkle) - [License](https://github.com/sparkle-project/Sparkle/blob/master/LICENSE)
-
-**AppCenter**
-[Website](https://github.com/microsoft/appcenter-sdk-apple) - [Custom](https://github.com/microsoft/appcenter-sdk-apple/blob/develop/LICENSE)
-
 ## Altab brand artwork
 
 The application icon and menu-bar artwork come from [salasebas/altab-archived](https://github.com/salasebas/altab-archived) at revision `6fe0c6455c00c050f8ac061621117f50adcf1c71`.

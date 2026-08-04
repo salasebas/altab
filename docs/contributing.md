@@ -19,7 +19,7 @@ Regarding SDKs, it’s very different from other (better) ecosystems like Java. 
 
 Documentation is abysmal. Very simple things are not documented at all, and good information is hard to find. Compared to other ecosystem I’ve worked on in the past like Android, nodejs, Java, rust, this is really a bad spot. You can truly tell Apple doesn’t care about supporting third-parties. They are in such a good position that people will struggle and just push through to deliver on their ecosystem because it is so valuable, and because they don’t have to care, they don’t. They could pay an intern to update the docs over the summer for instance, just to give you context of the lack of care we are talking about here.
 
-Dependencies in this project are vendored under `vendor/` and consumed as local Swift Package Manager packages. Each dependency has an `update_*.sh` script under `vendor/scripts/` that re-fetches it from upstream, strips unused files, and regenerates its `Package.swift`. There is no remote dependency resolution at build time — `git clone && xcodebuild` is the full bootstrap.
+ShortcutRecorder is vendored under `vendor/` and consumed as a local Swift Package Manager package. Its `vendor/scripts/update_shortcut_recorder.sh` script re-fetches it from upstream, strips unused files, and regenerates its `Package.swift`. There is no remote dependency resolution at build time — `git clone && xcodebuild` is the full bootstrap.
 
 OS APIs are quite limited for the kind of low-level, system-wide app AltTab is. This means often we just don’t have an API to do something. For instance, there is no API to ask the OS “how many Spaces does the user have?” or “Can you focus the window on Space 2?”. There are however, retro-engineered private APIs which you can call. These are not documented at all, not guaranteed to be there in future macOS releases, and prevent us from releasing AltTab on the Mac AppStore. We have tried our best to [document the ones we are using](https://github.com/lwouis/alt-tab-macos/blob/master/src/macos/api-wrappers/README.md), as well as [the ones we investigated](https://github.com/lwouis/alt-tab-macos/blob/master/src/experimentations/PrivateApis.swift) in the past.
 
@@ -31,7 +31,7 @@ We minimize reliance on XCode, InterfaceBuilder, Playground, and other GUI tools
 
 * `alt-tab-macos.xcodeproj` file describing AltTab itself. It contains some settings for the app
 * `alt_tab_macos.entitlements` and `Info.plist` which are static files describing some app config for XCode
-* `vendor/` holds vendored open-source libraries (Sparkle, ShortcutRecorder, AppCenter) as local SPM packages. `vendor/scripts/update_*.sh` refresh them from upstream
+* `vendor/` holds ShortcutRecorder as a local SPM package. `vendor/scripts/update_shortcut_recorder.sh` refreshes it from upstream
 * Some `.xcconfig` files in `config/` which contain XCode settings that people typically change using XCode UI, but that I want to be version controlled
 
 The project directory is organized in the following way:
@@ -59,7 +59,7 @@ The `src/` folder groups files by feature, so files that change together live to
 | `src/kit/`              | reusable AppKit building blocks (custom buttons, views, controls) |
 | `src/util/`             | generic helpers (background work, throttling, scheduling policy) |
 | `src/api/`              | client for the licensing backend |
-| `src/vendors/`          | glue code for vendored libraries (AppCenter, Sparkle, ObjC exception catcher) |
+| `src/vendors/`          | Objective-C exception-catching glue |
 | `src/debug/`            | benchmarking and QA tooling |
 | `src/experimentations/` | private APIs and approaches we investigated but don't ship |
 | `src/_test-support/`    | mocks and helpers shared by the unit tests |

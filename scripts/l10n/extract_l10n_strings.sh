@@ -5,7 +5,7 @@ set -exu
 fileDirectory="resources/l10n"
 stringsFile="$fileDirectory/Localizable.strings"
 
-rm $stringsFile
+rm -f $stringsFile
 # generate fresh Localizable.strings
 find src -name '*.swift' | xargs genstrings -a -o $fileDirectory
 # convert to utf8

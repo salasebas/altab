@@ -9,7 +9,6 @@ enum Endpoints {
     static let domain = Bundle.main.object(forInfoDictionaryKey: "Domain") as! String
     static let apiDomain = Bundle.main.object(forInfoDictionaryKey: "ApiDomain") as! String
     static let serviceUrl = "https://\(domain)"
-    static let appcastUrl = "\(serviceUrl)/appcast.xml"
     static let checkoutUrl = "\(serviceUrl)/pricing"
     static let accountUrl = "\(serviceUrl)/my-account"
     static let licenseApiBaseUrl = "https://\(apiDomain)/v1/license"

@@ -13,7 +13,7 @@
 
 # require_update_flag <user-args...> -- <script_path> <description>
 # Bash can't easily take "$@" then trailing args, so the calling convention is:
-#   require_update_flag "${1:-}" "$0" "refreshes vendor/Sparkle to 2.9.1"
+#   require_update_flag "${1:-}" "$0" "refreshes vendor/Dependency to 1.2.3"
 require_update_flag() {
     local arg="$1" script="$2" desc="$3"
     if [[ "$arg" != "--update" ]]; then
@@ -67,9 +67,8 @@ fetch_extract() {
 }
 
 # keep_lprojs: returns (newline-separated) the lproj base names our app supports.
-# Source of truth: resources/l10n/*.lproj. Also emits alternative spellings each
-# vendored dep uses (Sparkle underscores, ShortcutRecorder BCP-47 Hans/Hant) so adding
-# a language to the app only requires editing resources/l10n/.
+# Source of truth: resources/l10n/*.lproj. Also emits the BCP-47 Hans/Hant spellings
+# used by ShortcutRecorder so adding a language only requires editing resources/l10n/.
 keep_lprojs() {
     local lp name
     for lp in resources/l10n/*.lproj; do
@@ -77,10 +76,8 @@ keep_lprojs() {
         name="$(basename "$lp" .lproj)"
         printf '%s\n' "$name"
         case "$name" in
-            pt-BR) printf 'pt_BR\n' ;;
-            zh-CN) printf 'zh_CN\nzh-Hans\n' ;;
-            zh-TW) printf 'zh_TW\nzh-Hant\n' ;;
-            zh-HK) printf 'zh_HK\n' ;;
+            zh-CN) printf 'zh-Hans\n' ;;
+            zh-TW) printf 'zh-Hant\n' ;;
         esac
     done
 }

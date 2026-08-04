@@ -5,8 +5,6 @@
 "30-day money-back guarantee" = "30 天退款保证";
 "4-finger Horizontal Swipe" = "四指水平滑动";
 "4-finger Vertical Swipe" = "四指垂直滑动";
-"A debug profile (versions, settings, hardware) is attached to help diagnose the issue." = "已附上调试信息（版本、设置、硬件）以协助诊断问题。";
-"A new version of Altab is available" = "Altab 有新版本可用";
 "About %@" = "关于 %@";
 "Accessibility" = "辅助功能";
 "Activate" = "激活";
@@ -26,7 +24,6 @@
 "All Spaces" = "所有桌面";
 "Allowed" = "允许";
 "Alphabetical Order" = "按字母顺序";
-"Altab crashed last time you used it. Sending a crash report will help get the issue fixed" = "Altab 在您上次使用时崩溃了。发送崩溃报告有助于修复问题";
 "Altab is a free, open-source window switcher for macOS. Pro features are available with a 14-day free trial." = "Altab 是一款免费、开源的 macOS 窗口切换器。Pro 功能提供 14 天免费试用。";
 "Altab is running without Screen Recording permissions. %@ won’t show." = "Altab 正在运行但未获得屏幕录制权限。%@将无法显示。";
 "Altab needs some permissions" = "Altab 需要一些权限";
@@ -37,7 +34,6 @@
 "Altab Pro is still available" = "Altab Pro 仍然可用";
 "Altab will show if the window is currently minimized or fullscreen with a status icon." = "Altab 将通过状态图标显示窗口当前是否已最小化或全屏。";
 "Always" = "始终";
-"Always send crash reports" = "始终发送崩溃报告";
 "and press" = "然后按";
 "Animations" = "动画";
 "Animations…" = "动画…";
@@ -55,10 +51,8 @@
 "Applies in other Appearances" = "适用于其他外观";
 "Arrow keys" = "方向键";
 "Arrow keys already assigned to other actions:\n%@" = "方向键已分配给其他操作：\n%@";
-"Ask whether to send crash reports" = "询问是否发送崩溃报告";
 "Auto" = "自动";
 "Auto Size — larger previews with few windows, more at once with many" = "自动大小 — 窗口较少时预览更大,窗口较多时一次显示更多";
-"Auto-install updates periodically" = "定期自动安装更新";
 "Auto-sizing switcher" = "自动调整切换器大小";
 "Automatic activation failed" = "自动激活失败";
 "Brief description of the bug" = "简要描述错误";
@@ -66,9 +60,6 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "取消";
 "Capture windows in the background" = "在后台捕获窗口";
-"Check for updates now…" = "立即检查更新…";
-"Check for updates periodically" = "定期检查更新";
-"Check for updates…" = "检查更新…";
 "Check permissions…" = "检查权限…";
 "Close window" = "关闭窗口";
 "Conflicting shortcut" = "快捷键冲突";
@@ -78,7 +69,6 @@
 "Couldn't deactivate that machine" = "无法停用该设备";
 "Couldn't save your license to the macOS Keychain. Please share the details below with the developer." = "无法将您的许可证保存到 macOS 钥匙串。请将以下详细信息发送给开发者。";
 "Couldn't submit feedback" = "无法提交反馈";
-"Crash reports policy" = "崩溃报告策略";
 "Create GitHub issue" = "创建 GitHub issue";
 "Cursor follows focus" = "光标跟随焦点";
 "Customize more…" = "更多自定义…";
@@ -94,8 +84,6 @@
 "Do Not Move" = "不移动";
 "Don't hide" = "不隐藏";
 "Done" = "完成";
-"Don’t check for updates periodically" = "不定期检查更新";
-"Don’t send" = "不发送";
 "e.g. com.example.app" = "例如 com.example.app";
 "e.g. Debug" = "例如 Debug";
 "End" = "末尾";
@@ -156,7 +144,6 @@
 "Multiple screens" = "多个屏幕";
 "My Account" = "我的账户";
 "Never" = "从不";
-"Never send crash reports" = "从不发送崩溃报告";
 "No response from server." = "服务器无响应。";
 "No thanks — don't ask again" = "不用了 — 不再询问";
 "No Window" = "无窗口";
@@ -191,7 +178,6 @@
 "Recently Created First" = "最近创建优先";
 "Recently Focused First" = "最近聚焦优先";
 "Reliable, fast window switching with high-quality thumbnails" = "可靠、快速的窗口切换，提供高质量缩略图";
-"Remember my choice" = "记住我的选择";
 "Report a bug" = "报告错误";
 "Report on current version" = "在当前版本上报告";
 "Reset settings and restart" = "重置设置并重启";
@@ -210,8 +196,6 @@
 "Select windows on mouse hover" = "鼠标悬停时选择窗口";
 "Select windows using arrow keys" = "使用方向键选择窗口";
 "Select windows using vim keys" = "使用 Vim 键选择窗口";
-"Send" = "发送";
-"Send a crash report?" = "发送崩溃报告？";
 "Send feedback" = "发送反馈";
 "Send feedback…" = "发送反馈…";
 "Sending…" = "发送中…";
@@ -281,8 +265,6 @@
 "Unlock the App Icons style with Pro" = "通过 Pro 解锁应用图标样式";
 "Unlock the Titles style with Pro" = "通过 Pro 解锁标题样式";
 "Up to 9 keyboard shortcuts" = "最多 9 个键盘快捷键";
-"Update now" = "立即更新";
-"Updates policy" = "更新策略";
 "Usage" = "使用情况";
 "Use the app without this permission. Thumbnails won’t show." = "在没有此权限的情况下使用应用。缩略图将无法显示。";
 "Version" = "版本";
