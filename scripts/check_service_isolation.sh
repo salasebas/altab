@@ -46,6 +46,10 @@ check_source() {
     scripts/replace_environment_variables_in_app.sh
     scripts/update_readme_and_website.sh
     scripts/update_website.sh
+    scripts/build_readme_svg.py
+    docs/readme/main.svg
+    docs/readme/screenshot-source.webp
+    docs/readme/sponsor.svg
     src/api/Secrets.swift
     src/events/UserDefaultsEvents.swift
     src/pro/license/LicenseCookie.swift
