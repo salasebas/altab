@@ -53,6 +53,7 @@ check_source() {
   done
   require_production_wiring 'Preferences.effectiveShortcutStyle(shortcutIndex) == .searchOnRelease' src/App.swift
   require_production_wiring 'TilesView.startSearchSession(shouldStartInSearchMode)' src/App.swift
+  require_production_wiring 'SearchModeResolver.enableEditing(mode: searchMode)' src/switcher/main-window/TilesView.swift
   require_production_wiring 'Preferences.effectiveAppearanceSize(SwitcherSession.activeShortcutIndex) == .auto' src/switcher/main-window/TilesView.swift
   require_production_wiring 'Preferences.effectiveAppearanceStyle(SwitcherSession.activeShortcutIndex)' src/switcher/Appearance.swift
   require_production_wiring 'Preferences.effectiveAppearanceStyle(SwitcherSession.activeShortcutIndex)' src/switcher/main-window/TileView.swift
