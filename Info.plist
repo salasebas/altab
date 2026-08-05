@@ -18,7 +18,7 @@
 	<key>CFBundleIconFile</key>
 	<string>app.icns</string>
 	<key>NSHumanReadableCopyright</key>
-	<string>GPL-3.0 licence</string>
+	<string>Copyright © AltTab and AlTab contributors. GPL-3.0-only.</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
 

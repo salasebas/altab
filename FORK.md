@@ -50,7 +50,7 @@ Security-related upstream work receives priority, but there is no promise of imm
 - [x] Remove upstream Developer ID and Team ID values from release configuration and CI.
 - [x] Remove AppCenter/crash-reporting configuration and document that the fork sends no crash reports or analytics to AppCenter.
 - [x] Remove the inherited publish workflow and its upstream signing, appcast, AppCenter, and deployment dependencies.
-- [ ] Design fork-owned validation and release workflows.
+- [x] Design fork-owned validation and release workflows.
 
 ### Free feature surface
 
@@ -62,11 +62,11 @@ Security-related upstream work receives priority, but there is no promise of imm
 
 ### Distribution and compliance
 
-- [ ] Correct all root metadata so it consistently declares the GPL license.
-- [ ] Keep corresponding source, build scripts, copyright notices, Git history, and third-party licenses available with every binary distribution.
+- [x] Correct all root metadata so it consistently declares the GPL license.
+- [x] Keep corresponding source, build scripts, copyright notices, Git history, and third-party licenses available with every binary distribution.
 - [ ] Test a clean install, upgrade, uninstall, Accessibility permissions, Screen Recording permissions, login item behavior, and side-by-side behavior with official AltTab.
 - [ ] Either sign and notarize releases with the fork maintainer's stable Developer ID or label every unsigned preview prominently in the README and release notes.
-- [ ] Publish checksums and describe exactly how each release artifact was built.
+- [x] Publish checksums and describe exactly how each release artifact was built.
 
 ## Suggested public wording
 

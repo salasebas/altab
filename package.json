@@ -1,9 +1,13 @@
 {
   "private": true,
-  "name": "alt-tab-macos",
-  "version": "1.0.0",
-  "author": "",
-  "license": "MIT",
+  "name": "altab",
+  "version": "0.0.0",
+  "description": "Tooling for the AlTab GPL-3.0 macOS application",
+  "author": "salasebas and contributors",
+  "license": "GPL-3.0-only",
+  "repository": "github:salasebas/altab",
+  "homepage": "https://github.com/salasebas/altab#readme",
+  "bugs": "https://github.com/salasebas/altab/issues",
   "packageManager": "pnpm@11.5.2",
   "husky": {
     "hooks": {

@@ -15,6 +15,7 @@ mktempdir
 UPSTREAM_SHA="$(git_clone_commit "$GIT_URL" "$UPSTREAM_COMMIT" "$TMP/src")"
 
 rebuild_dest "$DEST" Sources/ShortcutRecorder/include/ShortcutRecorder
+cp "$TMP/src/LICENSE.txt" "$DEST/LICENSE.txt"
 
 # .m files at the target root (alongside resources). Headers go into include/ShortcutRecorder/
 # so SPM's publicHeadersPath = "include" resolves `#import <ShortcutRecorder/Foo.h>` correctly

@@ -9,7 +9,19 @@ AlTab is derived from [AltTab for macOS](https://github.com/lwouis/alt-tab-macos
 These third-party libraries are used:
 
 **ShortcutRecorder**
-[Website](https://github.com/Kentzo/ShortcutRecorder) - [CC 4.0 License](https://github.com/Kentzo/ShortcutRecorder/blob/master/LICENSE.txt)
+
+AlTab vendors source from [lwouis/ShortcutRecorder](https://github.com/lwouis/ShortcutRecorder) at commit `52c6273d233f7794e4fd5d22f50d2de0e4e41b19`, rearranged for Swift Package Manager and patched to locate its resource bundle. It is distributed under the [Creative Commons Attribution 4.0 International license](../vendor/ShortcutRecorder/LICENSE.txt).
+
+**Apple SF Symbols subset**
+
+The app includes a tracked subset of Apple SF Pro Text glyphs used to render SF Symbols on supported Apple platforms. Its exact build input is `resources/SF-Pro-Text-Regular.otf` with SHA-256 `aa702e9da824bc3d251076afd93ed431dc9142d04b24411282e169bb07c98831`; use remains subject to [Apple's San Francisco font license and SF Symbols terms](https://developer.apple.com/fonts/). The release process does not regenerate this file from a maintainer's locally installed font.
+
+## Build tools included with the source
+
+- [xcbeautify 3.0.0](https://github.com/cpisciotta/xcbeautify), MIT license: [`scripts/licenses/xcbeautify-LICENSE.txt`](../scripts/licenses/xcbeautify-LICENSE.txt)
+- [createicns](https://github.com/lwouis/createicns), BSD 2-Clause license: [`scripts/licenses/createicns-LICENSE.txt`](../scripts/licenses/createicns-LICENSE.txt)
+
+Binary release packages copy these license texts into their top-level `licenses` directory.
 
 ## AlTab brand artwork
 
