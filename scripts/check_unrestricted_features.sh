@@ -34,7 +34,7 @@ check_source() {
 
   local paidArchitecture='License(Manager|State|API)|RemoteLicenseClient|MachineFingerprint|SystemKeychain|Pro(GatedPreferences|Feature|Transition|Prompt|Badge|Gradient|Conversion)|Upgrade(Tab|MenuItem|Button)|upgradeToPro|isPro(Locked|Available)|proGatedIndices|attemptHardGatedFeature'
   local paidFallback='PreferenceDefinition|snapshotAndDowngrade|isStoredValuePro|free(Default|Tier)|revert(ed|s|ing)? (to )?(the )?free defaults?|downgrad(e|es|ed|ing) (a |the )?(stored )?preference'
-  local paidUi='Altab Pro|Get Pro|Pro (feature|license|tier|trial)|Pro-only|Pro only|14-day (free )?trial|Start my .*trial|Trial (expired|ends|includes)|license key|Activate( your)? .*license|Deactivate( your)? .*license|My Account|Upgrade to Lifetime Pro|Unlock .* with Pro|one-time purchase|Manage activations|view receipts|money-back guarantee'
+  local paidUi='AlTab Pro|Get Pro|Pro (feature|license|tier|trial)|Pro-only|Pro only|14-day (free )?trial|Start my .*trial|Trial (expired|ends|includes)|license key|Activate( your)? .*license|Deactivate( your)? .*license|My Account|Upgrade to Lifetime Pro|Unlock .* with Pro|one-time purchase|Manage activations|view receipts|money-back guarantee'
   local paidEndpoint='alt-tab\.app|LemonSqueezy|checkoutUrl|accountUrl|licenseApiBaseUrl|/v1/license|/my-account'
 
   reject_matches "production code or project contains paid-access architecture" "$paidArchitecture" --glob '*.swift' src alt-tab-macos.xcodeproj/project.pbxproj
@@ -78,7 +78,7 @@ check_bundle() {
   if strings "$executable" | rg "$paidSymbols|alt-tab\.app|LemonSqueezy|/v1/license|/my-account"; then
     fail "$appPath contains paid-access symbols or endpoints"
   fi
-  if rg -a -n -i 'Altab Pro|Get Pro|Pro (feature|license|tier|trial)|Pro-only|14-day (free )?trial|Start my .*trial|Trial (expired|ends|includes)|license key|Activate( your)? .*license|Deactivate( your)? .*license|My Account|Upgrade to Lifetime Pro|Unlock .* with Pro|one-time purchase|Manage activations|view receipts|money-back guarantee|alt-tab\.app|LemonSqueezy' "$resourcesPath"; then
+  if rg -a -n -i 'AlTab Pro|Get Pro|Pro (feature|license|tier|trial)|Pro-only|14-day (free )?trial|Start my .*trial|Trial (expired|ends|includes)|license key|Activate( your)? .*license|Deactivate( your)? .*license|My Account|Upgrade to Lifetime Pro|Unlock .* with Pro|one-time purchase|Manage activations|view receipts|money-back guarantee|alt-tab\.app|LemonSqueezy' "$resourcesPath"; then
     fail "$appPath exposes paid-access, trial, account, or upsell content"
   fi
 

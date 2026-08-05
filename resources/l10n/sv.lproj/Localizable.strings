@@ -17,11 +17,11 @@
 "All Spaces" = "Alla skrivbord";
 "Allowed" = "Tillåten";
 "Alphabetical Order" = "Alfabetisk ordning";
-"Altab is running without Screen Recording permissions. %@ won’t show." = "Altab körs utan behörighet för Skärminspelning. %@ visas inte.";
-"Altab needs some permissions" = "Altab behöver vissa behörigheter";
-"Altab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Altabs inställningsfil är en symbolisk länk. macOS stöder inte symboliska länkar för inställningar. Använd en giltig fil i stället för en symbolisk länk här:";
-"Altab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Altabs inställningsfil går inte att skriva till med ditt konto. Korrigera filens ägare och behörigheter här:";
-"Altab will show if the window is currently minimized or fullscreen with a status icon." = "Altab visar med en statusikon om fönstret är minimerat eller i helskärm.";
+"AlTab is running without Screen Recording permissions. %@ won’t show." = "AlTab körs utan behörighet för Skärminspelning. %@ visas inte.";
+"AlTab needs some permissions" = "AlTab behöver vissa behörigheter";
+"AlTab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "AlTabs inställningsfil är en symbolisk länk. macOS stöder inte symboliska länkar för inställningar. Använd en giltig fil i stället för en symbolisk länk här:";
+"AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "AlTabs inställningsfil går inte att skriva till med ditt konto. Korrigera filens ägare och behörigheter här:";
+"AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab visar med en statusikon om fönstret är minimerat eller i helskärm.";
 "Always" = "Alltid";
 "and press" = "och tryck";
 "Animations" = "Animationer";
@@ -85,7 +85,7 @@
 "Large" = "Stor";
 "Later" = "Senare";
 "Light" = "Ljus";
-"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. Altab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS reserverar ⌘⌥⎋, ⌘⌥⇧⎋ och ⌘⌥⇧⌃⎋ för Tvinga att avsluta och de kan inte frigöras. Altab kan inte använda dem.\n\nDin ändring skulle tilldela ett av dessa till: %@.";
+"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS reserverar ⌘⌥⎋, ⌘⌥⇧⎋ och ⌘⌥⇧⌃⎋ för Tvinga att avsluta och de kan inte frigöras. AlTab kan inte använda dem.\n\nDin ändring skulle tilldela ett av dessa till: %@.";
 "Medium" = "Mellan";
 "Menubar icon" = "Menyradsikon";
 "Middle" = "Mitten";
@@ -107,7 +107,7 @@
 "Order windows by" = "Sortera fönster efter";
 "Ordering & Grouping" = "Sortering och gruppering";
 "Overridden in Shortcut:" = "Åsidosatt i Kortkommando:";
-"Please drag Altab into the Applications folder manually." = "Dra Altab till mappen Program manuellt.";
+"Please drag AlTab into the Applications folder manually." = "Dra AlTab till mappen Program manuellt.";
 "Preview selected window" = "Förhandsvisa valt fönster";
 "Quit %@" = "Avsluta %@";
 "Quit app" = "Avsluta app";
@@ -119,7 +119,7 @@
 "Screen including menu bar" = "Skärm som innehåller menyraden";
 "Screen including mouse" = "Skärm som innehåller musen";
 "Screen Recording" = "Skärminspelning";
-"Screen showing Altab" = "Skärm som visar Altab";
+"Screen showing AlTab" = "Skärm som visar AlTab";
 "Search" = "Sök";
 "Select next window" = "Välj nästa fönster";
 "Select previous window" = "Välj föregående fönster";
@@ -192,4 +192,4 @@
 "Window title contains" = "Fönstertitel innehåller";
 "You can’t undo this action." = "Den här åtgärden kan inte ångras.";
 "You may need to disable some conflicting system gestures" = "Du kan behöva inaktivera vissa motstridiga systemgester";
-"Your settings reset every time Altab restarts." = "Dina inställningar återställs varje gång Altab startas om.";
+"Your settings reset every time AlTab restarts." = "Dina inställningar återställs varje gång AlTab startas om.";

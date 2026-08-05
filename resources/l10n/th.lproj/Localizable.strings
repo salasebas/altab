@@ -17,11 +17,11 @@
 "All Spaces" = "พื้นที่ทำงานทั้งหมด";
 "Allowed" = "อนุญาต";
 "Alphabetical Order" = "เรียงตามตัวอักษร";
-"Altab is running without Screen Recording permissions. %@ won’t show." = "Altab กำลังทำงานโดยไม่มีสิทธิ์การบันทึกหน้าจอ %@จะไม่แสดง";
-"Altab needs some permissions" = "Altab ต้องการสิทธิ์บางอย่าง";
-"Altab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "ไฟล์การตั้งค่าของ Altab เป็นลิงก์สัญลักษณ์ macOS ไม่รองรับลิงก์สัญลักษณ์สำหรับการตั้งค่า โปรดใช้ไฟล์ที่ถูกต้องแทนลิงก์สัญลักษณ์ที่นี่:";
-"Altab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "ไฟล์การตั้งค่าของ Altab ไม่สามารถเขียนได้ด้วยบัญชีของคุณ โปรดแก้ไขเจ้าของและสิทธิ์ของไฟล์ที่นี่:";
-"Altab will show if the window is currently minimized or fullscreen with a status icon." = "Altab จะแสดงไอคอนสถานะหากหน้าต่างถูกย่อหรืออยู่ในโหมดเต็มหน้าจอ";
+"AlTab is running without Screen Recording permissions. %@ won’t show." = "AlTab กำลังทำงานโดยไม่มีสิทธิ์การบันทึกหน้าจอ %@จะไม่แสดง";
+"AlTab needs some permissions" = "AlTab ต้องการสิทธิ์บางอย่าง";
+"AlTab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "ไฟล์การตั้งค่าของ AlTab เป็นลิงก์สัญลักษณ์ macOS ไม่รองรับลิงก์สัญลักษณ์สำหรับการตั้งค่า โปรดใช้ไฟล์ที่ถูกต้องแทนลิงก์สัญลักษณ์ที่นี่:";
+"AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "ไฟล์การตั้งค่าของ AlTab ไม่สามารถเขียนได้ด้วยบัญชีของคุณ โปรดแก้ไขเจ้าของและสิทธิ์ของไฟล์ที่นี่:";
+"AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab จะแสดงไอคอนสถานะหากหน้าต่างถูกย่อหรืออยู่ในโหมดเต็มหน้าจอ";
 "Always" = "เสมอ";
 "and press" = "แล้วกด";
 "Animations" = "แอนิเมชัน";
@@ -85,7 +85,7 @@
 "Large" = "ใหญ่";
 "Later" = "ภายหลัง";
 "Light" = "สว่าง";
-"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. Altab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS สงวน ⌘⌥⎋, ⌘⌥⇧⎋ และ ⌘⌥⇧⌃⎋ ไว้สำหรับการบังคับออก และไม่สามารถยกเลิกการกำหนดได้ Altab ไม่สามารถใช้ปุ่มเหล่านี้\n\nการเปลี่ยนแปลงของคุณจะกำหนดปุ่มหนึ่งในเหล่านี้ให้กับ: %@";
+"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS สงวน ⌘⌥⎋, ⌘⌥⇧⎋ และ ⌘⌥⇧⌃⎋ ไว้สำหรับการบังคับออก และไม่สามารถยกเลิกการกำหนดได้ AlTab ไม่สามารถใช้ปุ่มเหล่านี้\n\nการเปลี่ยนแปลงของคุณจะกำหนดปุ่มหนึ่งในเหล่านี้ให้กับ: %@";
 "Medium" = "ปานกลาง";
 "Menubar icon" = "ไอคอนแถบเมนู";
 "Middle" = "ตรงกลาง";
@@ -107,7 +107,7 @@
 "Order windows by" = "เรียงหน้าต่างตาม";
 "Ordering & Grouping" = "การเรียงและการจัดกลุ่ม";
 "Overridden in Shortcut:" = "ถูกแทนที่ในทางลัด:";
-"Please drag Altab into the Applications folder manually." = "โปรดลาก Altab ไปยังโฟลเดอร์ Applications ด้วยตนเอง";
+"Please drag AlTab into the Applications folder manually." = "โปรดลาก AlTab ไปยังโฟลเดอร์ Applications ด้วยตนเอง";
 "Preview selected window" = "แสดงตัวอย่างหน้าต่างที่เลือก";
 "Quit %@" = "ออกจาก %@";
 "Quit app" = "ออกจากแอป";
@@ -119,7 +119,7 @@
 "Screen including menu bar" = "หน้าจอที่มีแถบเมนู";
 "Screen including mouse" = "หน้าจอที่มีเมาส์";
 "Screen Recording" = "การบันทึกหน้าจอ";
-"Screen showing Altab" = "หน้าจอที่แสดง Altab";
+"Screen showing AlTab" = "หน้าจอที่แสดง AlTab";
 "Search" = "ค้นหา";
 "Select next window" = "เลือกหน้าต่างถัดไป";
 "Select previous window" = "เลือกหน้าต่างก่อนหน้า";
@@ -192,4 +192,4 @@
 "Window title contains" = "ชื่อหน้าต่างมี";
 "You can’t undo this action." = "คุณไม่สามารถเลิกทำการกระทำนี้ได้";
 "You may need to disable some conflicting system gestures" = "คุณอาจต้องปิดท่าทางของระบบบางอย่างที่ขัดแย้งกัน";
-"Your settings reset every time Altab restarts." = "การตั้งค่าของคุณจะถูกรีเซ็ตทุกครั้งที่ Altab เริ่มทำงานใหม่";
+"Your settings reset every time AlTab restarts." = "การตั้งค่าของคุณจะถูกรีเซ็ตทุกครั้งที่ AlTab เริ่มทำงานใหม่";

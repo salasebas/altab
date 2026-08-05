@@ -2,7 +2,7 @@
 
 ## Upstream lineage
 
-Altab is derived from [AltTab for macOS](https://github.com/lwouis/alt-tab-macos). Its Git history, GPL-3.0 license, copyright notices, and contributor authorship are retained. Altab is an independent fork and is not affiliated with or endorsed by the upstream maintainers.
+AlTab is derived from [AltTab for macOS](https://github.com/lwouis/alt-tab-macos). Its Git history, GPL-3.0 license, copyright notices, and contributor authorship are retained. AlTab is an independent fork and is not affiliated with or endorsed by the upstream maintainers.
 
 ## Third-party libraries
 
@@ -11,7 +11,7 @@ These third-party libraries are used:
 **ShortcutRecorder**
 [Website](https://github.com/Kentzo/ShortcutRecorder) - [CC 4.0 License](https://github.com/Kentzo/ShortcutRecorder/blob/master/LICENSE.txt)
 
-## Altab brand artwork
+## AlTab brand artwork
 
 The application icon and menu-bar artwork come from [salasebas/altab-archived](https://github.com/salasebas/altab-archived) at revision `6fe0c6455c00c050f8ac061621117f50adcf1c71`.
 

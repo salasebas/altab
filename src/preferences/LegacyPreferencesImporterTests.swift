@@ -219,7 +219,7 @@ final class LegacyPreferencesImporterTests: XCTestCase {
         }
     }
 
-    func testOlderSourceIsNormalizedWithoutChangingAltabPreferencesVersion() {
+    func testOlderSourceIsNormalizedWithoutChangingAlTabPreferencesVersion() {
         destination.set("99.99.99", forKey: "preferencesVersion")
         destination.set("1", forKey: "appearanceStyle")
         let source: [String: Any] = [
@@ -233,7 +233,7 @@ final class LegacyPreferencesImporterTests: XCTestCase {
         XCTAssertEqual(destination.string(forKey: "preferencesVersion"), "99.99.99")
     }
 
-    func testImportThenAltabSchemaMigrationPreservesCurrentImportedAndExplicitValues() {
+    func testImportThenAlTabSchemaMigrationPreservesCurrentImportedAndExplicitValues() {
         destination.setPersistentDomain(["language": "3", "preferencesVersion": "1"], forName: destinationDomainName)
         let source: [String: Any] = [
             "language": "4",
@@ -308,7 +308,7 @@ final class LegacyPreferencesImporterTests: XCTestCase {
         XCTAssertNil(persistent()["proTransition.customerEmail"])
     }
 
-    func testExistingAltabValueWinsOverRecoveredSourceSelection() {
+    func testExistingAlTabValueWinsOverRecoveredSourceSelection() {
         destination.set("1", forKey: "appearanceStyle")
         let remembered = [LegacyPreferencesImporter.rememberedSelectionKeys[0]: 2]
         XCTAssertEqual(run(["appearanceStyle": "0"], rememberedSelections: remembered), .imported(importedCount: 0, invalidCount: 0, preservedCount: 1))

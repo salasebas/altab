@@ -1,3 +1,3 @@
 #!/bin/bash
 
-"DerivedData/Build/Products/Debug/Altab Dev.app/Contents/MacOS/Altab Dev" --logs=debug --benchmark showUi 3
+"DerivedData/Build/Products/Debug/AlTab Dev.app/Contents/MacOS/AlTab Dev" --logs=debug --benchmark showUi 3

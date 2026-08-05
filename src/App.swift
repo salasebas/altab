@@ -44,7 +44,7 @@ class App: NSApplication {
 
     static func restart() {
         // we use -n to open a new instance, to avoid calling applicationShouldHandleReopen
-        // we use Bundle.main.bundlePath in case of multiple Altab versions on the machine
+        // we use Bundle.main.bundlePath in case of multiple AlTab versions on the machine
         printStackTrace()
         Process.launchedProcess(launchPath: "/usr/bin/open", arguments: ["-n", Bundle.main.bundlePath])
         App.shared.terminate(nil)

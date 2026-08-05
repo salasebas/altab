@@ -10,7 +10,7 @@
 /* No comment provided by engineer. */
 "4-finger Vertical Swipe" = "4-finger Vertical Swipe";
 
-/* Menubar option. %@ is Altab */
+/* Menubar option. %@ is AlTab */
 "About %@" = "About %@";
 
 /* No comment provided by engineer. */
@@ -56,19 +56,19 @@
 "Alphabetical Order" = "Alphabetical Order";
 
 /* Menubar callout. %@ is one or more feature names, e.g. Thumbnails */
-"Altab is running without Screen Recording permissions. %@ won’t show." = "Altab is running without Screen Recording permissions. %@ won’t show.";
+"AlTab is running without Screen Recording permissions. %@ won’t show." = "AlTab is running without Screen Recording permissions. %@ won’t show.";
 
 /* No comment provided by engineer. */
-"Altab needs some permissions" = "Altab needs some permissions";
+"AlTab needs some permissions" = "AlTab needs some permissions";
 
 /* No comment provided by engineer. */
-"Altab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Altab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:";
+"AlTab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "AlTab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:";
 
 /* No comment provided by engineer. */
-"Altab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Altab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:";
+"AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:";
 
 /* No comment provided by engineer. */
-"Altab will show if the window is currently minimized or fullscreen with a status icon." = "Altab will show if the window is currently minimized or fullscreen with a status icon.";
+"AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab will show if the window is currently minimized or fullscreen with a status icon.";
 
 /* No comment provided by engineer. */
 "Always" = "Always";
@@ -260,7 +260,7 @@
 "Light" = "Light";
 
 /* No comment provided by engineer. */
-"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. Altab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. Altab cannot use them.\n\nYour change would assign one of these to: %@.";
+"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@.";
 
 /* No comment provided by engineer. */
 "Medium" = "Medium";
@@ -326,12 +326,12 @@
 "Overridden in Shortcut:" = "Overridden in Shortcut:";
 
 /* LetsMove replacement alert */
-"Please drag Altab into the Applications folder manually." = "Please drag Altab into the Applications folder manually.";
+"Please drag AlTab into the Applications folder manually." = "Please drag AlTab into the Applications folder manually.";
 
 /* No comment provided by engineer. */
 "Preview selected window" = "Preview selected window";
 
-/* %@ is Altab */
+/* %@ is AlTab */
 "Quit %@" = "Quit %@";
 
 /* No comment provided by engineer. */
@@ -362,7 +362,7 @@
 "Screen Recording" = "Screen Recording";
 
 /* No comment provided by engineer. */
-"Screen showing Altab" = "Screen showing Altab";
+"Screen showing AlTab" = "Screen showing AlTab";
 
 /* No comment provided by engineer. */
 "Search" = "Search";
@@ -581,4 +581,4 @@
 "You may need to disable some conflicting system gestures" = "You may need to disable some conflicting system gestures";
 
 /* No comment provided by engineer. */
-"Your settings reset every time Altab restarts." = "Your settings reset every time Altab restarts.";
+"Your settings reset every time AlTab restarts." = "Your settings reset every time AlTab restarts.";

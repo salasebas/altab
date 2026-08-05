@@ -17,11 +17,11 @@
 "All Spaces" = "Tutti gli Spazi";
 "Allowed" = "Consentito";
 "Alphabetical Order" = "Ordine alfabetico";
-"Altab is running without Screen Recording permissions. %@ won’t show." = "Altab è in esecuzione senza i permessi di Registrazione schermo. %@ non verranno mostrate.";
-"Altab needs some permissions" = "Altab richiede alcuni permessi";
-"Altab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Il file delle impostazioni di Altab è un collegamento simbolico. macOS non supporta i collegamenti simbolici per le impostazioni. Usa un file valido invece di un collegamento simbolico qui:";
-"Altab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Il file delle impostazioni di Altab non è scrivibile dal tuo account. Correggi proprietario e permessi del file qui:";
-"Altab will show if the window is currently minimized or fullscreen with a status icon." = "Altab indicherà con un'icona di stato se la finestra è ridotta a icona o a tutto schermo.";
+"AlTab is running without Screen Recording permissions. %@ won’t show." = "AlTab è in esecuzione senza i permessi di Registrazione schermo. %@ non verranno mostrate.";
+"AlTab needs some permissions" = "AlTab richiede alcuni permessi";
+"AlTab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Il file delle impostazioni di AlTab è un collegamento simbolico. macOS non supporta i collegamenti simbolici per le impostazioni. Usa un file valido invece di un collegamento simbolico qui:";
+"AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Il file delle impostazioni di AlTab non è scrivibile dal tuo account. Correggi proprietario e permessi del file qui:";
+"AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab indicherà con un'icona di stato se la finestra è ridotta a icona o a tutto schermo.";
 "Always" = "Sempre";
 "and press" = "e premi";
 "Animations" = "Animazioni";
@@ -85,7 +85,7 @@
 "Large" = "Grande";
 "Later" = "Più tardi";
 "Light" = "Chiaro";
-"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. Altab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS riserva ⌘⌥⎋, ⌘⌥⇧⎋ e ⌘⌥⇧⌃⎋ per Uscita forzata e non possono essere disassegnati. Altab non può usarli.\n\nLa tua modifica assegnerebbe uno di essi a: %@.";
+"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS riserva ⌘⌥⎋, ⌘⌥⇧⎋ e ⌘⌥⇧⌃⎋ per Uscita forzata e non possono essere disassegnati. AlTab non può usarli.\n\nLa tua modifica assegnerebbe uno di essi a: %@.";
 "Medium" = "Medio";
 "Menubar icon" = "Icona della barra dei menu";
 "Middle" = "Centro";
@@ -107,7 +107,7 @@
 "Order windows by" = "Ordina finestre per";
 "Ordering & Grouping" = "Ordinamento e raggruppamento";
 "Overridden in Shortcut:" = "Sovrascritto nella scorciatoia:";
-"Please drag Altab into the Applications folder manually." = "Trascina Altab manualmente nella cartella Applicazioni.";
+"Please drag AlTab into the Applications folder manually." = "Trascina AlTab manualmente nella cartella Applicazioni.";
 "Preview selected window" = "Anteprima della finestra selezionata";
 "Quit %@" = "Esci da %@";
 "Quit app" = "Esci dall'app";
@@ -119,7 +119,7 @@
 "Screen including menu bar" = "Schermo con la barra dei menu";
 "Screen including mouse" = "Schermo con il mouse";
 "Screen Recording" = "Registrazione schermo";
-"Screen showing Altab" = "Schermo che mostra Altab";
+"Screen showing AlTab" = "Schermo che mostra AlTab";
 "Search" = "Cerca";
 "Select next window" = "Seleziona la finestra successiva";
 "Select previous window" = "Seleziona la finestra precedente";
@@ -192,4 +192,4 @@
 "Window title contains" = "Il titolo della finestra contiene";
 "You can’t undo this action." = "Non puoi annullare questa azione.";
 "You may need to disable some conflicting system gestures" = "Potrebbe essere necessario disabilitare alcuni gesti di sistema in conflitto";
-"Your settings reset every time Altab restarts." = "Le tue impostazioni si reimpostano a ogni riavvio di Altab.";
+"Your settings reset every time AlTab restarts." = "Le tue impostazioni si reimpostano a ogni riavvio di AlTab.";

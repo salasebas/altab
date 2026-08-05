@@ -17,11 +17,11 @@
 "All Spaces" = "كل المساحات";
 "Allowed" = "مسموح";
 "Alphabetical Order" = "ترتيب أبجدي";
-"Altab is running without Screen Recording permissions. %@ won’t show." = "يعمل Altab بدون أذونات تسجيل الشاشة. لن تظهر %@.";
-"Altab needs some permissions" = "يحتاج Altab إلى بعض الأذونات";
-"Altab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "ملف إعدادات Altab هو رابط رمزي. لا يدعم macOS الروابط الرمزية للإعدادات. الرجاء استخدام ملف صالح بدلاً من رابط رمزي هنا:";
-"Altab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "ملف إعدادات Altab غير قابل للكتابة بواسطة حسابك. الرجاء تصحيح المالك والأذونات لهذا الملف هنا:";
-"Altab will show if the window is currently minimized or fullscreen with a status icon." = "سيُظهر Altab ما إذا كانت النافذة مصغّرة أو بملء الشاشة حاليًا برمز حالة.";
+"AlTab is running without Screen Recording permissions. %@ won’t show." = "يعمل AlTab بدون أذونات تسجيل الشاشة. لن تظهر %@.";
+"AlTab needs some permissions" = "يحتاج AlTab إلى بعض الأذونات";
+"AlTab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "ملف إعدادات AlTab هو رابط رمزي. لا يدعم macOS الروابط الرمزية للإعدادات. الرجاء استخدام ملف صالح بدلاً من رابط رمزي هنا:";
+"AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "ملف إعدادات AlTab غير قابل للكتابة بواسطة حسابك. الرجاء تصحيح المالك والأذونات لهذا الملف هنا:";
+"AlTab will show if the window is currently minimized or fullscreen with a status icon." = "سيُظهر AlTab ما إذا كانت النافذة مصغّرة أو بملء الشاشة حاليًا برمز حالة.";
 "Always" = "دائمًا";
 "and press" = "ثم اضغط";
 "Animations" = "الرسوم المتحركة";
@@ -85,7 +85,7 @@
 "Large" = "كبير";
 "Later" = "لاحقًا";
 "Light" = "فاتح";
-"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. Altab cannot use them.\n\nYour change would assign one of these to: %@." = "يحجز macOS ⌘⌥⎋ و⌘⌥⇧⎋ و⌘⌥⇧⌃⎋ لإنهاء بالقوة ولا يمكن إلغاء ربطها. لا يمكن لـ Altab استخدامها.\n\nسيؤدي تغييرك إلى تعيين أحدها إلى: %@.";
+"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "يحجز macOS ⌘⌥⎋ و⌘⌥⇧⎋ و⌘⌥⇧⌃⎋ لإنهاء بالقوة ولا يمكن إلغاء ربطها. لا يمكن لـ AlTab استخدامها.\n\nسيؤدي تغييرك إلى تعيين أحدها إلى: %@.";
 "Medium" = "متوسط";
 "Menubar icon" = "أيقونة شريط القائمة";
 "Middle" = "الوسط";
@@ -107,7 +107,7 @@
 "Order windows by" = "ترتيب النوافذ حسب";
 "Ordering & Grouping" = "الترتيب والتجميع";
 "Overridden in Shortcut:" = "تم تجاوزه في اختصار:";
-"Please drag Altab into the Applications folder manually." = "يرجى سحب Altab إلى مجلد التطبيقات يدويًا.";
+"Please drag AlTab into the Applications folder manually." = "يرجى سحب AlTab إلى مجلد التطبيقات يدويًا.";
 "Preview selected window" = "معاينة النافذة المحددة";
 "Quit %@" = "إنهاء %@";
 "Quit app" = "إنهاء التطبيق";
@@ -119,7 +119,7 @@
 "Screen including menu bar" = "الشاشة التي تتضمن شريط القائمة";
 "Screen including mouse" = "الشاشة التي تتضمن الفأرة";
 "Screen Recording" = "تسجيل الشاشة";
-"Screen showing Altab" = "الشاشة التي تعرض Altab";
+"Screen showing AlTab" = "الشاشة التي تعرض AlTab";
 "Search" = "البحث";
 "Select next window" = "تحديد النافذة التالية";
 "Select previous window" = "تحديد النافذة السابقة";
@@ -192,4 +192,4 @@
 "Window title contains" = "عنوان النافذة يحتوي على";
 "You can’t undo this action." = "لا يمكنك التراجع عن هذا الإجراء.";
 "You may need to disable some conflicting system gestures" = "قد تحتاج إلى تعطيل بعض إيماءات النظام المتعارضة";
-"Your settings reset every time Altab restarts." = "تتم إعادة تعيين إعداداتك في كل مرة يُعاد فيها تشغيل Altab.";
+"Your settings reset every time AlTab restarts." = "تتم إعادة تعيين إعداداتك في كل مرة يُعاد فيها تشغيل AlTab.";

@@ -17,11 +17,11 @@
 "All Spaces" = "Semua Ruang";
 "Allowed" = "Diizinkan";
 "Alphabetical Order" = "Urutan Abjad";
-"Altab is running without Screen Recording permissions. %@ won’t show." = "Altab berjalan tanpa izin Perekaman Layar. %@ tidak akan ditampilkan.";
-"Altab needs some permissions" = "Altab memerlukan beberapa izin";
-"Altab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Berkas preferensi Altab adalah tautan simbolik. macOS tidak mendukung tautan simbolik untuk preferensi. Harap gunakan berkas yang valid alih-alih tautan simbolik di sini:";
-"Altab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Berkas preferensi Altab tidak dapat ditulis oleh akun Anda. Harap perbaiki kepemilikan dan izin berkas di sini:";
-"Altab will show if the window is currently minimized or fullscreen with a status icon." = "Altab akan menampilkan ikon status jika jendela saat ini diminimalkan atau dalam layar penuh.";
+"AlTab is running without Screen Recording permissions. %@ won’t show." = "AlTab berjalan tanpa izin Perekaman Layar. %@ tidak akan ditampilkan.";
+"AlTab needs some permissions" = "AlTab memerlukan beberapa izin";
+"AlTab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Berkas preferensi AlTab adalah tautan simbolik. macOS tidak mendukung tautan simbolik untuk preferensi. Harap gunakan berkas yang valid alih-alih tautan simbolik di sini:";
+"AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Berkas preferensi AlTab tidak dapat ditulis oleh akun Anda. Harap perbaiki kepemilikan dan izin berkas di sini:";
+"AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab akan menampilkan ikon status jika jendela saat ini diminimalkan atau dalam layar penuh.";
 "Always" = "Selalu";
 "and press" = "lalu tekan";
 "Animations" = "Animasi";
@@ -85,7 +85,7 @@
 "Large" = "Besar";
 "Later" = "Nanti";
 "Light" = "Terang";
-"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. Altab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS mencadangkan ⌘⌥⎋, ⌘⌥⇧⎋, dan ⌘⌥⇧⌃⎋ untuk Paksa Keluar dan tidak dapat dilepaskan. Altab tidak dapat menggunakannya.\n\nPerubahan Anda akan menetapkan salah satunya ke: %@.";
+"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS mencadangkan ⌘⌥⎋, ⌘⌥⇧⎋, dan ⌘⌥⇧⌃⎋ untuk Paksa Keluar dan tidak dapat dilepaskan. AlTab tidak dapat menggunakannya.\n\nPerubahan Anda akan menetapkan salah satunya ke: %@.";
 "Medium" = "Sedang";
 "Menubar icon" = "Ikon bilah menu";
 "Middle" = "Tengah";
@@ -107,7 +107,7 @@
 "Order windows by" = "Urutkan jendela berdasarkan";
 "Ordering & Grouping" = "Pengurutan & Pengelompokan";
 "Overridden in Shortcut:" = "Diganti dalam Pintasan:";
-"Please drag Altab into the Applications folder manually." = "Seret Altab ke folder Aplikasi secara manual.";
+"Please drag AlTab into the Applications folder manually." = "Seret AlTab ke folder Aplikasi secara manual.";
 "Preview selected window" = "Pratinjau jendela terpilih";
 "Quit %@" = "Keluar dari %@";
 "Quit app" = "Keluar dari aplikasi";
@@ -119,7 +119,7 @@
 "Screen including menu bar" = "Layar termasuk bilah menu";
 "Screen including mouse" = "Layar termasuk tetikus";
 "Screen Recording" = "Perekaman Layar";
-"Screen showing Altab" = "Layar yang menampilkan Altab";
+"Screen showing AlTab" = "Layar yang menampilkan AlTab";
 "Search" = "Cari";
 "Select next window" = "Pilih jendela berikutnya";
 "Select previous window" = "Pilih jendela sebelumnya";
@@ -192,4 +192,4 @@
 "Window title contains" = "Judul jendela mengandung";
 "You can’t undo this action." = "Anda tidak dapat membatalkan tindakan ini.";
 "You may need to disable some conflicting system gestures" = "Anda mungkin perlu menonaktifkan beberapa gestur sistem yang bertentangan";
-"Your settings reset every time Altab restarts." = "Pengaturan Anda diatur ulang setiap kali Altab dimulai ulang.";
+"Your settings reset every time AlTab restarts." = "Pengaturan Anda diatur ulang setiap kali AlTab dimulai ulang.";
