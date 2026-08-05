@@ -17,11 +17,11 @@
 "All Spaces" = "所有 Spaces";
 "Allowed" = "允許";
 "Alphabetical Order" = "字母順序";
-"Altab is running without Screen Recording permissions. %@ won’t show." = "Altab 正在沒有「螢幕錄影」權限的情況下執行，將無法顯示%@。";
-"Altab needs some permissions" = "Altab 需要部分權限";
-"Altab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Altab 的偏好設定檔案是一個符號連結。macOS 不支援以符號連結儲存偏好設定。請在此處使用正常檔案，而非符號連結：";
-"Altab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Altab 的偏好設定檔案無法由你的帳戶寫入。請在此處修正該檔案的擁有者和權限：";
-"Altab will show if the window is currently minimized or fullscreen with a status icon." = "Altab 會以狀態圖示顯示視窗目前是否為最小化或全螢幕。";
+"AlTab is running without Screen Recording permissions. %@ won’t show." = "AlTab 正在沒有「螢幕錄影」權限的情況下執行，將無法顯示%@。";
+"AlTab needs some permissions" = "AlTab 需要部分權限";
+"AlTab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "AlTab 的偏好設定檔案是一個符號連結。macOS 不支援以符號連結儲存偏好設定。請在此處使用正常檔案，而非符號連結：";
+"AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "AlTab 的偏好設定檔案無法由你的帳戶寫入。請在此處修正該檔案的擁有者和權限：";
+"AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab 會以狀態圖示顯示視窗目前是否為最小化或全螢幕。";
 "Always" = "永遠";
 "and press" = "並按下";
 "Animations" = "動畫";
@@ -85,7 +85,7 @@
 "Large" = "大";
 "Later" = "稍後";
 "Light" = "淺色";
-"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. Altab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS 將 ⌘⌥⎋、⌘⌥⇧⎋ 和 ⌘⌥⇧⌃⎋ 保留作「強制結束」之用，且無法解除指派。Altab 無法使用這些組合鍵。\n\n您的變更會將其中之一指派給：%@。";
+"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS 將 ⌘⌥⎋、⌘⌥⇧⎋ 和 ⌘⌥⇧⌃⎋ 保留作「強制結束」之用，且無法解除指派。AlTab 無法使用這些組合鍵。\n\n您的變更會將其中之一指派給：%@。";
 "Medium" = "中";
 "Menubar icon" = "選單列圖像";
 "Middle" = "中間";
@@ -107,7 +107,7 @@
 "Order windows by" = "視窗排序方式";
 "Ordering & Grouping" = "排序與分組";
 "Overridden in Shortcut:" = "已在快速鍵中覆寫：";
-"Please drag Altab into the Applications folder manually." = "請手動將 Altab 拖移到「應用程式」資料夾。";
+"Please drag AlTab into the Applications folder manually." = "請手動將 AlTab 拖移到「應用程式」資料夾。";
 "Preview selected window" = "預覽所選視窗";
 "Quit %@" = "結束 %@";
 "Quit app" = "結束 App";
@@ -119,7 +119,7 @@
 "Screen including menu bar" = "包含選單列的螢幕";
 "Screen including mouse" = "包含滑鼠的螢幕";
 "Screen Recording" = "螢幕錄影";
-"Screen showing Altab" = "顯示 Altab 的螢幕";
+"Screen showing AlTab" = "顯示 AlTab 的螢幕";
 "Search" = "搜尋";
 "Select next window" = "選擇下一個視窗";
 "Select previous window" = "選擇上一個視窗";
@@ -192,4 +192,4 @@
 "Window title contains" = "視窗標題包含";
 "You can’t undo this action." = "此動作無法復原。";
 "You may need to disable some conflicting system gestures" = "您可能需要停用某些衝突的系統手勢";
-"Your settings reset every time Altab restarts." = "每次重新啟動 Altab 時，你的設定都會重設。";
+"Your settings reset every time AlTab restarts." = "每次重新啟動 AlTab 時，你的設定都會重設。";

@@ -8,7 +8,7 @@ xcrun xctrace record \
   --no-prompt --quiet \
   --output "$profileFile".trace \
   --launch -- \
-    "DerivedData/Build/Products/Debug/Altab Dev.app" --benchmark showUi 3
+    "DerivedData/Build/Products/Debug/AlTab Dev.app" --benchmark showUi 3
 
 xcrun xctrace export \
   --input "$profileFile".trace \

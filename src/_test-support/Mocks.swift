@@ -138,7 +138,7 @@ class App {
         var tilesPanel = TilesPanelMock()
     }
     static let app = AppMock()
-    static let bundleIdentifier = "dev.salasebas.Altab"
+    static let bundleIdentifier = "dev.salasebas.AlTab"
     static var cycleDirections = [Direction]()
     static var focusedShortcutIndices = [Int]()
     static var shownShortcutIndices = [Int]()

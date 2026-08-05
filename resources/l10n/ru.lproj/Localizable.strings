@@ -17,11 +17,11 @@
 "All Spaces" = "Все пространства";
 "Allowed" = "Разрешено";
 "Alphabetical Order" = "По алфавиту";
-"Altab is running without Screen Recording permissions. %@ won’t show." = "Altab работает без разрешения на запись экрана. %@ не будут отображаться.";
-"Altab needs some permissions" = "Altab требуется несколько разрешений";
-"Altab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Файл настроек Altab является символической ссылкой. macOS не поддерживает символические ссылки для настроек. Используйте здесь обычный файл вместо символической ссылки:";
-"Altab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Файл настроек Altab недоступен для записи под вашей учётной записью. Исправьте владельца и права доступа к файлу здесь:";
-"Altab will show if the window is currently minimized or fullscreen with a status icon." = "Altab покажет значком статуса, если окно сейчас свёрнуто или в полноэкранном режиме.";
+"AlTab is running without Screen Recording permissions. %@ won’t show." = "AlTab работает без разрешения на запись экрана. %@ не будут отображаться.";
+"AlTab needs some permissions" = "AlTab требуется несколько разрешений";
+"AlTab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Файл настроек AlTab является символической ссылкой. macOS не поддерживает символические ссылки для настроек. Используйте здесь обычный файл вместо символической ссылки:";
+"AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Файл настроек AlTab недоступен для записи под вашей учётной записью. Исправьте владельца и права доступа к файлу здесь:";
+"AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab покажет значком статуса, если окно сейчас свёрнуто или в полноэкранном режиме.";
 "Always" = "Всегда";
 "and press" = "и нажмите";
 "Animations" = "Анимация";
@@ -85,7 +85,7 @@
 "Large" = "Большой";
 "Later" = "Позже";
 "Light" = "Светлая";
-"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. Altab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS резервирует ⌘⌥⎋, ⌘⌥⇧⎋ и ⌘⌥⇧⌃⎋ для «Завершить принудительно», и их нельзя отвязать. Altab не может их использовать.\n\nВаше изменение назначит одно из них на: %@.";
+"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS резервирует ⌘⌥⎋, ⌘⌥⇧⎋ и ⌘⌥⇧⌃⎋ для «Завершить принудительно», и их нельзя отвязать. AlTab не может их использовать.\n\nВаше изменение назначит одно из них на: %@.";
 "Medium" = "Средний";
 "Menubar icon" = "Значок в строке меню";
 "Middle" = "Середина";
@@ -107,7 +107,7 @@
 "Order windows by" = "Сортировка окон";
 "Ordering & Grouping" = "Сортировка и группировка";
 "Overridden in Shortcut:" = "Переопределено в сочетании клавиш:";
-"Please drag Altab into the Applications folder manually." = "Перетащите Altab в папку «Программы» вручную.";
+"Please drag AlTab into the Applications folder manually." = "Перетащите AlTab в папку «Программы» вручную.";
 "Preview selected window" = "Предпросмотр выбранного окна";
 "Quit %@" = "Завершить %@";
 "Quit app" = "Завершить приложение";
@@ -119,7 +119,7 @@
 "Screen including menu bar" = "Экран со строкой меню";
 "Screen including mouse" = "Экран с курсором мыши";
 "Screen Recording" = "Запись экрана";
-"Screen showing Altab" = "Экран с Altab";
+"Screen showing AlTab" = "Экран с AlTab";
 "Search" = "Поиск";
 "Select next window" = "Выбрать следующее окно";
 "Select previous window" = "Выбрать предыдущее окно";
@@ -192,4 +192,4 @@
 "Window title contains" = "Заголовок окна содержит";
 "You can’t undo this action." = "Это действие нельзя отменить.";
 "You may need to disable some conflicting system gestures" = "Возможно, потребуется отключить некоторые конфликтующие системные жесты";
-"Your settings reset every time Altab restarts." = "Ваши настройки сбрасываются при каждом перезапуске Altab.";
+"Your settings reset every time AlTab restarts." = "Ваши настройки сбрасываются при каждом перезапуске AlTab.";

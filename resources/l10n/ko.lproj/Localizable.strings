@@ -17,11 +17,11 @@
 "All Spaces" = "모든 Space";
 "Allowed" = "허용됨";
 "Alphabetical Order" = "알파벳 순서";
-"Altab is running without Screen Recording permissions. %@ won’t show." = "Altab이 화면 녹화 권한 없이 실행 중입니다. %@이(가) 표시되지 않습니다.";
-"Altab needs some permissions" = "Altab에 몇 가지 권한이 필요합니다";
-"Altab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Altab 환경설정 파일이 심볼릭 링크입니다. macOS는 환경설정에 심볼릭 링크를 지원하지 않습니다. 여기에서 심볼릭 링크 대신 올바른 파일을 사용하십시오:";
-"Altab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Altab 환경설정 파일을 사용자 계정에서 쓸 수 없습니다. 여기에서 파일의 소유자와 권한을 수정하십시오:";
-"Altab will show if the window is currently minimized or fullscreen with a status icon." = "Altab이 윈도우의 최소화 또는 전체 화면 상태를 상태 아이콘으로 표시합니다.";
+"AlTab is running without Screen Recording permissions. %@ won’t show." = "AlTab이 화면 녹화 권한 없이 실행 중입니다. %@이(가) 표시되지 않습니다.";
+"AlTab needs some permissions" = "AlTab에 몇 가지 권한이 필요합니다";
+"AlTab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "AlTab 환경설정 파일이 심볼릭 링크입니다. macOS는 환경설정에 심볼릭 링크를 지원하지 않습니다. 여기에서 심볼릭 링크 대신 올바른 파일을 사용하십시오:";
+"AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "AlTab 환경설정 파일을 사용자 계정에서 쓸 수 없습니다. 여기에서 파일의 소유자와 권한을 수정하십시오:";
+"AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab이 윈도우의 최소화 또는 전체 화면 상태를 상태 아이콘으로 표시합니다.";
 "Always" = "항상";
 "and press" = "그리고 누르기";
 "Animations" = "애니메이션";
@@ -85,7 +85,7 @@
 "Large" = "크게";
 "Later" = "나중에";
 "Light" = "라이트";
-"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. Altab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS는 ⌘⌥⎋, ⌘⌥⇧⎋, ⌘⌥⇧⌃⎋를 강제 종료용으로 예약하며 해제할 수 없습니다. Altab은 이를 사용할 수 없습니다.\n\n변경하면 이 중 하나가 %@에 할당됩니다.";
+"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS는 ⌘⌥⎋, ⌘⌥⇧⎋, ⌘⌥⇧⌃⎋를 강제 종료용으로 예약하며 해제할 수 없습니다. AlTab은 이를 사용할 수 없습니다.\n\n변경하면 이 중 하나가 %@에 할당됩니다.";
 "Medium" = "보통";
 "Menubar icon" = "메뉴 막대 아이콘";
 "Middle" = "가운데";
@@ -107,7 +107,7 @@
 "Order windows by" = "윈도우 정렬 기준";
 "Ordering & Grouping" = "정렬 및 그룹화";
 "Overridden in Shortcut:" = "단축키에서 재정의됨:";
-"Please drag Altab into the Applications folder manually." = "Altab을 응용 프로그램 폴더로 직접 드래그해 주세요.";
+"Please drag AlTab into the Applications folder manually." = "AlTab을 응용 프로그램 폴더로 직접 드래그해 주세요.";
 "Preview selected window" = "선택한 윈도우 미리보기";
 "Quit %@" = "%@ 종료";
 "Quit app" = "앱 종료";
@@ -119,7 +119,7 @@
 "Screen including menu bar" = "메뉴 막대가 있는 화면";
 "Screen including mouse" = "마우스가 있는 화면";
 "Screen Recording" = "화면 녹화";
-"Screen showing Altab" = "Altab이 표시되는 화면";
+"Screen showing AlTab" = "AlTab이 표시되는 화면";
 "Search" = "검색";
 "Select next window" = "다음 윈도우 선택";
 "Select previous window" = "이전 윈도우 선택";
@@ -192,4 +192,4 @@
 "Window title contains" = "윈도우 제목 포함";
 "You can’t undo this action." = "이 작업은 되돌릴 수 없습니다.";
 "You may need to disable some conflicting system gestures" = "충돌하는 일부 시스템 제스처를 비활성화해야 할 수 있습니다";
-"Your settings reset every time Altab restarts." = "Altab을 다시 시작할 때마다 설정이 초기화됩니다.";
+"Your settings reset every time AlTab restarts." = "AlTab을 다시 시작할 때마다 설정이 초기화됩니다.";

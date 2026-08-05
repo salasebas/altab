@@ -17,11 +17,11 @@
 "All Spaces" = "すべての Space";
 "Allowed" = "許可";
 "Alphabetical Order" = "アルファベット順";
-"Altab is running without Screen Recording permissions. %@ won’t show." = "Altab は画面収録の権限なしで動作しています。%@は表示されません。";
-"Altab needs some permissions" = "Altab にはいくつかの権限が必要です";
-"Altab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Altab の設定ファイルがシンボリックリンクです。macOS は設定にシンボリックリンクをサポートしていません。ここではシンボリックリンクではなく通常のファイルを使用してください:";
-"Altab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Altab の設定ファイルにあなたのアカウントで書き込みできません。ここでファイルの所有者と権限を修正してください:";
-"Altab will show if the window is currently minimized or fullscreen with a status icon." = "ウインドウが現在最小化またはフルスクリーンの場合、Altab はステータスアイコンで表示します。";
+"AlTab is running without Screen Recording permissions. %@ won’t show." = "AlTab は画面収録の権限なしで動作しています。%@は表示されません。";
+"AlTab needs some permissions" = "AlTab にはいくつかの権限が必要です";
+"AlTab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "AlTab の設定ファイルがシンボリックリンクです。macOS は設定にシンボリックリンクをサポートしていません。ここではシンボリックリンクではなく通常のファイルを使用してください:";
+"AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "AlTab の設定ファイルにあなたのアカウントで書き込みできません。ここでファイルの所有者と権限を修正してください:";
+"AlTab will show if the window is currently minimized or fullscreen with a status icon." = "ウインドウが現在最小化またはフルスクリーンの場合、AlTab はステータスアイコンで表示します。";
 "Always" = "常に";
 "and press" = "を押す";
 "Animations" = "アニメーション";
@@ -85,7 +85,7 @@
 "Large" = "大";
 "Later" = "後で";
 "Light" = "ライト";
-"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. Altab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS は ⌘⌥⎋、⌘⌥⇧⎋、⌘⌥⇧⌃⎋ を強制終了用に予約しており、解除できません。Altab では使用できません。\n\n変更しようとしている割り当て: %@。";
+"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS は ⌘⌥⎋、⌘⌥⇧⎋、⌘⌥⇧⌃⎋ を強制終了用に予約しており、解除できません。AlTab では使用できません。\n\n変更しようとしている割り当て: %@。";
 "Medium" = "中";
 "Menubar icon" = "メニューバーアイコン";
 "Middle" = "中央";
@@ -107,7 +107,7 @@
 "Order windows by" = "ウインドウの並び順";
 "Ordering & Grouping" = "並び順とグループ化";
 "Overridden in Shortcut:" = "上書きされているショートカット:";
-"Please drag Altab into the Applications folder manually." = "Altab を手動でアプリケーションフォルダにドラッグしてください。";
+"Please drag AlTab into the Applications folder manually." = "AlTab を手動でアプリケーションフォルダにドラッグしてください。";
 "Preview selected window" = "選択したウインドウをプレビュー";
 "Quit %@" = "%@ を終了";
 "Quit app" = "App を終了";
@@ -119,7 +119,7 @@
 "Screen including menu bar" = "メニューバーを含む画面";
 "Screen including mouse" = "マウスのある画面";
 "Screen Recording" = "画面収録";
-"Screen showing Altab" = "Altab を表示する画面";
+"Screen showing AlTab" = "AlTab を表示する画面";
 "Search" = "検索";
 "Select next window" = "次のウインドウを選択";
 "Select previous window" = "前のウインドウを選択";
@@ -192,4 +192,4 @@
 "Window title contains" = "ウインドウタイトルに含まれる";
 "You can’t undo this action." = "この操作は取り消せません。";
 "You may need to disable some conflicting system gestures" = "競合するシステムのジェスチャを一部無効にする必要があるかもしれません";
-"Your settings reset every time Altab restarts." = "Altab を再起動するたびに設定がリセットされます。";
+"Your settings reset every time AlTab restarts." = "AlTab を再起動するたびに設定がリセットされます。";

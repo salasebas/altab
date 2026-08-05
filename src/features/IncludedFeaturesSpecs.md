@@ -1,6 +1,6 @@
 # Included features — Specs
 
-Altab includes the complete local feature set. Availability never depends on a license, trial,
+AlTab includes the complete local feature set. Availability never depends on a license, trial,
 account, purchase, elapsed time, or network response. Preferences remain opt-in where they were
 already user choices; removing access checks does not force a preference on.
 
@@ -25,4 +25,4 @@ already user choices; removing access checks does not force a preference on.
 - A precomputed production `ShortcutActions` lookup recognizes every `holdShortcut` and `nextWindowShortcut` key without generating identifiers at execution time, and compiled tests execute all 18 production routes.
 - The production registration plan proves all configured hold/next pairs through shortcut index 8 remain active while all 18 supported keys are registered; the shortcut-count contract permits adding through slot 9 and never routes to an access prompt. The source guard pins both contracts to `ControlsTab`.
 - Search-mode decisions contain no entitlement/access-denied branch.
-- Existing preferences in the Altab defaults domain are preserved; no downgrade or reset runs.
+- Existing preferences in the AlTab defaults domain are preserved; no downgrade or reset runs.

@@ -1,6 +1,6 @@
 # Fork identity and release readiness
 
-This file distinguishes current facts from the intended Altab product. Do not make public claims based on the intended state until the corresponding release blockers are complete.
+This file distinguishes current facts from the intended AlTab product. Do not make public claims based on the intended state until the corresponding release blockers are complete.
 
 ## Lineage
 
@@ -13,11 +13,11 @@ This file distinguishes current facts from the intended Altab product. Do not ma
 
 ## Product model
 
-Altab provides the locally implemented functionality in this codebase to every user. Feature behavior remains preference-driven, but availability never depends on a license, trial, account, purchase, elapsed time, or network response. There is no activation flow, paid-access state, upgrade prompt, checkout integration, or upstream licensing dependency.
+AlTab provides the locally implemented functionality in this codebase to every user. Feature behavior remains preference-driven, but availability never depends on a license, trial, account, purchase, elapsed time, or network response. There is no activation flow, paid-access state, upgrade prompt, checkout integration, or upstream licensing dependency.
 
-## Relationship with the earlier MIT Altab codebase
+## Relationship with the earlier MIT AlTab codebase
 
-MIT-licensed Altab code and artwork may be incorporated into this GPL fork when its copyright and license notice are preserved. The combined application remains GPL-covered. Do not copy GPL-covered implementation from this fork back into the MIT project and present the result as MIT-only.
+MIT-licensed AlTab code and artwork may be incorporated into this GPL fork when its copyright and license notice are preserved. The combined application remains GPL-covered. Do not copy GPL-covered implementation from this fork back into the MIT project and present the result as MIT-only.
 
 ## Upstream integration policy
 
@@ -40,7 +40,7 @@ Security-related upstream work receives priority, but there is no promise of imm
 - [x] Keep the fork as `origin`, the official project as read-only `upstream`, and the local branch tracking `origin/master`.
 - [x] Establish stable Release and Debug app names and bundle IDs, remove the activation URL scheme, and keep Team ID and signing credentials fork-configurable before the first public release.
 - [x] Replace in-app repository, support, funding, About, feedback, and website links.
-- [x] Replace the application and menu bar artwork with Altab-owned assets and retain their provenance.
+- [x] Replace the application and menu bar artwork with AlTab-owned assets and retain their provenance.
 
 ### Updates and external services
 
@@ -56,8 +56,8 @@ Security-related upstream work receives priority, but there is no promise of imm
 
 - [x] Inventory every formerly paid feature path and pin its unrestricted behavior in specs and tests.
 - [x] Remove activation, license Keychain state, remote license calls, trials, conversion scheduling, upgrade prompts, and paid-tier copy without regressing feature implementations.
-- [x] Preserve existing Altab user settings while removing the paid-access state machine and its forced fallback behavior.
-- [x] Import compatible AltTab preferences once into missing Altab keys while preserving existing Altab choices and leaving AltTab defaults, license data, and Keychain items untouched.
+- [x] Preserve existing AlTab user settings while removing the paid-access state machine and its forced fallback behavior.
+- [x] Import compatible AltTab preferences once into missing AlTab keys while preserving existing AlTab choices and leaving AltTab defaults, license data, and Keychain items untouched.
 - [x] Guard source and packaged builds against upstream licensing/payment services, paid-access decisions, and upsell UI.
 
 ### Distribution and compliance
@@ -72,4 +72,4 @@ Security-related upstream work receives priority, but there is no promise of imm
 
 Use wording with this level of precision once public releases exist:
 
-> Altab is an independent GPL-3.0 fork of AltTab for macOS. It is not affiliated with or endorsed by the upstream project. Upstream reliability and security changes are reviewed and selectively ported, but updates are not automatic and this fork may lag behind upstream. The signing and notarization status of each binary is stated in its release notes.
+> AlTab is an independent GPL-3.0 fork of AltTab for macOS. It is not affiliated with or endorsed by the upstream project. Upstream reliability and security changes are reviewed and selectively ported, but updates are not automatic and this fork may lag behind upstream. The signing and notarization status of each binary is stated in its release notes.

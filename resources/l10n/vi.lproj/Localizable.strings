@@ -17,11 +17,11 @@
 "All Spaces" = "Tất cả Không gian";
 "Allowed" = "Cho phép";
 "Alphabetical Order" = "Thứ tự bảng chữ cái";
-"Altab is running without Screen Recording permissions. %@ won’t show." = "Altab đang chạy mà không có quyền Ghi màn hình. %@ sẽ không hiển thị.";
-"Altab needs some permissions" = "Altab cần một số quyền";
-"Altab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Tệp cài đặt của Altab là một liên kết tượng trưng. macOS không hỗ trợ liên kết tượng trưng cho cài đặt. Vui lòng dùng một tệp hợp lệ thay cho liên kết tượng trưng tại đây:";
-"Altab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Tệp cài đặt của Altab không thể ghi bằng tài khoản của bạn. Vui lòng sửa chủ sở hữu và quyền của tệp tại đây:";
-"Altab will show if the window is currently minimized or fullscreen with a status icon." = "Altab sẽ hiển thị biểu tượng trạng thái nếu cửa sổ đang được thu nhỏ hoặc ở chế độ toàn màn hình.";
+"AlTab is running without Screen Recording permissions. %@ won’t show." = "AlTab đang chạy mà không có quyền Ghi màn hình. %@ sẽ không hiển thị.";
+"AlTab needs some permissions" = "AlTab cần một số quyền";
+"AlTab preferences file is a symlink. macOS doesn’t support symlink for preferences. Please use a valid file instead of a symlink here:" = "Tệp cài đặt của AlTab là một liên kết tượng trưng. macOS không hỗ trợ liên kết tượng trưng cho cài đặt. Vui lòng dùng một tệp hợp lệ thay cho liên kết tượng trưng tại đây:";
+"AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Tệp cài đặt của AlTab không thể ghi bằng tài khoản của bạn. Vui lòng sửa chủ sở hữu và quyền của tệp tại đây:";
+"AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab sẽ hiển thị biểu tượng trạng thái nếu cửa sổ đang được thu nhỏ hoặc ở chế độ toàn màn hình.";
 "Always" = "Luôn luôn";
 "and press" = "và nhấn";
 "Animations" = "Hoạt ảnh";
@@ -85,7 +85,7 @@
 "Large" = "Lớn";
 "Later" = "Để sau";
 "Light" = "Sáng";
-"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. Altab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS dành riêng ⌘⌥⎋, ⌘⌥⇧⎋, và ⌘⌥⇧⌃⎋ cho Buộc thoát và không thể gỡ bỏ. Altab không thể sử dụng chúng.\n\nThay đổi của bạn sẽ gán một trong số đó cho: %@.";
+"macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS dành riêng ⌘⌥⎋, ⌘⌥⇧⎋, và ⌘⌥⇧⌃⎋ cho Buộc thoát và không thể gỡ bỏ. AlTab không thể sử dụng chúng.\n\nThay đổi của bạn sẽ gán một trong số đó cho: %@.";
 "Medium" = "Trung bình";
 "Menubar icon" = "Biểu tượng thanh menu";
 "Middle" = "Giữa";
@@ -107,7 +107,7 @@
 "Order windows by" = "Sắp xếp cửa sổ theo";
 "Ordering & Grouping" = "Sắp xếp & Nhóm";
 "Overridden in Shortcut:" = "Bị ghi đè trong Phím tắt:";
-"Please drag Altab into the Applications folder manually." = "Vui lòng kéo Altab vào thư mục Ứng dụng theo cách thủ công.";
+"Please drag AlTab into the Applications folder manually." = "Vui lòng kéo AlTab vào thư mục Ứng dụng theo cách thủ công.";
 "Preview selected window" = "Xem trước cửa sổ đã chọn";
 "Quit %@" = "Thoát %@";
 "Quit app" = "Thoát ứng dụng";
@@ -119,7 +119,7 @@
 "Screen including menu bar" = "Màn hình có thanh menu";
 "Screen including mouse" = "Màn hình có con trỏ chuột";
 "Screen Recording" = "Ghi màn hình";
-"Screen showing Altab" = "Màn hình hiển thị Altab";
+"Screen showing AlTab" = "Màn hình hiển thị AlTab";
 "Search" = "Tìm kiếm";
 "Select next window" = "Chọn cửa sổ kế tiếp";
 "Select previous window" = "Chọn cửa sổ trước đó";
@@ -192,4 +192,4 @@
 "Window title contains" = "Tiêu đề cửa sổ chứa";
 "You can’t undo this action." = "Bạn không thể hoàn tác hành động này.";
 "You may need to disable some conflicting system gestures" = "Bạn có thể cần tắt một số cử chỉ hệ thống xung đột";
-"Your settings reset every time Altab restarts." = "Cài đặt của bạn bị đặt lại mỗi khi Altab khởi động lại.";
+"Your settings reset every time AlTab restarts." = "Cài đặt của bạn bị đặt lại mỗi khi AlTab khởi động lại.";

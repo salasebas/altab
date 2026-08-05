@@ -25,7 +25,7 @@ struct ShortcutRegistrationPlan {
 class Preferences {
     private static let persistentDomainStateKeys = [LegacyPreferencesImporter.completionKey]
     #if TESTING
-    private static let testDefaultsDomainName = "dev.salasebas.Altab.unit-tests"
+    private static let testDefaultsDomainName = "dev.salasebas.AlTab.unit-tests"
     static var defaults = UserDefaults(suiteName: testDefaultsDomainName)!
     static var defaultsDomainName = testDefaultsDomainName
     #else
