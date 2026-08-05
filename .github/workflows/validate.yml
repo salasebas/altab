@@ -39,16 +39,37 @@ jobs:
           corepack install
           pnpm install --frozen-lockfile
 
-      - name: Install SwiftFormat
+      - name: Install validation tools
         env:
+          RIPGREP_AARCH64_SHA256: 3750b2e93f37e0c692657da574d7019a101c0084da05a790c83fd335bad973e4
+          RIPGREP_VERSION: 15.2.0
+          RIPGREP_X86_64_SHA256: af7825fcc69a2afc7a7aea55fc9af90e26421d8f20fe59df32e233c0b8a231c1
           SWIFTFORMAT_SHA256: 7cb1cb1fae04932047c7015441c543848e8e60e1572d808d080e0a1f1661114a
           SWIFTFORMAT_VERSION: 0.62.1
         run: |
+          case "$(uname -m)" in
+            arm64)
+              RIPGREP_TARGET=aarch64-apple-darwin
+              RIPGREP_SHA256="$RIPGREP_AARCH64_SHA256"
+              ;;
+            x86_64)
+              RIPGREP_TARGET=x86_64-apple-darwin
+              RIPGREP_SHA256="$RIPGREP_X86_64_SHA256"
+              ;;
+            *)
+              echo "Unsupported runner architecture: $(uname -m)" >&2
+              exit 1
+              ;;
+          esac
+          mkdir -p "$RUNNER_TEMP/validation-bin"
+          curl -fsSLo "$RUNNER_TEMP/ripgrep.tar.gz" "https://github.com/BurntSushi/ripgrep/releases/download/$RIPGREP_VERSION/ripgrep-$RIPGREP_VERSION-$RIPGREP_TARGET.tar.gz"
+          echo "$RIPGREP_SHA256  $RUNNER_TEMP/ripgrep.tar.gz" | shasum -a 256 --check
+          tar -xzf "$RUNNER_TEMP/ripgrep.tar.gz" -C "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/ripgrep-$RIPGREP_VERSION-$RIPGREP_TARGET/rg" "$RUNNER_TEMP/validation-bin/rg"
           curl -fsSLo "$RUNNER_TEMP/swiftformat.zip" "https://github.com/nicklockwood/SwiftFormat/releases/download/$SWIFTFORMAT_VERSION/swiftformat.zip"
           echo "$SWIFTFORMAT_SHA256  $RUNNER_TEMP/swiftformat.zip" | shasum -a 256 --check
-          mkdir -p "$RUNNER_TEMP/swiftformat"
-          ditto -x -k "$RUNNER_TEMP/swiftformat.zip" "$RUNNER_TEMP/swiftformat"
-          echo "$RUNNER_TEMP/swiftformat" >> "$GITHUB_PATH"
+          ditto -x -k "$RUNNER_TEMP/swiftformat.zip" "$RUNNER_TEMP/validation-bin"
+          echo "$RUNNER_TEMP/validation-bin" >> "$GITHUB_PATH"
 
       - name: Validate repository
         run: |
