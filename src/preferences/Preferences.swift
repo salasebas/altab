@@ -194,7 +194,15 @@ class Preferences {
     }
 
     static func resetAll() {
-        defaults.removePersistentDomain(forName: defaultsDomainName)
+        resetAll(defaults, defaultsDomainName)
+    }
+
+    static func resetAll(_ targetDefaults: UserDefaults, _ domainName: String) {
+        let importCompleted = targetDefaults.persistentDomain(forName: domainName)?[LegacyPreferencesImporter.completionKey] as? Bool == true
+        targetDefaults.removePersistentDomain(forName: domainName)
+        if importCompleted {
+            targetDefaults.setPersistentDomain([LegacyPreferencesImporter.completionKey: true], forName: domainName)
+        }
         invalidateAllCache()
     }
 

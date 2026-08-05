@@ -4,7 +4,7 @@
 
 ## Summary
 
-`PreferencesMigrations` upgrades a user's stored `UserDefaults` from an older AltTab version to the current schema. It runs once per launch (`migratePreferences()`), comparing the stored `preferencesVersion` to the app version and applying each registered migration whose version threshold the stored version is at or below. Most migrations are small, self-contained `UserDefaults` transforms (rename a key, remap an index, split one key into two, convert a Bool string to an enum index).
+`PreferencesMigrations` upgrades a user's stored `UserDefaults` from an older AltTab schema to the current schema. It runs once per launch (`migratePreferences()`), comparing the stored `preferencesVersion` to `currentSchemaVersion` and applying each registered migration whose version threshold the stored version is at or below. Most migrations are small, self-contained `UserDefaults` transforms (rename a key, remap an index, split one key into two, convert a Bool string to an enum index).
 
 **Why this is the highest-value safety net:** these run on every upgrade against real users' data. A mistake silently corrupts settings for the entire installed base — and there's no UI signal when it goes wrong. The tests pin each transform's exact input→output.
 
@@ -16,6 +16,8 @@
 - **A quirk worth knowing** (pinned by a test): the global→per-shortcut grouping migration copies the global value into the indexed keys, but because index 0's key *is* the old global key, that key is removed at the end — so slot 0 ends up unset while slots 2…10 hold the value.
 - **Testability**: production reads/writes `UserDefaults.standard`; the tests inject an isolated suite via `PreferencesMigrations.defaults` (reset in `tearDown`) so they never touch the dev machine's real prefs. `LegacyPreferencesImporter` uses the same transforms against a dictionary-backed store, allowing an upstream snapshot to be normalized without writing the source domain or temporarily classifying Altab as the older profile. Imported snapshots are gated by their own source version rather than Altab's version, whose independent numbering restarted at `1`.
 - **Identity effects**: normal Altab upgrades retain the historical login-item cleanup migration. Dictionary-backed import normalization disables that identity-changing step, because login state does not transfer across bundle IDs.
+- **Schema identity**: `PreferencesMigrations.currentSchemaVersion` is independent from `CFBundleVersion`. The fork starts this preference-schema lineage at `12.0.0`; future preference migrations must advance that constant and add their threshold here instead of using the public app version. Earlier Altab builds wrote public version `1` into `preferencesVersion` despite already storing the current schema, so that one value is promoted without running upstream legacy transforms.
+- **Shared remembered selections**: `RememberedPreferenceRecovery.rules` is the single map used by both in-place Altab recovery and upstream import recovery. It owns the six snapshot names, destination keys, forced fallbacks, and enum ranges.
 - **Included-feature recovery**: before normal version migrations, Altab checks the former
   `dev.salasebas.Altab.license` defaults suite for the six valid remembered enum indices that an
   older restricted build may have replaced in the main preferences domain. It restores global

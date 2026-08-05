@@ -178,6 +178,13 @@ class App {
     }
 }
 
+class ObjCExceptionCatcher {
+    static func attempt(_ block: () -> Void) -> Bool {
+        block()
+        return true
+    }
+}
+
 enum Direction {
     case right
     case left

@@ -11,6 +11,7 @@ final class LegacyPreferencesImporterTests: XCTestCase {
         destinationDomainName = "test-legacy-import-destination-\(UUID().uuidString)"
         destination = UserDefaults(suiteName: destinationDomainName)!
         registrationDomain = UserDefaults.standard.volatileDomain(forName: UserDefaults.registrationDomain)
+        PreferencesMigrations.legacyIncludedFeaturesDefaults = nil
     }
 
     override func tearDown() {
@@ -155,6 +156,7 @@ final class LegacyPreferencesImporterTests: XCTestCase {
 
     func testSecureShortcutStorageCompatibility() {
         let secure = shortcutStorage()
+        XCTAssertTrue(Preferences.decodeShortcutStorage(secure).0)
         let source: [String: Any] = [
             "focusWindowShortcut": secure,
             "closeWindowShortcut": secure,
@@ -166,6 +168,23 @@ final class LegacyPreferencesImporterTests: XCTestCase {
             XCTAssertNotNil(storage["secureData"] as? Data)
             XCTAssertTrue(LegacyPreferencesImporter.isValidShortcutStorage(storage))
         }
+    }
+
+    func testCanonicalEmptyShortcutStorageCompatibility() {
+        let secure = Preferences.shortcutStorage(nil, "")
+        let decoded = Preferences.decodeShortcutStorage(secure)
+        XCTAssertTrue(decoded.0)
+        XCTAssertNil(decoded.1)
+        guard let canonical = LegacyPreferencesImporter.canonicalShortcutStorage(secure) else { return XCTFail("canonical empty shortcut rejected") }
+        XCTAssertTrue(Preferences.decodeShortcutStorage(canonical).0)
+        XCTAssertEqual(canonical["string"] as? String, "")
+    }
+
+    func testStructurallyPlausibleButUndecodableShortcutArchiveIsRejected() {
+        let fake = structurallyPlausibleShortcutStorage()
+        XCTAssertNil(LegacyPreferencesImporter.canonicalShortcutStorage(fake))
+        XCTAssertEqual(run(["focusWindowShortcut": fake]), .imported(importedCount: 0, invalidCount: 1, preservedCount: 0))
+        XCTAssertNil(persistent()["focusWindowShortcut"])
     }
 
     func testExceptionsRequireValidCurrentJSON() {
@@ -202,6 +221,31 @@ final class LegacyPreferencesImporterTests: XCTestCase {
         XCTAssertEqual(destination.string(forKey: "nextWindowGesture"), "3")
         XCTAssertEqual(destination.string(forKey: "appearanceStyle"), "1")
         XCTAssertEqual(destination.string(forKey: "preferencesVersion"), "99.99.99")
+    }
+
+    func testImportThenAltabSchemaMigrationPreservesCurrentImportedAndExplicitValues() {
+        destination.setPersistentDomain(["language": "3", "preferencesVersion": "1"], forName: destinationDomainName)
+        let source: [String: Any] = [
+            "language": "4",
+            "nextWindowGesture": "2",
+            "preferencesVersion": "11.4.3",
+            "showWindowlessApps": "2",
+        ]
+        XCTAssertEqual(run(source), .imported(importedCount: 2, invalidCount: 0, preservedCount: 1))
+        PreferencesMigrations.defaults = destination
+        PreferencesMigrations.migratePreferences()
+        XCTAssertEqual(destination.string(forKey: "language"), "3")
+        XCTAssertEqual(destination.string(forKey: "nextWindowGesture"), "2")
+        XCTAssertEqual(destination.string(forKey: "showWindowlessApps"), "2")
+        XCTAssertEqual(destination.string(forKey: "preferencesVersion"), PreferencesMigrations.currentSchemaVersion)
+    }
+
+    func testResetPreservesCompletionAndNextLaunchDoesNotReimport() {
+        XCTAssertEqual(run(["language": "3"]), .imported(importedCount: 1, invalidCount: 0, preservedCount: 0))
+        Preferences.resetAll(destination, destinationDomainName)
+        XCTAssertEqual(persistent() as NSDictionary, [LegacyPreferencesImporter.completionKey: true] as NSDictionary)
+        XCTAssertEqual(run(["language": "4"]), .alreadyCompleted)
+        XCTAssertNil(persistent()["language"])
     }
 
     func testAllSixRememberedSelectionsRecoverFromKnownForcedFallbacks() {
@@ -303,6 +347,10 @@ final class LegacyPreferencesImporterTests: XCTestCase {
     }
 
     private func shortcutStorage() -> [String: Any] {
+        return Preferences.shortcutStorage(Preferences.shortcutFromKeyEquivalent("⌥"), "⌥")
+    }
+
+    private func structurallyPlausibleShortcutStorage() -> [String: Any] {
         let archive: [String: Any] = [
             "$archiver": "NSKeyedArchiver",
             "$objects": ["$null", ["$class": "fixture"], ["$classname": "SRShortcut", "$classes": ["SRShortcut", "NSObject"]]],

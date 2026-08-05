@@ -352,10 +352,6 @@ final class PreferencesMigrationsTests: XCTestCase {
     }
 }
 
-// App-only singletons referenced by `migratePreferences()`.
-extension App {
-    static let version = "99.99.99"
-}
 
 enum AxError: Error {
     case runtimeError

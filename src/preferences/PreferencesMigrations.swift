@@ -43,7 +43,40 @@ final class DictionaryPreferencesMigrationStore: PreferencesMigrationStore {
     }
 }
 
+struct RememberedPreferenceRecoveryRule {
+    let rememberedKey: String
+    let preferenceKey: String
+    let forcedFallback: Int
+    let valueCount: Int
+
+    func recoveredValue(_ rememberedValue: Any?, _ currentValue: Any?) -> String? {
+        guard let rememberedValue = rememberedValue as? Int,
+              (0..<valueCount).contains(rememberedValue),
+              exactInteger(currentValue) == forcedFallback else { return nil }
+        return String(rememberedValue)
+    }
+
+    private func exactInteger(_ value: Any?) -> Int? {
+        if let value = value as? Int { return value }
+        guard let value = value as? String, let integer = Int(value), String(integer) == value else { return nil }
+        return integer
+    }
+}
+
+enum RememberedPreferenceRecovery {
+    static let rules = [
+        RememberedPreferenceRecoveryRule(rememberedKey: "proTransition.rememberedAppearanceStyle", preferenceKey: "appearanceStyle", forcedFallback: 0, valueCount: AppearanceStylePreference.allCases.count),
+        RememberedPreferenceRecoveryRule(rememberedKey: "proTransition.rememberedAppearanceSize", preferenceKey: "appearanceSize", forcedFallback: 1, valueCount: AppearanceSizePreference.allCases.count),
+        RememberedPreferenceRecoveryRule(rememberedKey: "proTransition.rememberedShortcutStyle", preferenceKey: "shortcutStyle", forcedFallback: 1, valueCount: ShortcutStylePreference.allCases.count),
+        RememberedPreferenceRecoveryRule(rememberedKey: "proTransition.rememberedAppearanceStyleOverride", preferenceKey: "appearanceStyleOverride", forcedFallback: 0, valueCount: AppearanceStylePreference.allCases.count),
+        RememberedPreferenceRecoveryRule(rememberedKey: "proTransition.rememberedAppearanceSizeOverride", preferenceKey: "appearanceSizeOverride", forcedFallback: 1, valueCount: AppearanceSizePreference.allCases.count),
+        RememberedPreferenceRecoveryRule(rememberedKey: "proTransition.rememberedShortcutStyleOverride", preferenceKey: "shortcutStyleOverride", forcedFallback: 1, valueCount: ShortcutStylePreference.allCases.count),
+    ]
+}
+
 class PreferencesMigrations {
+    static let currentSchemaVersion = "12.0.0"
+    private static let appVersionsPreviouslyUsedAsSchemaVersions: Set<String> = ["1"]
     private static let includedFeaturesRestorationKey = "includedFeaturesPreferencesRestored"
     private static let legacyIncludedFeaturesSuiteName = "\(App.bundleIdentifier).license"
 
@@ -65,12 +98,13 @@ class PreferencesMigrations {
         let preferencesKey = "preferencesVersion"
         let existingVersion = Self.defaults.string(forKey: preferencesKey)
         restoreIncludedFeaturePreferences()
-        if let versionInPlist = existingVersion {
-            if versionInPlist != "#VERSION#" && versionInPlist.compare(App.version, options: .numeric) != .orderedDescending {
-                updateToNewPreferences(versionInPlist)
-            }
+        if let existingVersion,
+           existingVersion != "#VERSION#",
+           !appVersionsPreviouslyUsedAsSchemaVersions.contains(existingVersion),
+           existingVersion.compare(currentSchemaVersion, options: .numeric) != .orderedDescending {
+            updateToNewPreferences(existingVersion)
         }
-        Self.defaults.set(App.version, forKey: preferencesKey)
+        Self.defaults.set(currentSchemaVersion, forKey: preferencesKey)
     }
 
     /// Older builds could replace six selected values with restricted defaults and remember the
@@ -80,24 +114,14 @@ class PreferencesMigrations {
         guard !Self.defaults.bool(forKey: includedFeaturesRestorationKey) else { return }
         defer { Self.defaults.set(true, forKey: includedFeaturesRestorationKey) }
         guard let legacyDefaults = legacyIncludedFeaturesDefaults else { return }
-        let restorations = [
-            ("rememberedAppearanceStyle", "appearanceStyle", 0, AppearanceStylePreference.allCases.count),
-            ("rememberedAppearanceSize", "appearanceSize", 1, AppearanceSizePreference.allCases.count),
-            ("rememberedShortcutStyle", "shortcutStyle", 1, ShortcutStylePreference.allCases.count),
-            ("rememberedAppearanceStyleOverride", "appearanceStyleOverride", 0, AppearanceStylePreference.allCases.count),
-            ("rememberedAppearanceSizeOverride", "appearanceSizeOverride", 1, AppearanceSizePreference.allCases.count),
-            ("rememberedShortcutStyleOverride", "shortcutStyleOverride", 1, ShortcutStylePreference.allCases.count),
-        ]
-        for (rememberedKey, preferenceKey, replacedIndex, valueCount) in restorations {
-            guard let index = legacyDefaults.object(forKey: "proTransition.\(rememberedKey)") as? Int,
-                  (0..<valueCount).contains(index),
-                  Self.defaults.string(forKey: preferenceKey) == String(replacedIndex) else { continue }
-            Self.defaults.set(String(index), forKey: preferenceKey)
+        for rule in RememberedPreferenceRecovery.rules {
+            guard let value = rule.recoveredValue(legacyDefaults.object(forKey: rule.rememberedKey), Self.defaults.object(forKey: rule.preferenceKey)) else { continue }
+            Self.defaults.set(value, forKey: rule.preferenceKey)
         }
     }
 
     static func updateToNewPreferences(_ versionInPlist: String, includeAppIdentityEffects: Bool = true) {
-        Logger.debug { "App-version:\(App.version), Plist-version:\(versionInPlist)" }
+        Logger.debug { "Preferences-schema:\(currentSchemaVersion), Plist-version:\(versionInPlist)" }
         let migrations: [(String, () -> Void)] = [
             ("10.13.0", migrateGroupingToPerShortcut),
             ("10.12.0", migrateExceptionsTitleArray),

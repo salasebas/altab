@@ -43,6 +43,9 @@ NSBundle *SRBundle()
     dispatch_once(&onceToken, ^{
         NSURL *bundleURL = [[NSBundle mainBundle] URLForResource:@"ShortcutRecorder_ShortcutRecorder" withExtension:@"bundle"];
         Bundle = bundleURL ? [NSBundle bundleWithURL:bundleURL] : [NSBundle bundleWithIdentifier:@"com.kulakov.ShortcutRecorder"];
+        Class shortcutClass = NSClassFromString(@"SRShortcut");
+        if (!Bundle && shortcutClass)
+            Bundle = [NSBundle bundleForClass:shortcutClass];
     });
 
     if (Bundle)
