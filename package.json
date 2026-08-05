@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "author": "",
   "license": "MIT",
+  "packageManager": "pnpm@11.5.2",
   "husky": {
     "hooks": {
       "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",

@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 set -ex
 
 scripts/l10n/extract_l10n_strings.sh

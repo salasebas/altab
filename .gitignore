@@ -5,6 +5,7 @@ xcuserdata/
 WorkspaceSettings.xcsettings
 IDEWorkspaceChecks.plist
 /node_modules/
+/.pnpm-store/
 /DerivedData/
 /build/
 /vendor/*/.build/
