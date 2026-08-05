@@ -1,3 +1,7 @@
+# Changelog
+
+Entries below the AlTab fork point are retained upstream AltTab history. They document inherited provenance and must not be presented as AlTab release notes. AlTab releases use the template in [`.github/RELEASE_NOTES_TEMPLATE.md`](.github/RELEASE_NOTES_TEMPLATE.md) and identify their exact fork commit, source archive, build manifest, and signing/notarization status.
+
 ## [11.4.3](https://github.com/lwouis/alt-tab-macos/compare/v11.4.2...v11.4.3) (2026-07-09)
 
 

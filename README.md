@@ -43,10 +43,18 @@ xcodebuild \
   -derivedDataPath DerivedData
 ```
 
+Maintainers can create the unsigned Release binary, matching dSYM, exact corresponding source archive, build manifest, release notes, and SHA-256 checksums from an explicit tag or full commit with:
+
+```bash
+scripts/package_release.sh <tag-or-commit>
+```
+
+The packager builds from a clean `git archive` of that revision, not from ignored or modified local files. See [the release packaging guide](docs/releasing.md) for prerequisites, artifact contents, validation, and rebuilding instructions.
+
 No public binary is currently offered by this fork. If preview binaries are published before Developer ID signing and notarization are available, each release must be labeled clearly as **unsigned and not notarized**. macOS Gatekeeper may block such builds, and users should not be instructed to disable system-wide security protections.
 
 ## License and attribution
 
-The application remains available under the [GNU General Public License v3](LICENCE.md). Distributions of modified binaries must satisfy the GPL's source and notice requirements. Third-party acknowledgments are in [docs/acknowledgments.md](docs/acknowledgments.md).
+The application remains available under the [GNU General Public License v3](LICENCE.md). Distributions of modified binaries must satisfy the GPL's source and notice requirements. Copyright and provenance are summarized in [NOTICE.md](NOTICE.md), and third-party acknowledgments and license locations are in [docs/acknowledgments.md](docs/acknowledgments.md).
 
 The AlTab icon used on this page comes from the maintainer's [earlier AlTab codebase](https://github.com/salasebas/altab-archived) and is separate from the upstream AltTab branding. Its provenance and license are recorded in [docs/brand/README.md](docs/brand/README.md).
