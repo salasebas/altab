@@ -17,7 +17,7 @@ GitHub Actions runs `scripts/validate_ci.sh` for every pull request and every pu
 
 The workflow has read-only repository permissions, does not persist checkout credentials, and does not receive or require signing, notarization, update-feed, analytics, licensing, or publishing secrets. Superseded runs for the same pull request or branch are cancelled. When validation fails, the run uploads its validation log and any available Xcode logs for seven days.
 
-CI is validation only. Its unsigned app bundle is not a release, the workflow does not publish or contact upstream infrastructure, and system-wide macOS interactions still require manual QA. The workflow pins Xcode 16.4, pnpm 11.5.2, ripgrep 15.2.0, SwiftFormat 0.62.1, and every reusable action. Contributors can run the same validation locally with `corepack enable`, `corepack install`, `pnpm install --frozen-lockfile`, and `scripts/validate_ci.sh` from a machine with Xcode 16.4, ripgrep, and SwiftFormat 0.62.1 available.
+CI is validation only. Its unsigned app bundle is not a release, the workflow does not publish or contact upstream infrastructure, and system-wide macOS interactions still require manual QA. The workflow pins Xcode 26.0.1, pnpm 11.5.2, ripgrep 15.2.0, SwiftFormat 0.62.1, and every reusable action. Contributors can run the same validation locally with `corepack enable`, `corepack install`, `pnpm install --frozen-lockfile`, and `scripts/validate_ci.sh` from a machine with Xcode 26, ripgrep, and SwiftFormat 0.62.1 available.
 
 ## Mac development
 
