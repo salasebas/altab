@@ -11,6 +11,14 @@ This project has minimal dependency on Xcode-only features (e.g. InterfaceBuilde
 * Debug builds use ad-hoc signing by default. To keep macOS permissions stable across local builds, run `scripts/codesign/setup_local.sh`, then set `CODE_SIGN_IDENTITY = Local Self-Signed` in `config/local.xcconfig`.
 * Run `xcodebuild -project alt-tab-macos.xcodeproj -scheme Debug` to build the app with the Debug configuration.
 
+## Continuous integration
+
+GitHub Actions runs `scripts/validate_ci.sh` for every pull request and every push to `master`. The script validates property lists, the Xcode project, localizations, generated files, Swift formatting, repository whitespace, service isolation, unrestricted features, and legacy preference import behavior. It then runs the full test suite and builds both the Debug app and an optimized, unsigned Release app whose binary must contain the `arm64` and `x86_64` architectures.
+
+The workflow has read-only repository permissions, does not persist checkout credentials, and does not receive or require signing, notarization, update-feed, analytics, licensing, or publishing secrets. Superseded runs for the same pull request or branch are cancelled. When validation fails, the run uploads its validation log and any available Xcode logs for seven days.
+
+CI is validation only. Its unsigned app bundle is not a release, the workflow does not publish or contact upstream infrastructure, and system-wide macOS interactions still require manual QA. The workflow pins Xcode 26.0.1, pnpm 11.5.2, ripgrep 15.2.0, SwiftFormat 0.62.1, and every reusable action. Contributors can run the same validation locally with `corepack enable`, `corepack install`, `pnpm install --frozen-lockfile`, and `scripts/validate_ci.sh` from a machine with Xcode 26, ripgrep, and SwiftFormat 0.62.1 available.
+
 ## Mac development
 
 Mac development ecosystem is pretty terrible in general. They keep piling on the tech stacks on top of each other, so you have C APIs, ObjC APIs, Swift APIs, Interface builder, Playgrounds, Swift UI, Mac Catalyst. All these are bridging with each other with a bunch of macros, SDKs glue, compiler flags, compatibility mode, XCode legacy build system, etc. For alt-tab, we are on Swift 5.0. Note that swift just recently started being stable, but overall any change of version breaks a lot of stuff. Swift itself is the mainstream language with the worst governance I’ve seen in modern times.

@@ -1,0 +1,89 @@
+name: Validation
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validation-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Build and test
+    runs-on: macos-15
+    timeout-minutes: 45
+    env:
+      CI_DERIVED_DATA_PATH: DerivedData/CI
+      DEVELOPER_DIR: /Applications/Xcode_26.0.1.app/Contents/Developer
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: 22.20.0
+          package-manager-cache: false
+
+      - name: Install JavaScript dependencies
+        run: |
+          corepack enable
+          corepack install
+          pnpm install --frozen-lockfile
+
+      - name: Install validation tools
+        env:
+          RIPGREP_AARCH64_SHA256: 3750b2e93f37e0c692657da574d7019a101c0084da05a790c83fd335bad973e4
+          RIPGREP_VERSION: 15.2.0
+          RIPGREP_X86_64_SHA256: af7825fcc69a2afc7a7aea55fc9af90e26421d8f20fe59df32e233c0b8a231c1
+          SWIFTFORMAT_SHA256: 7cb1cb1fae04932047c7015441c543848e8e60e1572d808d080e0a1f1661114a
+          SWIFTFORMAT_VERSION: 0.62.1
+        run: |
+          case "$(uname -m)" in
+            arm64)
+              RIPGREP_TARGET=aarch64-apple-darwin
+              RIPGREP_SHA256="$RIPGREP_AARCH64_SHA256"
+              ;;
+            x86_64)
+              RIPGREP_TARGET=x86_64-apple-darwin
+              RIPGREP_SHA256="$RIPGREP_X86_64_SHA256"
+              ;;
+            *)
+              echo "Unsupported runner architecture: $(uname -m)" >&2
+              exit 1
+              ;;
+          esac
+          mkdir -p "$RUNNER_TEMP/validation-bin"
+          curl -fsSLo "$RUNNER_TEMP/ripgrep.tar.gz" "https://github.com/BurntSushi/ripgrep/releases/download/$RIPGREP_VERSION/ripgrep-$RIPGREP_VERSION-$RIPGREP_TARGET.tar.gz"
+          echo "$RIPGREP_SHA256  $RUNNER_TEMP/ripgrep.tar.gz" | shasum -a 256 --check
+          tar -xzf "$RUNNER_TEMP/ripgrep.tar.gz" -C "$RUNNER_TEMP"
+          mv "$RUNNER_TEMP/ripgrep-$RIPGREP_VERSION-$RIPGREP_TARGET/rg" "$RUNNER_TEMP/validation-bin/rg"
+          curl -fsSLo "$RUNNER_TEMP/swiftformat.zip" "https://github.com/nicklockwood/SwiftFormat/releases/download/$SWIFTFORMAT_VERSION/swiftformat.zip"
+          echo "$SWIFTFORMAT_SHA256  $RUNNER_TEMP/swiftformat.zip" | shasum -a 256 --check
+          ditto -x -k "$RUNNER_TEMP/swiftformat.zip" "$RUNNER_TEMP/validation-bin"
+          echo "$RUNNER_TEMP/validation-bin" >> "$GITHUB_PATH"
+
+      - name: Validate repository
+        run: |
+          mkdir -p artifacts
+          set -o pipefail
+          scripts/validate_ci.sh "$CI_DERIVED_DATA_PATH" 2>&1 | tee artifacts/ci-validation.log
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: validation-diagnostics-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            artifacts/ci-validation.log
+            DerivedData/CI/Logs
+          if-no-files-found: warn
+          retention-days: 7
