@@ -57,6 +57,7 @@ Security-related upstream work receives priority, but there is no promise of imm
 - [x] Inventory every formerly paid feature path and pin its unrestricted behavior in specs and tests.
 - [x] Remove activation, license Keychain state, remote license calls, trials, conversion scheduling, upgrade prompts, and paid-tier copy without regressing feature implementations.
 - [x] Preserve existing Altab user settings while removing the paid-access state machine and its forced fallback behavior.
+- [x] Import compatible AltTab preferences once into missing Altab keys while preserving existing Altab choices and leaving AltTab defaults, license data, and Keychain items untouched.
 - [x] Guard source and packaged builds against upstream licensing/payment services, paid-access decisions, and upsell UI.
 
 ### Distribution and compliance

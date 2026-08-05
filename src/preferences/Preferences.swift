@@ -187,6 +187,7 @@ class Preferences {
     static let gestureIndex = IncludedFeatures.gestureIndex
 
     static func initialize() {
+        LegacyPreferencesImporter.importIfNeeded()
         PreferencesMigrations.removeCorruptedPreferences()
         PreferencesMigrations.migratePreferences()
         registerDefaults()

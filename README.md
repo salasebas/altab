@@ -23,6 +23,8 @@ Altab does not bundle or initialize Sparkle, has no in-app updater, and cannot d
 
 This build does not bundle or initialize AppCenter and does not send crash reports or analytics to AppCenter. No replacement crash-reporting, analytics, or telemetry service has been added. It has no licensing, trial, checkout, or account network path and does not contact upstream services for feature access.
 
+On its first launch, Altab locally imports compatible user configuration from the official AltTab defaults domain. This is a one-time copy: existing explicit Altab choices win, unsupported and identity-specific state is excluded, and AltTab's preferences, license data, and Keychain items remain untouched. Login-item and permission/onboarding state are not transferred because those behaviors belong to the new bundle identity.
+
 ## Relationship with upstream
 
 This fork began at AltTab `v11.4.3` (`10af70aaaaac0a2dbb7d0aaa61cda21b065c203f`). The original Git history is retained so authorship and provenance remain visible.

@@ -30,7 +30,7 @@ final class PreferencesMigrationsTests: XCTestCase {
     }
 
     override func tearDown() {
-        PreferencesMigrations.defaults = .standard
+        PreferencesMigrations.defaults = UserDefaults.standard
         PreferencesMigrations.legacyIncludedFeaturesDefaults = UserDefaults(suiteName: "\(App.bundleIdentifier).license")
         UserDefaults().removePersistentDomain(forName: suiteName)
         UserDefaults().removePersistentDomain(forName: legacySuiteName)

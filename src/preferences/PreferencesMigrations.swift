@@ -1,12 +1,55 @@
 import Cocoa
 
+protocol PreferencesMigrationStore: AnyObject {
+    func bool(forKey defaultName: String) -> Bool
+    func object(forKey defaultName: String) -> Any?
+    func removeObject(forKey defaultName: String)
+    func set(_ value: Any?, forKey defaultName: String)
+    func string(forKey defaultName: String) -> String?
+}
+
+extension UserDefaults: PreferencesMigrationStore {}
+
+final class DictionaryPreferencesMigrationStore: PreferencesMigrationStore {
+    private(set) var values: [String: Any]
+
+    init(_ values: [String: Any]) {
+        self.values = values
+    }
+
+    func bool(forKey defaultName: String) -> Bool {
+        guard let value = values[defaultName] else { return false }
+        if let value = value as? Bool { return value }
+        if let value = value as? NSNumber { return value.boolValue }
+        return (value as? NSString)?.boolValue ?? false
+    }
+
+    func object(forKey defaultName: String) -> Any? {
+        return values[defaultName]
+    }
+
+    func removeObject(forKey defaultName: String) {
+        values.removeValue(forKey: defaultName)
+    }
+
+    func set(_ value: Any?, forKey defaultName: String) {
+        values[defaultName] = value
+    }
+
+    func string(forKey defaultName: String) -> String? {
+        if let value = values[defaultName] as? String { return value }
+        if let value = values[defaultName] as? NSNumber { return value.stringValue }
+        return nil
+    }
+}
+
 class PreferencesMigrations {
     private static let includedFeaturesRestorationKey = "includedFeaturesPreferencesRestored"
     private static let legacyIncludedFeaturesSuiteName = "\(App.bundleIdentifier).license"
 
     /// Injectable so tests can run migrations against an isolated `UserDefaults` suite.
     /// Production keeps `.standard`; behavior is unchanged.
-    static var defaults = UserDefaults.standard
+    static var defaults: PreferencesMigrationStore = UserDefaults.standard
     static var legacyIncludedFeaturesDefaults = UserDefaults(suiteName: legacyIncludedFeaturesSuiteName)
 
     static func removeCorruptedPreferences() {
@@ -53,9 +96,9 @@ class PreferencesMigrations {
         }
     }
 
-    static func updateToNewPreferences(_ versionInPlist: String) {
+    static func updateToNewPreferences(_ versionInPlist: String, includeAppIdentityEffects: Bool = true) {
         Logger.debug { "App-version:\(App.version), Plist-version:\(versionInPlist)" }
-        for (version, migration) in [
+        let migrations: [(String, () -> Void)] = [
             ("10.13.0", migrateGroupingToPerShortcut),
             ("10.12.0", migrateExceptionsTitleArray),
             ("10.12.0", migrateLanguagePreferenceIndex),
@@ -69,8 +112,7 @@ class PreferencesMigrations {
             ("7.0.0", migratePreferencesIndexes),
             ("6.43.0", migrateExceptions),
             ("6.28.1", migrateMinMaxWindowsWidthInRow),
-            // "Start at login" new implem doesn't use Login Items; we remove the entry from previous versions
-            ("6.27.1", { (PreferencesMigrations.self as AvoidDeprecationWarnings.Type).migrateLoginItem() }),
+            ("6.27.1", { if includeAppIdentityEffects { (PreferencesMigrations.self as AvoidDeprecationWarnings.Type).migrateLoginItem() } }),
             // "Show windows from:" got the "Active Space" option removed
             ("6.23.0", migrateShowWindowsFrom),
             // nextWindowShortcut used to be able to have modifiers already present in holdShortcut; we remove these
@@ -83,11 +125,23 @@ class PreferencesMigrations {
             ("6.18.1", migrateShowWindowsCheckboxToDropdown),
             // "Max size on screen" was split into max width and max height
             ("6.18.1", migrateMaxSizeOnScreenToWidthAndHeight),
-        ] {
+        ]
+        for (version, migration) in migrations {
             if shouldRun(versionInPlist, version) {
                 migration()
             }
         }
+    }
+
+    static func normalizeImportedPreferences(_ values: [String: Any], _ sourceVersion: String?) -> [String: Any] {
+        let store = DictionaryPreferencesMigrationStore(values)
+        let liveDefaults = defaults
+        defaults = store
+        defer { defaults = liveDefaults }
+        if let sourceVersion, sourceVersion != "#VERSION#" {
+            updateToNewPreferences(sourceVersion, includeAppIdentityEffects: false)
+        }
+        return store.values
     }
 
     static func shouldRun(_ versionInPlist: String, _ versionThreshold: String) -> Bool {
