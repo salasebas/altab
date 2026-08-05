@@ -37,7 +37,10 @@ patch_sr_bundle() {
     [ -f "$f" ] || return 0
     sed -i.bak '/Bundle = \[NSBundle bundleWithIdentifier:@"com.kulakov.ShortcutRecorder"\];/c\
         NSURL *bundleURL = [[NSBundle mainBundle] URLForResource:@"ShortcutRecorder_ShortcutRecorder" withExtension:@"bundle"];\
-        Bundle = bundleURL ? [NSBundle bundleWithURL:bundleURL] : [NSBundle bundleWithIdentifier:@"com.kulakov.ShortcutRecorder"];
+        Bundle = bundleURL ? [NSBundle bundleWithURL:bundleURL] : [NSBundle bundleWithIdentifier:@"com.kulakov.ShortcutRecorder"];\
+        Class shortcutClass = NSClassFromString(@"SRShortcut");\
+        if (!Bundle && shortcutClass)\
+            Bundle = [NSBundle bundleForClass:shortcutClass];
 ' "$f"
     rm -f "$f.bak"
 }

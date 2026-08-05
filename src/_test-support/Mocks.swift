@@ -179,7 +179,10 @@ class App {
 }
 
 class ObjCExceptionCatcher {
+    static var failAttempts = false
+
     static func attempt(_ block: () -> Void) -> Bool {
+        guard !failAttempts else { return false }
         block()
         return true
     }

@@ -198,74 +198,7 @@ class LegacyPreferencesImporter {
               let data = storage["secureData"] as? Data,
               string.count <= 128,
               (64...16_384).contains(data.count) else { return nil }
-        guard let archive = normalizedArchive(data),
-              Set(archive.keys) == ["$archiver", "$objects", "$top", "$version"],
-              archive["$archiver"] as? String == "NSKeyedArchiver",
-              exactPlistInteger(archive["$version"]) == 100_000 else { return nil }
-        guard let objects = archive["$objects"] as? [Any],
-              (6...8).contains(objects.count),
-              objects[0] as? String == "$null" else { return nil }
-        guard let top = archive["$top"] as? [String: Any], Set(top.keys) == ["root"] else { return nil }
-        guard let rootIndex = uidIndex(top["root"], objects.count), rootIndex > 0,
-              let root = objects[rootIndex] as? [String: Any] else { return nil }
-        let requiredRootKeys: Set<String> = ["$class", "characters", "charactersIgnoringModifiers", "keyCode", "modifierFlags", "version"]
-        guard Set(root.keys) == requiredRootKeys,
-              let classIndex = uidIndex(root["$class"], objects.count), classIndex > 0,
-              let metadata = objects[classIndex] as? [String: Any],
-              Set(metadata.keys) == ["$classes", "$classname"],
-              metadata["$classname"] as? String == "SRShortcut",
-              metadata["$classes"] as? [String] == ["SRShortcut", "NSObject"] else { return nil }
-        var referencedIndexes: Set<Int> = [rootIndex, classIndex]
-        guard let version = resolvedScalar("version", root, objects, &referencedIndexes) as? String, version.count <= 32,
-              let keyCode = exactPlistInteger(resolvedScalar("keyCode", root, objects, &referencedIndexes)), (0...Int(UInt16.max)).contains(keyCode),
-              let modifiers = exactPlistInteger(resolvedScalar("modifierFlags", root, objects, &referencedIndexes)), modifiers >= 0,
-              UInt(modifiers) & ~shortcutModifierMask == 0,
-              validOptionalString("characters", root, objects, &referencedIndexes),
-              validOptionalString("charactersIgnoringModifiers", root, objects, &referencedIndexes),
-              referencedIndexes == Set(1..<objects.count) else { return nil }
         return storage
-    }
-
-    private static var shortcutModifierMask: UInt {
-        NSEvent.ModifierFlags.command.union(.option).union(.shift).union(.control).rawValue
-    }
-
-    private static func normalizedArchive(_ data: Data) -> [String: Any]? {
-        guard let archive = try? PropertyListSerialization.propertyList(from: data, options: [], format: nil),
-              let xml = try? PropertyListSerialization.data(fromPropertyList: archive, format: .xml, options: 0),
-              let xmlString = String(data: xml, encoding: .utf8),
-              let normalizedData = xmlString.replacingOccurrences(of: "<key>CF$UID</key>", with: "<key>AltabUID</key>").data(using: .utf8),
-              let normalized = try? PropertyListSerialization.propertyList(from: normalizedData, options: [], format: nil) as? [String: Any] else { return nil }
-        return normalized
-    }
-
-    private static func uidIndex(_ value: Any?, _ objectCount: Int) -> Int? {
-        guard let uid = value as? [String: Any], Set(uid.keys) == ["AltabUID"],
-              let index = exactPlistInteger(uid["AltabUID"]), (0..<objectCount).contains(index) else { return nil }
-        return index
-    }
-
-    private static func resolvedScalar(_ key: String, _ root: [String: Any], _ objects: [Any], _ references: inout Set<Int>) -> Any? {
-        guard let index = uidIndex(root[key], objects.count), index > 0 else { return nil }
-        references.insert(index)
-        return objects[index]
-    }
-
-    private static func validOptionalString(_ key: String, _ root: [String: Any], _ objects: [Any], _ references: inout Set<Int>) -> Bool {
-        guard let index = uidIndex(root[key], objects.count) else { return false }
-        guard index > 0 else { return true }
-        references.insert(index)
-        guard let value = objects[index] as? String else { return false }
-        return value.count <= 64
-    }
-
-    private static func exactPlistInteger(_ value: Any?) -> Int? {
-        guard let value = value as? NSNumber,
-              CFGetTypeID(value) != CFBooleanGetTypeID(),
-              value.doubleValue.rounded() == value.doubleValue,
-              value.doubleValue >= Double(Int.min),
-              value.doubleValue <= Double(Int.max) else { return nil }
-        return value.intValue
     }
 
     private static func exactBoolean(_ value: Any?) -> Bool? {

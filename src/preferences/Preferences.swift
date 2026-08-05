@@ -23,6 +23,7 @@ struct ShortcutRegistrationPlan {
 }
 
 class Preferences {
+    private static let persistentDomainStateKeys = [LegacyPreferencesImporter.completionKey]
     #if TESTING
     private static let testDefaultsDomainName = "dev.salasebas.Altab.unit-tests"
     static var defaults = UserDefaults(suiteName: testDefaultsDomainName)!
@@ -198,11 +199,22 @@ class Preferences {
     }
 
     static func resetAll(_ targetDefaults: UserDefaults, _ domainName: String) {
-        let importCompleted = targetDefaults.persistentDomain(forName: domainName)?[LegacyPreferencesImporter.completionKey] as? Bool == true
-        targetDefaults.removePersistentDomain(forName: domainName)
-        if importCompleted {
-            targetDefaults.setPersistentDomain([LegacyPreferencesImporter.completionKey: true], forName: domainName)
+        replacePersistentDomain([:], targetDefaults, domainName)
+    }
+
+    static func replacePersistentDomain(_ values: [String: Any]) {
+        replacePersistentDomain(values, defaults, defaultsDomainName)
+    }
+
+    static func replacePersistentDomain(_ values: [String: Any], _ targetDefaults: UserDefaults, _ domainName: String) {
+        let existing = targetDefaults.persistentDomain(forName: domainName) ?? [:]
+        var replacement = values
+        for key in persistentDomainStateKeys {
+            replacement.removeValue(forKey: key)
+            if let value = existing[key] { replacement[key] = value }
         }
+        targetDefaults.setPersistentDomain(replacement, forName: domainName)
+        CachedUserDefaults.cache.withLock { $0.removeAll() }
         invalidateAllCache()
     }
 
@@ -260,7 +272,7 @@ class Preferences {
     /// `persistentDomain(forName:)` rebuilds a full snapshot dictionary on every call, which adds
     /// up: every `hasOverride` / `effectiveAppearanceStyle` consults `all`, and the switcher show
     /// path triggers a cascade of these per show. Cache the filtered snapshot; the only paths that
-    /// mutate the domain (`set`, `setShortcut`, `remove`, `resetAll`) clear `cachedAll` below.
+    /// mutate the domain (`set`, `setShortcut`, `remove`, `resetAll`, `replacePersistentDomain`) clear `cachedAll` below.
     private static var cachedAll: [String: Any]?
 
     static var all: [String: Any] {

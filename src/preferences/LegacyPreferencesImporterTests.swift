@@ -12,9 +12,11 @@ final class LegacyPreferencesImporterTests: XCTestCase {
         destination = UserDefaults(suiteName: destinationDomainName)!
         registrationDomain = UserDefaults.standard.volatileDomain(forName: UserDefaults.registrationDomain)
         PreferencesMigrations.legacyIncludedFeaturesDefaults = nil
+        ObjCExceptionCatcher.failAttempts = false
     }
 
     override func tearDown() {
+        ObjCExceptionCatcher.failAttempts = false
         UserDefaults().removePersistentDomain(forName: destinationDomainName)
         UserDefaults.standard.setVolatileDomain(registrationDomain, forName: UserDefaults.registrationDomain)
         PreferencesMigrations.defaults = UserDefaults.standard
@@ -187,6 +189,14 @@ final class LegacyPreferencesImporterTests: XCTestCase {
         XCTAssertNil(persistent()["focusWindowShortcut"])
     }
 
+    func testShortcutExceptionBoundaryFailureRejectsWithoutDecoding() {
+        ObjCExceptionCatcher.failAttempts = true
+        let secure = shortcutStorage()
+        XCTAssertNil(LegacyPreferencesImporter.canonicalShortcutStorage(secure))
+        XCTAssertEqual(run(["focusWindowShortcut": secure]), .imported(importedCount: 0, invalidCount: 1, preservedCount: 0))
+        XCTAssertNil(persistent()["focusWindowShortcut"])
+    }
+
     func testExceptionsRequireValidCurrentJSON() {
         let valid = Preferences.jsonEncode([ExceptionEntry(bundleIdentifier: "com.example.app", hide: .always, ignore: .none, windowTitleContains: ["Document"])] )
         XCTAssertEqual(run(["exceptions": valid]), .imported(importedCount: 1, invalidCount: 0, preservedCount: 0))
@@ -246,6 +256,15 @@ final class LegacyPreferencesImporterTests: XCTestCase {
         XCTAssertEqual(persistent() as NSDictionary, [LegacyPreferencesImporter.completionKey: true] as NSDictionary)
         XCTAssertEqual(run(["language": "4"]), .alreadyCompleted)
         XCTAssertNil(persistent()["language"])
+    }
+
+    func testSettingsImportReplacementPreservesCompletionAndNextLaunchDoesNotReimport() {
+        XCTAssertEqual(run(["language": "3"]), .imported(importedCount: 1, invalidCount: 0, preservedCount: 0))
+        Preferences.replacePersistentDomain(["appearanceStyle": "2"], destination, destinationDomainName)
+        XCTAssertEqual(persistent() as NSDictionary, ["appearanceStyle": "2", LegacyPreferencesImporter.completionKey: true] as NSDictionary)
+        XCTAssertEqual(run(["language": "4"]), .alreadyCompleted)
+        XCTAssertNil(persistent()["language"])
+        XCTAssertEqual(destination.string(forKey: "appearanceStyle"), "2")
     }
 
     func testAllSixRememberedSelectionsRecoverFromKnownForcedFallbacks() {
