@@ -73,9 +73,7 @@ class GeneralTab {
             return
         }
         let filtered = dict.filter { Preferences.ownedKeys.contains($0.key) }
-        UserDefaults.standard.setPersistentDomain(filtered, forName: App.bundleIdentifier)
-        CachedUserDefaults.cache.withLock { $0.removeAll() }
-        Preferences.invalidateAllCache()
+        Preferences.replacePersistentDomain(filtered)
         let alert = NSAlert()
         alert.alertStyle = .informational
         alert.messageText = NSLocalizedString("Settings imported", comment: "")

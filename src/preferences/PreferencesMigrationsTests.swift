@@ -30,7 +30,7 @@ final class PreferencesMigrationsTests: XCTestCase {
     }
 
     override func tearDown() {
-        PreferencesMigrations.defaults = .standard
+        PreferencesMigrations.defaults = UserDefaults.standard
         PreferencesMigrations.legacyIncludedFeaturesDefaults = UserDefaults(suiteName: "\(App.bundleIdentifier).license")
         UserDefaults().removePersistentDomain(forName: suiteName)
         UserDefaults().removePersistentDomain(forName: legacySuiteName)
@@ -352,10 +352,6 @@ final class PreferencesMigrationsTests: XCTestCase {
     }
 }
 
-// App-only singletons referenced by `migratePreferences()`.
-extension App {
-    static let version = "99.99.99"
-}
 
 enum AxError: Error {
     case runtimeError
