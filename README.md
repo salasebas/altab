@@ -43,7 +43,7 @@ xcodebuild \
   -derivedDataPath DerivedData
 ```
 
-Maintainers can create the unsigned Release binary, matching dSYM, exact corresponding source archive, build manifest, release notes, and SHA-256 checksums from an explicit tag or full commit with:
+The routine local build stops with the app in `DerivedData`; it does not create redistribution artifacts. Maintainers can separately invoke the optional packager to create an unsigned Release binary, matching dSYM, exact corresponding source archive, build manifest, release notes, and SHA-256 checksums from an explicit tag or full commit with:
 
 ```bash
 scripts/package_release.sh <tag-or-commit>
