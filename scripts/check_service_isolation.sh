@@ -19,6 +19,14 @@ reject_matches() {
   fi
 }
 
+inspect_localized_resources() {
+  local resourcesPath="$1"
+  local resourcePath
+  while IFS= read -r -d '' resourcePath; do
+    plutil -p "$resourcePath" || return 1
+  done < <(find "$resourcesPath" -type f -name '*.strings' -print0)
+}
+
 check_source() {
   plutil -lint Info.plist >/dev/null
   plutil -lint alt-tab-macos.xcodeproj/project.pbxproj >/dev/null
@@ -71,30 +79,43 @@ check_source() {
 check_bundle() {
   local appPath="$1"
   local infoPath="$appPath/Contents/Info.plist"
+  local resourcesPath="$appPath/Contents/Resources"
   [[ -d "$appPath" ]] || fail "app bundle not found: $appPath"
+  [[ -d "$resourcesPath" ]] || fail "resource directory not found: $resourcesPath"
   plutil -lint "$infoPath" >/dev/null
-  if plutil -p "$infoPath" | rg '"(SU[A-Z]|AppCenter)'; then
+  if plutil -p "$infoPath" | grep -E '"(SU[A-Z]|AppCenter)'; then
     fail "$appPath contains updater or AppCenter plist keys"
   fi
-  if find "$appPath/Contents" \( -iname '*Sparkle*' -o -iname '*AppCenter*' -o -iname '*CrashReporter*' -o -iname '*PLCrash*' -o -name 'Updater.app' -o -name 'Autoupdate' \) -print | rg .; then
+  local inheritedArtifact
+  inheritedArtifact="$(find "$appPath/Contents" \( -iname '*Sparkle*' -o -iname '*AppCenter*' -o -iname '*CrashReporter*' -o -iname '*PLCrash*' -o -name 'Updater.app' -o -name 'Autoupdate' \) -print -quit)" || fail "could not inspect bundle artifacts"
+  if [[ -n "$inheritedArtifact" ]]; then
     fail "$appPath contains inherited service artifacts"
   fi
   local executableName
   executableName="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$infoPath")"
   local executable="$appPath/Contents/MacOS/$executableName"
-  if otool -L "$executable" | rg -i 'Sparkle|AppCenter|CrashReporter|PLCrash'; then
+  if otool -L "$executable" | grep -Ei 'Sparkle|AppCenter|CrashReporter|PLCrash'; then
     fail "$appPath links an inherited service"
   fi
-  if strings "$executable" | rg 'api\.appcenter\.ms|in\.appcenter\.ms|MSACCrashes|AppCenter\.start|SPUStandardUpdaterController'; then
+  if strings "$executable" | grep -E 'api\.appcenter\.ms|in\.appcenter\.ms|MSACCrashes|AppCenter\.start|SPUStandardUpdaterController'; then
     fail "$appPath contains inherited service initialization symbols"
   fi
-  if rg -a 'Check for updates|Updates policy|Crash reports policy|Send a crash report' "$appPath/Contents/Resources"; then
+  local serviceUi='Check for updates|Updates policy|Crash reports policy|Send a crash report'
+  if grep -R -a -E "$serviceUi" "$resourcesPath"; then
+    fail "$appPath exposes updater or crash-reporting UI"
+  else
+    local grepStatus=$?
+    [[ "$grepStatus" -eq 1 ]] || fail "could not scan all bundle resources"
+  fi
+  local localizedResources
+  localizedResources="$(inspect_localized_resources "$resourcesPath")" || fail "could not inspect localized bundle resources"
+  if printf '%s\n' "$localizedResources" | grep -E "$serviceUi"; then
     fail "$appPath exposes updater or crash-reporting UI"
   fi
 }
 
-check_source
-if [[ $# -gt 0 ]]; then
-  for appPath in "$@"; do check_bundle "$appPath"; done
-fi
+bundleOnly=false
+if [[ "${1:-}" == "--bundle-only" ]]; then bundleOnly=true; shift; fi
+if [[ "$bundleOnly" == false ]]; then check_source; else [[ $# -gt 0 ]] || fail "--bundle-only requires an app path"; fi
+for appPath in "$@"; do check_bundle "$appPath"; done
 echo "service-isolation check passed"

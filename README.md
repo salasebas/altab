@@ -33,15 +33,13 @@ Upstream changes are reviewed periodically, with security, crash, compatibility,
 
 ## Build from source
 
-The routine Debug build is the command recorded in [`ai/build.sh`](ai/build.sh):
+Build an optimized app for the current Mac with the supported local command:
 
 ```bash
-xcodebuild \
-  -project alt-tab-macos.xcodeproj \
-  -scheme Debug \
-  -configuration Debug \
-  -derivedDataPath DerivedData
+scripts/build_local.sh
 ```
+
+The command produces a native-architecture `AlTab.app` with an ad-hoc signature, so it needs no Apple Developer account. It validates the bundle and prints its exact path and `open` command without launching, uploading, notarizing, or publishing it. Pass `--universal` to build both `arm64` and `x86_64`. An identity already installed in Keychain, Team ID, or custom bundle ID can be selected with `ALTAB_CODE_SIGN_IDENTITY`, `ALTAB_TEAM_ID`, and `ALTAB_BUNDLE_ID`; ignored `config/local.xcconfig` settings are also supported. See [the contributor build guide](docs/contributing.md) for stable-permission signing and Debug/QA builds.
 
 The routine local build stops with the app in `DerivedData`; it does not create redistribution artifacts. Maintainers can separately invoke the optional packager to create an unsigned Release binary, matching dSYM, exact corresponding source archive, build manifest, release notes, and SHA-256 checksums from an explicit tag or full commit with:
 
