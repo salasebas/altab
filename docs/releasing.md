@@ -1,6 +1,8 @@
-# Packaging a release
+# Packaging redistribution artifacts
 
-AlTab releases are assembled from an explicit Git tag or full 40-character commit. The packager exports that revision with `git archive`, builds inside the exported tree at a stable commit-derived path, normalizes package ordering and timestamps, and publishes that exact source alongside the binary. Ignored local configuration such as `config/local.xcconfig`, signing identities, and maintainer secrets cannot enter the build.
+This is an optional downstream redistribution tool, not AlTab's normal local build. Routine development uses the Debug command in `ai/build.sh` and leaves its products in `DerivedData`; it does not package or publish anything. Normal pull-request CI validates source, tests, and Debug/Release compilation without invoking this tool or requiring its release prose and templates.
+
+Redistribution artifacts are assembled from an explicit Git tag or full 40-character commit. The packager exports that revision with `git archive`, builds inside the exported tree at a stable commit-derived path, normalizes package ordering and timestamps, and places that exact source beside the binary. Ignored local configuration such as `config/local.xcconfig`, signing identities, and maintainer secrets cannot enter the build.
 
 ## Prerequisites
 
@@ -8,7 +10,13 @@ AlTab releases are assembled from an explicit Git tag or full 40-character commi
 - Git, `zip`, `gzip`, `shasum`, and the standard macOS developer tools
 - A revision that already contains the packaging and validation scripts
 
-From this repository, run one documented command:
+When maintaining the packaging tool, run its focused preflight explicitly:
+
+```bash
+scripts/check_release_packaging.sh
+```
+
+To assemble artifacts from this repository, run:
 
 ```bash
 scripts/package_release.sh <tag-or-commit>
@@ -28,7 +36,7 @@ The command creates `dist/AlTab-<release>/` containing:
 - `AlTab-<release>-RELEASE-NOTES.md`: rendered from the repository template
 - `SHA256SUMS`: SHA-256 checksums for every other published artifact
 
-The current packager intentionally produces an **unsigned and not notarized** universal Release build. Signing and notarization require a separately designed fork-owned identity and workflow.
+The current packager intentionally produces an **unsigned and not notarized** universal Release build. Signing and notarization require a separately designed fork-owned identity and workflow. No repository workflow invokes this packager, receives release secrets, or publishes its output.
 
 The script verifies arm64 and x86_64 slices, matching app/dSYM UUIDs, absence of a Developer ID authority and Team ID, complete checksums and notices, source-archive identity, and both service-isolation and unrestricted-feature guards after extracting the final ZIP. Xcode may emit a non-identifying ad hoc Mach-O signature even when code signing is disabled; the verifier accepts only that state or a fully unsigned bundle. It rejects known upstream signing identities, update or licensing endpoints, analytics credentials, and release-secret markers.
 
@@ -36,8 +44,16 @@ The script verifies arm64 and x86_64 slices, matching app/dSYM UUIDs, absence of
 
 Extract the corresponding source archive, select the Xcode version recorded in the manifest, and run the exact `xcodebuild` command recorded there. The command uses the Release scheme with code signing disabled and `ARCHS='arm64 x86_64'`. The tracked Apple font subset is a build input and is not regenerated during packaging.
 
-Verify downloaded artifacts before using them:
+Verify downloaded checksums before using the artifacts:
 
 ```bash
 shasum -a 256 --check SHA256SUMS
 ```
+
+The complete verifier checks the exact checksum set, extracts and inspects the supplied source archive, runs the guards from that archived revision, and validates the packaged app without consulting another checkout:
+
+```bash
+scripts/verify_release_artifacts.sh <artifact-directory> <full-commit> <label>
+```
+
+The verifier executes guard scripts from the supplied source archive. Only run it after obtaining the expected full commit and checksums through a channel you trust; the colocated checksum file establishes consistency, not artifact authenticity.
