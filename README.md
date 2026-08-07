@@ -128,6 +128,20 @@ open DerivedData/Local/Build/Products/Release/AlTab.app
 
 If you copied `AlTab.app` elsewhere, replace that copy with the newly built app and relaunch. Preferences for the same bundle ID are preserved by macOS; a different signing identity or bundle ID can require re-granting permissions.
 
+### Uninstall
+
+Removing `AlTab.app` does not erase local state. Residuals for the default Release identity may include:
+
+| Residual | Location |
+|---|---|
+| Preferences | `~/Library/Preferences/dev.salasebas.AlTab.plist` (and related CFPreferences) |
+| Local usage counters (About UI only) | UserDefaults suite `dev.salasebas.AlTab.usage` |
+| Login item | `~/Library/LaunchAgents/dev.salasebas.AlTab.plist` if **Start at login** was enabled |
+| Permissions | Accessibility / Screen Recording grants for this code signature in System Settings |
+| Optional self-signed identity | Keychain entry from `scripts/codesign/setup_local.sh` — remove with `scripts/codesign/remove_local.sh` |
+
+Debug builds use `dev.salasebas.AlTabDev` with the same pattern. AlTab never deletes official AltTab preferences (`com.lwouis.alt-tab-macos`), license suites, or Keychain items.
+
 ### Troubleshooting
 
 | Problem | What to try |
