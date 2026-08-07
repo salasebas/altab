@@ -20,6 +20,7 @@ scripts/ensure_generated_files_are_up_to_date.sh
 scripts/check_service_isolation.sh
 scripts/check_unrestricted_features.sh
 scripts/check_legacy_preferences_import.sh
+scripts/check_local_codesign_setup.sh
 scripts/run_tests.sh "$derivedDataPath"
 git diff --check
 git diff --exit-code
