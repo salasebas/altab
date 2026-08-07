@@ -34,6 +34,13 @@ for field in "${releaseManifestFields[@]}"; do require_text scripts/package_rele
 for placeholder in RELEASE TAG COMMIT BINARY_ARTIFACT SOURCE_ARTIFACT MANIFEST; do
   require_text .github/RELEASE_NOTES_TEMPLATE.md "{{$placeholder}}"
 done
+require_file .github/SOURCE_MILESTONE_NOTES_TEMPLATE.md
+for placeholder in VERSION TAG COMMIT CHANGES; do
+  require_text .github/SOURCE_MILESTONE_NOTES_TEMPLATE.md "{{$placeholder}}"
+done
+require_text docs/releasing.md 'altab-vMAJOR.MINOR.PATCH'
+require_text docs/releasing.md 'source-only'
+require_text scripts/package_release.sh 'altab-v'
 require_text scripts/package_release.sh 'scripts/verify_release_artifacts.sh'
 require_text scripts/package_release.sh 'scripts/check_service_isolation.sh'
 require_text scripts/package_release.sh 'scripts/check_symbol_assets.sh'

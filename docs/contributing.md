@@ -26,6 +26,10 @@ The workflow has read-only repository permissions, does not persist checkout cre
 
 CI is validation only. Its unsigned app bundle is not a release, the workflow does not publish or contact upstream infrastructure, and system-wide macOS interactions still require manual QA. The workflow pins Xcode 26.0.1, pnpm 11.5.2, ripgrep 15.2.0, SwiftFormat 0.62.1, and every reusable action. Contributors can run the same validation locally with `corepack enable`, `corepack install`, `pnpm install --frozen-lockfile`, and `scripts/validate_ci.sh` from a machine with Xcode 26, ripgrep, and SwiftFormat 0.62.1 available.
 
+## Source milestones
+
+Official AlTab milestones are **source-only** Git tags (`altab-vMAJOR.MINOR.PATCH`) plus GitHub release notes. They never attach compiled application binaries. Product versioning, how to cut a milestone, and how users update/rebuild are documented in [releasing.md](releasing.md). Do not reuse retained upstream `v*` tags for AlTab milestones.
+
 ## Mac development
 
 Mac development ecosystem is pretty terrible in general. They keep piling on the tech stacks on top of each other, so you have C APIs, ObjC APIs, Swift APIs, Interface builder, Playgrounds, Swift UI, Mac Catalyst. All these are bridging with each other with a bunch of macros, SDKs glue, compiler flags, compatibility mode, XCode legacy build system, etc. For alt-tab, we are on Swift 5.0. Note that swift just recently started being stable, but overall any change of version breaks a lot of stuff. Swift itself is the mainstream language with the worst governance I’ve seen in modern times.

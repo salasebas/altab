@@ -11,6 +11,19 @@ An independent, community-maintained fork of [AltTab for macOS](https://github.c
 > [!IMPORTANT]
 > This repository is not affiliated with or endorsed by the AltTab maintainers. Please report problems with this fork in [AlTab Issues](https://github.com/salasebas/altab/issues), not to the upstream project. This repository does **not** publish official binaries and has **no** in-app updater.
 
+## Current source milestone
+
+The first audited **source-only** milestone is **[AlTab 1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0)** (`altab-v1.0.0`). It is a Git tag and release notes only—no `.app`, DMG, PKG, or update feed is attached. Product versioning, future milestones, and update/rebuild steps are documented in [docs/releasing.md](docs/releasing.md).
+
+Pin a clean checkout to that milestone when you want a frozen, reviewed revision:
+
+```bash
+git clone https://github.com/salasebas/altab.git
+cd altab
+git checkout altab-v1.0.0
+scripts/build_local.sh
+```
+
 ## Direction
 
 AlTab preserves AltTab's fast AppKit window-switching experience. Every locally implemented user-facing feature is available to everyone: Search, Search on Release, Auto size, App Icons and Titles, additional shortcuts, and per-shortcut options remain controlled by your preferences only.
@@ -121,12 +134,13 @@ There is no Sparkle feed and no in-app updater. Update from source:
 
 ```bash
 cd altab
-git pull
+git fetch origin --tags
+git pull                  # or: git checkout altab-vMAJOR.MINOR.PATCH
 scripts/build_local.sh
 open DerivedData/Local/Build/Products/Release/AlTab.app
 ```
 
-If you copied `AlTab.app` elsewhere, replace that copy with the newly built app and relaunch. Preferences for the same bundle ID are preserved by macOS; a different signing identity or bundle ID can require re-granting permissions.
+If you copied `AlTab.app` elsewhere, replace that copy with the newly built app and relaunch. Preferences for the same bundle ID are preserved by macOS; a different signing identity or bundle ID can require re-granting permissions. Milestone tags and the versioning policy live in [docs/releasing.md](docs/releasing.md).
 
 ### Uninstall
 
@@ -163,13 +177,13 @@ On first launch, AlTab may locally import compatible settings from the official 
 
 ## Optional redistribution packaging
 
-The repository does not publish official binaries. Maintainers who need to assemble optional unsigned redistribution artifacts (app ZIP, matching dSYM, exact source archive, manifest, notes, checksums) from an explicit tag or full commit can use:
+Official milestones ship **source only** (Git tag + release notes). Maintainers who still need to assemble optional unsigned redistribution artifacts (app ZIP, matching dSYM, exact source archive, manifest, notes, checksums) from an explicit tag or full commit can use:
 
 ```bash
 scripts/package_release.sh <tag-or-commit>
 ```
 
-That tool is separate from the normal local build. See [docs/releasing.md](docs/releasing.md). If anyone publishes preview binaries before Developer ID signing and notarization exist, each build must be labeled **unsigned and not notarized**. Users must never be told to disable system-wide security protections.
+That tool is separate from the normal local build and is not used for official milestone publication. See [docs/releasing.md](docs/releasing.md). If anyone publishes preview binaries before Developer ID signing and notarization exist, each build must be labeled **unsigned and not notarized**. Users must never be told to disable system-wide security protections.
 
 ## Relationship with upstream
 

@@ -1,6 +1,34 @@
 # Changelog
 
-Entries below the AlTab fork point are retained upstream AltTab history. They document inherited provenance and must not be presented as AlTab release notes. AlTab releases use the template in [`.github/RELEASE_NOTES_TEMPLATE.md`](.github/RELEASE_NOTES_TEMPLATE.md) and identify their exact fork commit, source archive, build manifest, and signing/notarization status.
+AlTab **source milestones** are listed first. They use Git tags of the form `altab-vMAJOR.MINOR.PATCH` and publish source-only GitHub release notes ([`.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md`](.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md)). No official compiled application binary is attached.
+
+Entries below the AlTab fork point are retained upstream AltTab history. They document inherited provenance and must not be presented as AlTab release notes. Optional unsigned redistribution packaging (not used for official milestones) uses [`.github/RELEASE_NOTES_TEMPLATE.md`](.github/RELEASE_NOTES_TEMPLATE.md).
+
+## [1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0) — source milestone (2026-08-07)
+
+First audited **source-only** AlTab milestone. Tag: `altab-v1.0.0`.
+
+### Product
+
+* Independent GPL-3.0 fork of AltTab with AlTab branding, bundle IDs, and repository links
+* Every included user-facing feature available without license, trial, account, or paid-access state
+* One-time local import of compatible AltTab preferences into missing AlTab keys
+* No Sparkle updater, AppCenter/crash reporting, analytics, or upstream licensing endpoints
+
+### Build and distribution model
+
+* Supported path: clone and build with `scripts/build_local.sh` (Xcode 26)
+* Optional stable local self-signed identity for rebuild-stable permissions
+* Source validation CI only; optional GPL redistribution packaging is isolated and never publishes automatically
+* Redistributable symbol assets (no restricted Apple font subset)
+
+### Provenance
+
+* Fork point: upstream AltTab `v11.4.3` (`10af70aaaaac0a2dbb7d0aaa61cda21b065c203f`)
+* Last reviewed upstream at milestone: `081f3ee4014e03557c2ab39e9e168dac308fa49b` (`v11.4.4`); no automatic parity claimed
+* Versioning and update policy: [docs/releasing.md](docs/releasing.md)
+
+## Upstream history (not AlTab milestones)
 
 ## [11.4.3](https://github.com/lwouis/alt-tab-macos/compare/v11.4.2...v11.4.3) (2026-07-09)
 
