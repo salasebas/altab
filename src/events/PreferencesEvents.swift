@@ -10,6 +10,7 @@ class PreferencesEvents {
         "appearanceStyle",
         "appearanceSize",
         "appearanceTheme",
+        "tileSpacing",
         "showOnScreen",
     ]
 

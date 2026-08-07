@@ -130,6 +130,9 @@
 /* No comment provided by engineer. */
 "Close window" = "Close window";
 
+/* Tile spacing option */
+"Compact" = "Compact";
+
 /* No comment provided by engineer. */
 "Conflicting shortcut" = "Conflicting shortcut";
 
@@ -150,6 +153,9 @@
 
 /* Menubar option */
 "Debug tools" = "Debug tools";
+
+/* Tile spacing option */
+"Default" = "Default";
 
 /* No comment provided by engineer. */
 "Disabled" = "Disabled";
@@ -257,6 +263,9 @@
 "Later" = "Later";
 
 /* No comment provided by engineer. */
+"Layout" = "Layout";
+
+/* No comment provided by engineer. */
 "Light" = "Light";
 
 /* No comment provided by engineer. */
@@ -342,6 +351,9 @@
 
 /* No comment provided by engineer. */
 "Recently Focused First" = "Recently Focused First";
+
+/* Tile spacing option */
+"Relaxed" = "Relaxed";
 
 /* No comment provided by engineer. */
 "Reset settings and restart" = "Reset settings and restart";
@@ -463,6 +475,9 @@
 /* No comment provided by engineer. */
 "Space Order" = "Space Order";
 
+/* Tile spacing option */
+"Spacious" = "Spacious";
+
 /* No comment provided by engineer. */
 "Start" = "Start";
 
@@ -507,6 +522,9 @@
 
 /* Menubar callout subject */
 "Thumbnails and window previews" = "Thumbnails and window previews";
+
+/* No comment provided by engineer. */
+"Tile spacing" = "Tile spacing";
 
 /* No comment provided by engineer. */
 "Title truncation" = "Title truncation";

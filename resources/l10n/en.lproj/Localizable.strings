@@ -43,11 +43,13 @@
 "Check permissions…" = "Check permissions…";
 "Close window" = "Close window";
 "Conflicting shortcut" = "Conflicting shortcut";
+"Compact" = "Compact";
 "Controls" = "Controls";
 "Could not move to Applications folder" = "Could not move to Applications folder";
 "Cursor follows focus" = "Cursor follows focus";
 "Customize more…" = "Customize more…";
 "Dark" = "Dark";
+"Default" = "Default";
 "Debug tools" = "Debug tools";
 "Disabled" = "Disabled";
 "Do Not Move" = "Do Not Move";
@@ -84,6 +86,7 @@
 "Language Change" = "Language Change";
 "Large" = "Large";
 "Later" = "Later";
+"Layout" = "Layout";
 "Light" = "Light";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@.";
 "Medium" = "Medium";
@@ -113,6 +116,7 @@
 "Quit app" = "Quit app";
 "Recently Created First" = "Recently Created First";
 "Recently Focused First" = "Recently Focused First";
+"Relaxed" = "Relaxed";
 "Reset settings and restart" = "Reset settings and restart";
 "Reset settings and restart…" = "Reset settings and restart…";
 "Restart Now" = "Restart Now";
@@ -149,6 +153,7 @@
 "Show windows from screens" = "Show windows from screens";
 "Show windows from Spaces" = "Show windows from Spaces";
 "Size" = "Size";
+"Spacious" = "Spacious";
 "Skipped" = "Skipped";
 "Small" = "Small";
 "Source code" = "Source code";
@@ -163,6 +168,7 @@
 "The application needs to restart to apply the imported settings." = "The application needs to restart to apply the imported settings.";
 "The application needs to restart to apply the language change." = "The application needs to restart to apply the language change.";
 "Theme" = "Theme";
+"Tile spacing" = "Tile spacing";
 "This permission is needed to focus windows after you release the shortcut" = "This permission is needed to focus windows after you release the shortcut";
 "This permission is needed to show thumbnails and preview of open windows" = "This permission is needed to show thumbnails and preview of open windows";
 "This will keep your Downloads folder uncluttered." = "This will keep your Downloads folder uncluttered.";

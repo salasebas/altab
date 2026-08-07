@@ -451,42 +451,26 @@ class TilesView {
         let labelHeight = Self.layoutCache.labelHeight
         let height = TileView.height(labelHeight)
         let isLeftToRight = App.shared.userInterfaceLayoutDirection == .leftToRight
-        let startingX = isLeftToRight ? Appearance.interCellPadding : widthMax - Appearance.interCellPadding
-        var currentX = startingX
-        var currentY = Appearance.interCellPadding
-        var maxY = currentY + height + Appearance.interCellPadding
+        var layout = TileGridLayout(widthMax: widthMax, tileHeight: height, spacing: Appearance.interCellPadding, isLeftToRight: isLeftToRight)
         var index = 0
         while index < TilesView.recycledViews.count {
-            guard SwitcherSession.isActive else { return maxY }
+            guard SwitcherSession.isActive else { return layout.maxY }
             defer { index += 1 }
             let view = TilesView.recycledViews[index]
             guard index < Windows.list.count else { break }
             let window = Windows.list[index]
             guard Windows.shouldDisplay(window) else { view.frame = .zero; continue }
             view.updateRecycledCellWithNewContent(window, index, height)
-            let width = view.frame.size.width
-            let projectedX = projectedWidth(currentX, width).rounded(.down)
-            if needNewLine(projectedX, widthMax) {
-                currentX = startingX
-                currentY = (currentY + height + Appearance.interCellPadding).rounded(.down)
-                currentX = projectedWidth(currentX, width).rounded(.down)
-                maxY = max(currentY + height + Appearance.interCellPadding, maxY)
-            } else {
-                currentX = projectedX
-            }
+            _ = layout.place(view.frame.size.width)
         }
-        return maxY
+        return layout.maxY
     }
 
     private static func layoutTileViews(_ widthMax: CGFloat) -> (CGFloat, CGFloat, CGFloat, [Int])? {
         let labelHeight = Self.layoutCache.labelHeight
         let height = TileView.height(labelHeight)
         let isLeftToRight = App.shared.userInterfaceLayoutDirection == .leftToRight
-        let startingX = isLeftToRight ? Appearance.interCellPadding : widthMax - Appearance.interCellPadding
-        var currentX = startingX
-        var currentY = Appearance.interCellPadding
-        var maxX = CGFloat(0)
-        var maxY = currentY + height + Appearance.interCellPadding
+        var layout = TileGridLayout(widthMax: widthMax, tileHeight: height, spacing: Appearance.interCellPadding, isLeftToRight: isLeftToRight)
         var newViews = [TileView]()
         var rowSignature = [Int]()
         rows.removeAll(keepingCapacity: true)
@@ -504,18 +488,10 @@ class TilesView {
                 }
                 view.updateRecycledCellWithNewContent(window, index, height)
                 let width = view.frame.size.width
-                let projectedX = projectedWidth(currentX, width).rounded(.down)
-                if needNewLine(projectedX, widthMax) {
-                    currentX = startingX
-                    currentY = (currentY + height + Appearance.interCellPadding).rounded(.down)
-                    view.frame.origin = CGPoint(x: localizedCurrentX(currentX, width), y: currentY)
-                    currentX = projectedWidth(currentX, width).rounded(.down)
-                    maxY = max(currentY + height + Appearance.interCellPadding, maxY)
+                let placement = layout.place(width)
+                view.frame.origin = placement.origin
+                if placement.startsNewRow {
                     rows.append([TileView]())
-                } else {
-                    view.frame.origin = CGPoint(x: localizedCurrentX(currentX, width), y: currentY)
-                    currentX = projectedX
-                    maxX = max(isLeftToRight ? currentX : widthMax - currentX, maxX)
                 }
                 rows[rows.count - 1].append(view)
                 newViews.append(view)
@@ -535,25 +511,7 @@ class TilesView {
         if thumbnailUnderLayer.superlayer !== docLayer {
             docLayer.insertSublayer(thumbnailUnderLayer, at: 0)
         }
-        return (maxX, maxY, labelHeight, rowSignature)
-    }
-
-    private static func needNewLine(_ projectedX: CGFloat, _ widthMax: CGFloat) -> Bool {
-        if App.shared.userInterfaceLayoutDirection == .leftToRight {
-            return projectedX > widthMax
-        }
-        return projectedX < 0
-    }
-
-    private static func projectedWidth(_ currentX: CGFloat, _ width: CGFloat) -> CGFloat {
-        if App.shared.userInterfaceLayoutDirection == .leftToRight {
-            return currentX + width + Appearance.interCellPadding
-        }
-        return currentX - width - Appearance.interCellPadding
-    }
-
-    private static func localizedCurrentX(_ currentX: CGFloat, _ width: CGFloat) -> CGFloat {
-        App.shared.userInterfaceLayoutDirection == .leftToRight ? currentX : currentX - width
+        return (layout.maxX, layout.maxY, labelHeight, rowSignature)
     }
 
     private static func layoutParentViews(_ maxX: CGFloat, _ widthMax: CGFloat, _ maxY: CGFloat, _ labelHeight: CGFloat) {
@@ -597,10 +555,10 @@ class TilesView {
             searchField.removeFromSuperview()
         }
         if App.shared.userInterfaceLayoutDirection == .rightToLeft {
-            let croppedWidth = max(0, TilesView.thumbnailsWidth - maxX)
-            scrollView.documentView!.subviews.forEach { $0.frame.origin.x -= croppedWidth }
+            let offset = TileGridGeometry.documentOffsetX(widthMax, TilesView.thumbnailsWidth, false)
+            scrollView.documentView!.subviews.forEach { $0.frame.origin.x -= offset }
         }
-        scrollView.documentView!.frame.size = NSSize(width: maxX, height: maxY)
+        scrollView.documentView!.frame.size = NSSize(width: TilesView.thumbnailsWidth, height: maxY)
         let docSize = scrollView.documentView!.frame.size
         thumbnailOverView.frame = CGRect(origin: .zero, size: docSize)
         thumbnailUnderLayer.frame = CGRect(origin: .zero, size: docSize)
@@ -632,7 +590,7 @@ class TilesView {
     static func centerRows(_ maxX: CGFloat) {
         for row in rows where !row.isEmpty {
             guard SwitcherSession.isActive else { return }
-            let rowWidth = Appearance.interCellPadding + row.reduce(CGFloat(0)) { $0 + $1.frame.size.width + Appearance.interCellPadding }
+            let rowWidth = TileGridGeometry.rowWidth(row.map { $0.frame.size.width }, Appearance.interCellPadding)
             let offset = ((maxX - rowWidth) / 2).rounded()
             if offset > 0 {
                 for view in row {

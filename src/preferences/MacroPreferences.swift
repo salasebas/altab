@@ -332,6 +332,31 @@ enum AppearanceSizePreference: CaseIterable, SfSymbolMacroPreference {
     }
 }
 
+enum TileSpacingPreference: CaseIterable, MacroPreference {
+    case compact
+    case standard
+    case relaxed
+    case spacious
+
+    var localizedString: LocalizedString {
+        switch self {
+            case .compact: return NSLocalizedString("Compact", comment: "Tile spacing option")
+            case .standard: return NSLocalizedString("Default", comment: "Tile spacing option")
+            case .relaxed: return NSLocalizedString("Relaxed", comment: "Tile spacing option")
+            case .spacious: return NSLocalizedString("Spacious", comment: "Tile spacing option")
+        }
+    }
+
+    var points: CGFloat {
+        switch self {
+            case .compact: return 0
+            case .standard: return 1
+            case .relaxed: return 4
+            case .spacious: return 8
+        }
+    }
+}
+
 enum ThemePreference: CaseIterable, ImageMacroPreference {
     case macOs
     case windows10

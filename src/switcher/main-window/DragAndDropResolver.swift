@@ -18,7 +18,7 @@ enum DragAndDropResolver {
         case track(restartTimer: Bool)
     }
 
-    /// Targeting reuses hover's `findTarget` (which expands each tile by 1px so the inter-tile gap still
+    /// Targeting reuses hover's `findTarget` (which expands each tile by the configured spacing so the inter-tile gap still
     /// resolves to a tile) and hover's movement deadzone, so dragging feels exactly like hovering. But
     /// dragging is a stronger intent than hover, so the auto-select timer ALWAYS runs here — hover gates it
     /// on a preference, dragging never does. The timer (re)arms on a target change or once the pointer
