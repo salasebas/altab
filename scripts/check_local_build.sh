@@ -78,6 +78,7 @@ derivedDataPath=""
 architecture=""
 onlyActiveArch=""
 identity="-"
+identityFromCommandLine=false
 teamId=""
 bundleId="dev.salasebas.AlTab"
 previous=""
@@ -91,7 +92,7 @@ for argument in "$@"; do
     build) build=true ;;
     ARCHS=*) architecture="${argument#ARCHS=}" ;;
     ONLY_ACTIVE_ARCH=*) onlyActiveArch="${argument#ONLY_ACTIVE_ARCH=}" ;;
-    CODE_SIGN_IDENTITY=*) identity="${argument#CODE_SIGN_IDENTITY=}" ;;
+    CODE_SIGN_IDENTITY=*) identity="${argument#CODE_SIGN_IDENTITY=}"; identityFromCommandLine=true ;;
     DEVELOPMENT_TEAM=*) teamId="${argument#DEVELOPMENT_TEAM=}" ;;
     PRODUCT_BUNDLE_IDENTIFIER=*) bundleId="${argument#PRODUCT_BUNDLE_IDENTIFIER=}" ;;
   esac
@@ -100,6 +101,9 @@ done
 [[ -n "$derivedDataPath" && -n "$architecture" && -n "$onlyActiveArch" ]] || exit 91
 if [[ "$showSettings" == true ]]; then
   printf '%s\n' "$@" >"$stateRoot/settings-arguments.log"
+  if [[ "$identityFromCommandLine" == true ]]; then
+    printf 'Build settings from command line:\n    CODE_SIGN_IDENTITY = %s\n\n' "$identity"
+  fi
   cat <<SETTINGS
 Build settings for action build and target alt-tab-macos:
     ARCHS = $architecture

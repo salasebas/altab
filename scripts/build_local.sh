@@ -18,7 +18,7 @@ fail() {
 read_build_setting() {
   local name="$1"
   local values
-  values="$(printf '%s\n' "$effectiveSettings" | sed -n "s/^[[:space:]]*$name = //p")"
+  values="$(printf '%s\n' "$targetSettings" | sed -n "s/^[[:space:]]*$name = //p")"
   [[ -n "$values" ]] || fail "Xcode did not report $name"
   [[ "$values" != *$'\n'* ]] || fail "Xcode reported $name more than once"
   printf '%s' "$values"
@@ -93,6 +93,12 @@ buildArguments=(
   "${buildSettings[@]}"
 )
 effectiveSettings="$(xcodebuild "${buildArguments[@]}" -showBuildSettings)" || fail "could not resolve Release build settings"
+targetSettings="$(printf '%s\n' "$effectiveSettings" | awk '
+  $0 == "Build settings for action build and target alt-tab-macos:" { inspectingTarget = 1; next }
+  inspectingTarget && /^Build settings for action build and target / { exit }
+  inspectingTarget { print }
+')"
+[[ -n "$targetSettings" ]] || fail "Xcode did not report build settings for the alt-tab-macos target"
 targetBuildDirectory="$(read_build_setting TARGET_BUILD_DIR)"
 fullProductName="$(read_build_setting FULL_PRODUCT_NAME)"
 resolvedBundleId="$(read_build_setting PRODUCT_BUNDLE_IDENTIFIER)"
