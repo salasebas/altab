@@ -127,6 +127,9 @@
 /* No comment provided by engineer. */
 "Capture windows in the background" = "Capture windows in the background";
 
+/* No comment provided by engineer. */
+"Center" = "Center";
+
 /* Menubar option */
 "Check permissions…" = "Check permissions…";
 
@@ -269,6 +272,9 @@
 "Layout" = "Layout";
 
 /* No comment provided by engineer. */
+"Leading" = "Leading";
+
+/* No comment provided by engineer. */
 "Light" = "Light";
 
 /* No comment provided by engineer. */
@@ -366,6 +372,9 @@
 
 /* Tile spacing reset button help */
 "Restore tile spacing to 8 points." = "Restore tile spacing to 8 points.";
+
+/* No comment provided by engineer. */
+"Row alignment" = "Row alignment";
 
 /* No comment provided by engineer. */
 "Screen including menu bar" = "Screen including menu bar";
@@ -537,6 +546,9 @@
 
 /* No comment provided by engineer. */
 "Trackpad haptic feedback" = "Trackpad haptic feedback";
+
+/* No comment provided by engineer. */
+"Trailing" = "Trailing";
 
 /* No comment provided by engineer. */
 "Trigger" = "Trigger";

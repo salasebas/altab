@@ -110,24 +110,27 @@ class CustomizeStyleSheet: SheetWindow {
     private static let labelTitleTruncation = NSLocalizedString("Title truncation", comment: "")
     private static let labelLayout = NSLocalizedString("Layout", comment: "")
     private static let labelTileSpacing = NSLocalizedString("Tile spacing", comment: "")
+    private static let labelRowAlignment = NSLocalizedString("Row alignment", comment: "")
 
     /// Pre-build search index for the open-button. See `SettingsSearchIndex.sheetSearchableStrings`.
-    static let searchableStrings: [String] = [
-        labelShowTitles,
-        labelTitleTruncation,
-        labelLayout,
-        labelTileSpacing,
-        tileSpacingResetTitle,
-        tileSpacingAccessibilityHelp,
-        tileSpacingResetHelp,
-        ShowHideIllustratedView.hideStatusIconsLabel,
-        ShowHideIllustratedView.hideStatusIconsSubtitle,
-        ShowHideIllustratedView.hideSpaceNumberLabelsLabel,
-        ShowHideIllustratedView.hideColoredCirclesLabel,
-        ShowHideIllustratedView.showSymbolsInHoverControlsLabel,
-        IllustratedImageThemeView.placeholderLabelText,
-    ] + ShowTitlesPreference.allCases.map { $0.localizedString }
-      + TitleTruncationPreference.allCases.map { $0.localizedString }
+    static var searchableStrings: [String] {
+        var strings = [
+            labelShowTitles,
+            labelTitleTruncation,
+            ShowHideIllustratedView.hideStatusIconsLabel,
+            ShowHideIllustratedView.hideStatusIconsSubtitle,
+            ShowHideIllustratedView.hideSpaceNumberLabelsLabel,
+            ShowHideIllustratedView.hideColoredCirclesLabel,
+            ShowHideIllustratedView.showSymbolsInHoverControlsLabel,
+            IllustratedImageThemeView.placeholderLabelText,
+        ] + ShowTitlesPreference.allCases.map { $0.localizedString }
+          + TitleTruncationPreference.allCases.map { $0.localizedString }
+        if Preferences.appearanceStyle != .titles {
+            strings += [labelLayout, labelTileSpacing, labelRowAlignment, tileSpacingResetTitle, tileSpacingAccessibilityHelp, tileSpacingResetHelp]
+                + RowAlignmentPreference.allCases.map { $0.localizedString }
+        }
+        return strings
+    }
 
     static let illustratedImageWidth = width
 
@@ -137,11 +140,10 @@ class CustomizeStyleSheet: SheetWindow {
     private var tileSpacingControl: TileSpacingControl!
 
     override func makeContentView() -> NSView {
-        // The per-shortcut Customize sheet was trimmed to just style-tied global toggles. The
-        // settings that used to live here either (a) moved to per-shortcut storage and now live
-        // in `ControlsTab` (`showAppsOrWindows`, `showTabsAsWindows`) or (b) were dropped
-        // entirely (`alignThumbnails`). The "Show & Hide" / "Advanced" tab control is gone too —
-        // the remaining rows fit comfortably in one flat list.
+        // The per-shortcut Customize sheet was trimmed to style-tied global options. Grouping
+        // settings moved to per-shortcut storage in `ControlsTab`; row alignment remains global.
+        // The old "Show & Hide" / "Advanced" tab control is gone because the remaining options
+        // fit comfortably in one flat list.
         illustratedImageView = IllustratedImageThemeView(style, CustomizeStyleSheet.illustratedImageWidth)
         showHideIllustratedView = ShowHideIllustratedView(style, illustratedImageView)
         let showHideView = showHideIllustratedView.makeView()
@@ -170,12 +172,27 @@ class CustomizeStyleSheet: SheetWindow {
 
     private func makeLayoutView() -> NSView {
         let table = TableGroupView(title: Self.labelLayout, width: CustomizeStyleSheet.width)
+        let rowAlignment = TableGroupView.Row(leftTitle: Self.labelRowAlignment,
+            rightViews: LabelAndControl.makeRadioButtons("alignThumbnails", RowAlignmentPreference.allCases, extraAction: { [weak self] _ in
+                self?.showRowAlignmentIllustratedImage()
+            }))
+        table.addRow(rowAlignment, onMouseEntered: { [weak self] _, _ in
+            self?.showRowAlignmentIllustratedImage()
+        })
         tileSpacingControl = TileSpacingControl(Self.labelTileSpacing)
         table.addRow(leftViews: [TableGroupView.makeText(Self.labelTileSpacing)], rightViews: [tileSpacingControl.controls], secondaryViews: [tileSpacingControl.preview], secondaryViewsAlignment: .right, secondaryViewsTopGap: 8)
+        table.onMouseExited = { [weak self] event, view in
+            guard let self else { return }
+            IllustratedImageThemeView.resetImage(self.illustratedImageView, event, view)
+        }
         return table
     }
 
     private func showTitlesIllustratedImage() {
         illustratedImageView.highlight(true, Preferences.showTitles.image.name)
+    }
+
+    private func showRowAlignmentIllustratedImage() {
+        illustratedImageView.highlight(true, Preferences.rowAlignment.image.name)
     }
 }

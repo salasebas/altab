@@ -40,6 +40,7 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "Отмена";
 "Capture windows in the background" = "Захватывать окна в фоновом режиме";
+"Center" = "Центр";
 "Check permissions…" = "Проверить разрешения…";
 "Close window" = "Закрыть окно";
 "Conflicting shortcut" = "Конфликт сочетания клавиш";
@@ -84,6 +85,8 @@
 "Language Change" = "Смена языка";
 "Large" = "Большой";
 "Later" = "Позже";
+"Layout" = "Макет";
+"Leading" = "Начало";
 "Light" = "Светлая";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS резервирует ⌘⌥⎋, ⌘⌥⇧⎋ и ⌘⌥⇧⌃⎋ для «Завершить принудительно», и их нельзя отвязать. AlTab не может их использовать.\n\nВаше изменение назначит одно из них на: %@.";
 "Medium" = "Средний";
@@ -116,6 +119,7 @@
 "Reset settings and restart" = "Сбросить настройки и перезапустить";
 "Reset settings and restart…" = "Сбросить настройки и перезапустить…";
 "Restart Now" = "Перезапустить сейчас";
+"Row alignment" = "Выравнивание строк";
 "Screen including menu bar" = "Экран со строкой меню";
 "Screen including mouse" = "Экран с курсором мыши";
 "Screen Recording" = "Запись экрана";
@@ -172,6 +176,7 @@
 "Title truncation" = "Обрезка заголовков";
 "Titles" = "Заголовки";
 "Trackpad haptic feedback" = "Тактильный отклик трекпада";
+"Trailing" = "Конец";
 "Trigger" = "Триггер";
 "Unassign existing shortcut and continue" = "Снять текущее сочетание и продолжить";
 "Usage" = "Использование";

@@ -49,6 +49,7 @@ class LegacyPreferencesImporter {
             "theme": .enumeration(ThemePreference.allCases.count),
             "showOnScreen": .enumeration(ShowOnScreenPreference.allCases.count),
             "titleTruncation": .enumeration(TitleTruncationPreference.allCases.count),
+            "alignThumbnails": .enumeration(RowAlignmentPreference.allCases.count),
             "showTitles": .enumeration(ShowTitlesPreference.allCases.count),
             "fadeOutAnimation": .boolean,
             "previewFadeInAnimation": .boolean,

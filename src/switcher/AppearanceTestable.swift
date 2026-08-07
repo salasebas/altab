@@ -107,4 +107,22 @@ class AppearanceTestable {
         // Make sure the values are clamped between some reasonable bounds
         return (max(0.09, minRatio), min(0.30, maxRatio))
     }
+
+    /// Returns the horizontal origins that place a packed row at its semantic leading, center, or
+    /// trailing edge. The input frames may be anchored to a wider packing area than the final
+    /// container (as happens in RTL), so the result is derived from the row's actual bounds.
+    static func alignedRowOrigins(_ frames: [CGRect], _ containerWidth: CGFloat, _ edgePadding: CGFloat, _ alignment: RowAlignmentPreference, _ isLeftToRight: Bool) -> [CGFloat] {
+        guard let rowMinX = frames.map(\.minX).min(), let rowMaxX = frames.map(\.maxX).max() else { return [] }
+        let rowWidth = rowMaxX - rowMinX
+        let freeWidth = max(0, containerWidth - edgePadding * 2 - rowWidth)
+        let factor: CGFloat
+        switch alignment {
+            case .leading: factor = isLeftToRight ? 0 : 1
+            case .center: factor = 0.5
+            case .trailing: factor = isLeftToRight ? 1 : 0
+        }
+        let targetMinX = edgePadding + (freeWidth * factor).rounded()
+        let offset = targetMinX - rowMinX
+        return frames.map { $0.minX + offset }
+    }
 }

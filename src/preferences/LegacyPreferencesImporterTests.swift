@@ -87,6 +87,16 @@ final class LegacyPreferencesImporterTests: XCTestCase {
         XCTAssertEqual(Set(persistent().keys), [LegacyPreferencesImporter.completionKey])
     }
 
+    func testRowAlignmentImportsTrailing() {
+        XCTAssertEqual(run(["alignThumbnails": "2"]), .imported(importedCount: 1, invalidCount: 0, preservedCount: 0))
+        XCTAssertEqual(destination.string(forKey: "alignThumbnails"), "2")
+    }
+
+    func testRowAlignmentRejectsOutOfRangeValue() {
+        XCTAssertEqual(run(["alignThumbnails": "3"]), .imported(importedCount: 0, invalidCount: 1, preservedCount: 0))
+        XCTAssertNil(persistent()["alignThumbnails"])
+    }
+
     func testUnknownBannedIdentityPermissionLoginUpdateServiceAndLicenseFieldsNeverImport() {
         let banned: [String: Any] = [
             "licenseKey": "secret",
@@ -233,6 +243,15 @@ final class LegacyPreferencesImporterTests: XCTestCase {
         XCTAssertEqual(destination.string(forKey: "preferencesVersion"), "99.99.99")
     }
 
+    func testOlderSourceRowAlignmentTextIsNormalizedBeforeValidation() {
+        let source: [String: Any] = [
+            "alignThumbnails": "Right",
+            "preferencesVersion": "6.18.1",
+        ]
+        XCTAssertEqual(run(source), .imported(importedCount: 1, invalidCount: 0, preservedCount: 0))
+        XCTAssertEqual(destination.string(forKey: "alignThumbnails"), "2")
+    }
+
     func testImportThenAlTabSchemaMigrationPreservesCurrentImportedAndExplicitValues() {
         destination.setPersistentDomain(["language": "3", "preferencesVersion": "1"], forName: destinationDomainName)
         let source: [String: Any] = [
@@ -316,7 +335,7 @@ final class LegacyPreferencesImporterTests: XCTestCase {
     }
 
     func testAllowlistClassifiesEveryOwnedKeyAndRejectsBannedCategories() {
-        XCTAssertEqual(LegacyPreferencesImporter.allowedKeys.count, 215)
+        XCTAssertEqual(LegacyPreferencesImporter.allowedKeys.count, 216)
         XCTAssertEqual(Preferences.ownedKeys.subtracting(LegacyPreferencesImporter.allowedKeys), LegacyPreferencesImporter.excludedOwnedKeys)
         XCTAssertTrue(LegacyPreferencesImporter.allowedKeys.isDisjoint(with: LegacyPreferencesImporter.bannedExactKeys))
         XCTAssertEqual(Set(LegacyPreferencesImporter.rememberedSelectionKeys), [

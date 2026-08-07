@@ -283,6 +283,28 @@ enum ShowTitlesPreference: CaseIterable, MacroPreference {
     }
 }
 
+enum RowAlignmentPreference: CaseIterable, ImageMacroPreference {
+    case leading
+    case center
+    case trailing
+
+    var localizedString: LocalizedString {
+        switch self {
+            case .leading: return NSLocalizedString("Leading", comment: "")
+            case .center: return NSLocalizedString("Center", comment: "")
+            case .trailing: return NSLocalizedString("Trailing", comment: "")
+        }
+    }
+
+    var image: WidthHeightImage {
+        switch self {
+            case .leading: return WidthHeightImage(name: "align_thumbnails_leading")
+            case .center: return WidthHeightImage(name: "align_thumbnails_center")
+            case .trailing: return WidthHeightImage(name: "align_thumbnails_trailing")
+        }
+    }
+}
+
 enum AppearanceStylePreference: CaseIterable, ImageMacroPreference {
     case thumbnails
     case appIcons

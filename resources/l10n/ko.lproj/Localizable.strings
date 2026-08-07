@@ -40,6 +40,7 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "취소";
 "Capture windows in the background" = "백그라운드에서 윈도우 캡처";
+"Center" = "가운데";
 "Check permissions…" = "권한 확인…";
 "Close window" = "윈도우 닫기";
 "Conflicting shortcut" = "충돌하는 단축키";
@@ -84,6 +85,8 @@
 "Language Change" = "언어 변경";
 "Large" = "크게";
 "Later" = "나중에";
+"Layout" = "레이아웃";
+"Leading" = "시작";
 "Light" = "라이트";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS는 ⌘⌥⎋, ⌘⌥⇧⎋, ⌘⌥⇧⌃⎋를 강제 종료용으로 예약하며 해제할 수 없습니다. AlTab은 이를 사용할 수 없습니다.\n\n변경하면 이 중 하나가 %@에 할당됩니다.";
 "Medium" = "보통";
@@ -116,6 +119,7 @@
 "Reset settings and restart" = "설정 초기화 및 재시작";
 "Reset settings and restart…" = "설정 초기화 및 재시작…";
 "Restart Now" = "지금 재시작";
+"Row alignment" = "행 정렬";
 "Screen including menu bar" = "메뉴 막대가 있는 화면";
 "Screen including mouse" = "마우스가 있는 화면";
 "Screen Recording" = "화면 녹화";
@@ -172,6 +176,7 @@
 "Title truncation" = "제목 자르기";
 "Titles" = "제목";
 "Trackpad haptic feedback" = "트랙패드 햅틱 피드백";
+"Trailing" = "끝";
 "Trigger" = "트리거";
 "Unassign existing shortcut and continue" = "기존 단축키 할당 해제 후 계속";
 "Usage" = "사용량";

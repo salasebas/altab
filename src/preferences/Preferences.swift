@@ -59,6 +59,7 @@ class Preferences {
         schema.add("theme", ThemePreference.macOs.indexAsString)
         schema.add("showOnScreen", ShowOnScreenPreference.active.indexAsString)
         schema.add("titleTruncation", TitleTruncationPreference.end.indexAsString)
+        schema.add("alignThumbnails", RowAlignmentPreference.center.indexAsString)
         schema.add("showTitles", ShowTitlesPreference.windowTitle.indexAsString)
         schema.add("fadeOutAnimation", "false")
         schema.add("previewFadeInAnimation", "true")
@@ -161,6 +162,7 @@ class Preferences {
     static var theme: ThemePreference { ThemePreference.macOs/*CachedUserDefaults.macroPref("theme", ThemePreference.allCases)*/ }
     static var showOnScreen: ShowOnScreenPreference { CachedUserDefaults.macroPref("showOnScreen", ShowOnScreenPreference.allCases) }
     static var titleTruncation: TitleTruncationPreference { CachedUserDefaults.macroPref("titleTruncation", TitleTruncationPreference.allCases) }
+    static var rowAlignment: RowAlignmentPreference { CachedUserDefaults.macroPref("alignThumbnails", RowAlignmentPreference.allCases) }
     static var showTitles: ShowTitlesPreference { CachedUserDefaults.macroPref("showTitles", ShowTitlesPreference.allCases) }
     static var appsToShow: [AppsToShowPreference] { (0...maxShortcutCount).map { CachedUserDefaults.macroPref(indexToName("appsToShow", $0), AppsToShowPreference.allCases) } }
     static var spacesToShow: [SpacesToShowPreference] { (0...maxShortcutCount).map { CachedUserDefaults.macroPref(indexToName("spacesToShow", $0), SpacesToShowPreference.allCases) } }

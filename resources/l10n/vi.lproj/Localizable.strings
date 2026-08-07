@@ -40,6 +40,7 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "Hủy";
 "Capture windows in the background" = "Chụp cửa sổ ở chế độ nền";
+"Center" = "Giữa";
 "Check permissions…" = "Kiểm tra quyền…";
 "Close window" = "Đóng cửa sổ";
 "Conflicting shortcut" = "Phím tắt xung đột";
@@ -84,6 +85,8 @@
 "Language Change" = "Thay đổi ngôn ngữ";
 "Large" = "Lớn";
 "Later" = "Để sau";
+"Layout" = "Bố cục";
+"Leading" = "Đầu";
 "Light" = "Sáng";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS dành riêng ⌘⌥⎋, ⌘⌥⇧⎋, và ⌘⌥⇧⌃⎋ cho Buộc thoát và không thể gỡ bỏ. AlTab không thể sử dụng chúng.\n\nThay đổi của bạn sẽ gán một trong số đó cho: %@.";
 "Medium" = "Trung bình";
@@ -116,6 +119,7 @@
 "Reset settings and restart" = "Đặt lại cài đặt và khởi động lại";
 "Reset settings and restart…" = "Đặt lại cài đặt và khởi động lại…";
 "Restart Now" = "Khởi động lại ngay";
+"Row alignment" = "Căn chỉnh hàng";
 "Screen including menu bar" = "Màn hình có thanh menu";
 "Screen including mouse" = "Màn hình có con trỏ chuột";
 "Screen Recording" = "Ghi màn hình";
@@ -172,6 +176,7 @@
 "Title truncation" = "Cắt ngắn tiêu đề";
 "Titles" = "Tiêu đề";
 "Trackpad haptic feedback" = "Phản hồi xúc giác Trackpad";
+"Trailing" = "Cuối";
 "Trigger" = "Kích hoạt";
 "Unassign existing shortcut and continue" = "Bỏ gán phím tắt hiện có và tiếp tục";
 "Usage" = "Sử dụng";

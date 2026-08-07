@@ -40,6 +40,7 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "Batal";
 "Capture windows in the background" = "Tangkap jendela di latar belakang";
+"Center" = "Tengah";
 "Check permissions…" = "Periksa izin…";
 "Close window" = "Tutup jendela";
 "Conflicting shortcut" = "Pintasan bertentangan";
@@ -84,6 +85,8 @@
 "Language Change" = "Perubahan Bahasa";
 "Large" = "Besar";
 "Later" = "Nanti";
+"Layout" = "Tata letak";
+"Leading" = "Awal";
 "Light" = "Terang";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS mencadangkan ⌘⌥⎋, ⌘⌥⇧⎋, dan ⌘⌥⇧⌃⎋ untuk Paksa Keluar dan tidak dapat dilepaskan. AlTab tidak dapat menggunakannya.\n\nPerubahan Anda akan menetapkan salah satunya ke: %@.";
 "Medium" = "Sedang";
@@ -116,6 +119,7 @@
 "Reset settings and restart" = "Setel ulang pengaturan dan mulai ulang";
 "Reset settings and restart…" = "Setel ulang pengaturan dan mulai ulang…";
 "Restart Now" = "Mulai Ulang Sekarang";
+"Row alignment" = "Perataan baris";
 "Screen including menu bar" = "Layar termasuk bilah menu";
 "Screen including mouse" = "Layar termasuk tetikus";
 "Screen Recording" = "Perekaman Layar";
@@ -172,6 +176,7 @@
 "Title truncation" = "Pemotongan judul";
 "Titles" = "Judul";
 "Trackpad haptic feedback" = "Umpan balik haptik Trackpad";
+"Trailing" = "Akhir";
 "Trigger" = "Pemicu";
 "Unassign existing shortcut and continue" = "Hapus penetapan pintasan yang ada dan lanjutkan";
 "Usage" = "Penggunaan";

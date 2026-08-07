@@ -344,6 +344,15 @@ final class PreferencesMigrationsTests: XCTestCase {
         XCTAssertEqual(defaults.string(forKey: "theme"), "1")
     }
 
+    func testRowAlignmentTextValuesBecomeStableIndexes() {
+        let values = ["Left": "0", "Leading": "0", "Center": "1", "Right": "2", "Trailing": "2"]
+        for (legacy, expected) in values {
+            defaults.set(legacy, forKey: "alignThumbnails")
+            PreferencesMigrations.migrateDropdownsFromTextToIndexes()
+            XCTAssertEqual(defaults.string(forKey: "alignThumbnails"), expected, legacy)
+        }
+    }
+
     // MARK: - Helpers
 
     private func decodeExceptions() throws -> [ExceptionEntry] {

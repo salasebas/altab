@@ -17,12 +17,14 @@ Every imported key belongs to `Preferences.ownedKeys` and has a category-specifi
 | Static shortcuts | Focus, previous, cancel, close, minimize/deminimize, fullscreen, quit, hide/show app, search | Exact bounded storage dictionary, successful secure app decode, then canonical re-archive |
 | Keyboard triggers | `holdShortcut` and `nextWindowShortcut`, keyboard indices `0...8` | Exact bounded storage dictionary, successful secure app decode, then canonical re-archive |
 | Input behavior | Arrow keys, Vim keys, mouse hover, cursor-follow-focus, trackpad haptics | Exact Bool or current enum index |
-| Appearance | Colored-circle, hover-control-symbol, thumbnail, space-label and status-icon visibility; appearance style/size/theme; legacy theme; titles and truncation; active screen; display delay; fade animations; preview/capture behavior | Exact Bool, current enum index, or display delay `0...900` ms |
+| Appearance | Colored-circle, hover-control-symbol, thumbnail, space-label and status-icon visibility; appearance style/size/theme; row alignment; legacy theme; titles and truncation; active screen; display delay; fade animations; preview/capture behavior | Exact Bool, current enum index, or display delay `0...900` ms |
 | Menu/language | Menu icon style/visibility and language | Exact Bool or current enum index |
 | Exceptions | `exceptions` | JSON decodes as current `[ExceptionEntry]`, including valid enum values and non-empty bundle identifiers |
 | Per-configuration | All 16 keys in `IncludedFeatures.perShortcutPreferenceBaseNames` across keyboard `0...8` and gesture `9` | Current enum range or exact Bool by key |
 
 Malformed allowed values are skipped independently. Unknown keys and unsupported indices are ignored.
+
+`alignThumbnails` retains its historical storage key and accepts the current `Leading`, `Center`, and `Trailing` indices (`0...2`). Source snapshots old enough to contain English dropdown text are normalized by `PreferencesMigrations` before validation.
 
 ## Explicit exclusions
 
@@ -56,3 +58,4 @@ Shortcut storage must be an exact two-field dictionary with a bounded string and
 - Unit tests pin the allowlist to every currently owned key except the three bundle-identity exclusions, exercise every category and index, verify current canonical shortcut fixtures and reject plausible fake archives, cover AlTab-version-`1` ordering, and prove reset or settings-import replacement followed by relaunch cannot re-import.
 - `scripts/check_legacy_preferences_import.sh` restricts source-domain literals, forbids source-domain mutation APIs, and rejects Security/Keychain symbols in importer production code.
 - Tests use isolated destination suites and source dictionaries. They never read or modify the developer's real defaults domains.
+- Older source snapshots normalize textual row alignment before allowlist validation, preserving a historical physical `Right` choice as semantic `Trailing` index `2`.

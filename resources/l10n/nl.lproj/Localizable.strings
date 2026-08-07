@@ -40,6 +40,7 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "Annuleer";
 "Capture windows in the background" = "Vensters op de achtergrond vastleggen";
+"Center" = "Midden";
 "Check permissions…" = "Rechten controleren…";
 "Close window" = "Venster sluiten";
 "Conflicting shortcut" = "Conflicterende sneltoets";
@@ -84,6 +85,8 @@
 "Language Change" = "Taalwijziging";
 "Large" = "Groot";
 "Later" = "Later";
+"Layout" = "Indeling";
+"Leading" = "Begin";
 "Light" = "Licht";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS reserveert ⌘⌥⎋, ⌘⌥⇧⎋ en ⌘⌥⇧⌃⎋ voor Geforceerd stoppen en deze kunnen niet worden vrijgegeven. AlTab kan ze niet gebruiken.\n\nJe wijziging zou er een toewijzen aan: %@.";
 "Medium" = "Middelgroot";
@@ -116,6 +119,7 @@
 "Reset settings and restart" = "Instellingen herstellen en herstarten";
 "Reset settings and restart…" = "Instellingen herstellen en herstarten…";
 "Restart Now" = "Herstart nu";
+"Row alignment" = "Rij-uitlijning";
 "Screen including menu bar" = "Scherm met menubalk";
 "Screen including mouse" = "Scherm met muis";
 "Screen Recording" = "Schermopname";
@@ -172,6 +176,7 @@
 "Title truncation" = "Titel afkappen";
 "Titles" = "Titels";
 "Trackpad haptic feedback" = "Tactiele feedback van Trackpad";
+"Trailing" = "Einde";
 "Trigger" = "Activering";
 "Unassign existing shortcut and continue" = "Bestaande sneltoets vrijmaken en doorgaan";
 "Usage" = "Gebruik";
