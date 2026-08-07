@@ -69,7 +69,7 @@ Security-related upstream work receives priority, but there is no promise of imm
 - [x] Keep corresponding source, build scripts, copyright notices, Git history, and third-party licenses available with every binary distribution.
 - [x] Document the source-first clone, local Release build, permissions, signing choices, and `git pull` update path in the README (no official binary distribution required for local use).
 - [x] Test a clean install, upgrade, uninstall, Accessibility permissions, Screen Recording permissions, login item behavior, and side-by-side behavior with official AltTab.
-- [x] Either sign and notarize releases with the fork maintainer's stable Developer ID or label every unsigned preview prominently in the README and release notes. **Source-only path chosen for the first milestone:** no official binary is published; README and milestone notes state that local builds are ad-hoc/unsigned by default and that any third-party binary redistribution must be labeled **unsigned and not notarized**.
+- [x] Either sign and notarize releases with the fork maintainer's stable Developer ID or label every unsigned preview prominently in the README and release notes. **Source-only path chosen for the first milestone:** no official binary is published. Local interactive builds use once-per-Mac **Local Self-Signed** (not a distributable identity); CI/packaging stay explicitly ad-hoc or unsigned. Any third-party binary redistribution must be labeled **unsigned and not notarized**.
 - [x] Publish checksums and describe exactly how each release artifact was built. Optional packager emits `SHA256SUMS` when used; official milestones attach no binaries.
 
 ## Suggested public wording

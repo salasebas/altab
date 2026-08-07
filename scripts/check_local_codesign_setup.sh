@@ -123,7 +123,7 @@ shift || true
   printf '\n'
 } >>"$stateRoot/security.log"
 require_explanation() {
-  grep -Fq 'This optional setup will add' "${LOCAL_CODESIGN_TEST_OUTPUT:?}" || { echo "setup did not explain the change first" >&2; exit 96; }
+  grep -Fq 'This once-per-Mac setup adds' "${LOCAL_CODESIGN_TEST_OUTPUT:?}" || { echo "setup did not explain the change first" >&2; exit 96; }
 }
 case "$commandName" in
   default-keychain)
@@ -581,8 +581,13 @@ check_removal() {
 check_documentation_and_syntax() {
   require_contains "$repoRoot/docs/contributing.md" "scripts/codesign/remove_local.sh"
   require_contains "$repoRoot/docs/contributing.md" "--include-legacy-admin-trust"
-  require_contains "$repoRoot/docs/contributing.md" "ad-hoc signing by default"
+  require_contains "$repoRoot/docs/contributing.md" "setup once per Mac"
   require_contains "$repoRoot/docs/contributing.md" "CODE_SIGN_IDENTITY = Local Self-Signed"
+  require_contains "$repoRoot/docs/contributing.md" "ALTAB_CODE_SIGN_IDENTITY=-"
+  require_contains "$repoRoot/config/debug.xcconfig" "CODE_SIGN_IDENTITY = Local Self-Signed"
+  require_contains "$repoRoot/config/release.xcconfig" "CODE_SIGN_IDENTITY = Local Self-Signed"
+  require_contains "$repoRoot/scripts/codesign/preflight_local_signing.sh" "Local Self-Signed"
+  require_contains "$repoRoot/scripts/build_app.sh" "CODE_SIGN_IDENTITY=-"
   for extension in conf key crt pem p12; do
     require_absent "$repoRoot/codesign.$extension"
   done

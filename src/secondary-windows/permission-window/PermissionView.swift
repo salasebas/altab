@@ -8,7 +8,7 @@ class PermissionView: StackView {
     var status: NSTextField!
     var permissionStatus = PermissionStatus.notGranted
 
-    convenience init(_ symbol: Symbols, _ title: String, _ justification: String, _ buttonText: String, _ buttonUrl: String, _ skipCheckbox: NSView? = nil) {
+    convenience init(_ symbol: Symbols, _ title: String, _ justification: String, _ buttonText: String, _ buttonUrl: String, _ skipCheckbox: NSView? = nil, requestsScreenRecordingOnAction: Bool = false) {
         let iconImage = NSImage.fromSymbol(symbol, pointSize: 28)
         let icon = NSImageView(image: iconImage)
         if #available(macOS 10.14, *) { icon.contentTintColor = .systemBlue }
@@ -26,7 +26,20 @@ class PermissionView: StackView {
         justification.translatesAutoresizingMaskIntoConstraints = false
         justification.preferredMaxLayoutWidth = 500
         justification.addOrUpdateConstraint(justification.widthAnchor, justification.fittingSize.width + 5)
-        let button = Button(buttonText) { _ in NSWorkspace.shared.open(URL(string: buttonUrl)!) }
+        let shouldRequestScreenRecording = requestsScreenRecordingOnAction
+        let button = Button(buttonText) { _ in
+            if shouldRequestScreenRecording {
+                // At most one prompt-capable Screen Recording probe per process (issue #36).
+                ScreenRecordingPermission.requestFromUserAction()
+                PermissionsWindow.updatePermissionViews()
+                if ScreenRecordingPermission.status == .granted {
+                    // CGPreflight is frozen mid-session; restart so silent probes and capture match the grant.
+                    App.restart()
+                    return
+                }
+            }
+            NSWorkspace.shared.open(URL(string: buttonUrl)!)
+        }
         let status = NSTextField(wrappingLabelWithString: "")
         status.translatesAutoresizingMaskIntoConstraints = false
         let buttonStack = NSStackView(views: [button, status])
@@ -64,10 +77,4 @@ class PermissionView: StackView {
         status.textColor = color.withAlphaComponent(1)
         layer!.backgroundColor = color.cgColor
     }
-}
-
-enum PermissionStatus {
-    case granted
-    case notGranted
-    case skipped
 }

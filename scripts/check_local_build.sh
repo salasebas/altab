@@ -4,6 +4,7 @@ set -euo pipefail
 
 repoRoot="$(cd -P "$(dirname "$0")/.." && pwd -P)"
 buildScript="$repoRoot/scripts/build_local.sh"
+preflightScript="$repoRoot/scripts/codesign/preflight_local_signing.sh"
 testRoot="$(mktemp -d "${TMPDIR:-/tmp}/altab-local-build-check.XXXXXX")"
 testRoot="$(cd -P "$testRoot" && pwd -P)"
 
@@ -38,8 +39,9 @@ require_output() {
 
 write_fixture() {
   fixtureRoot="$testRoot/fixture"
-  mkdir -p "$fixtureRoot/scripts" "$testRoot/bin" "$testRoot/state"
+  mkdir -p "$fixtureRoot/scripts/codesign" "$testRoot/bin" "$testRoot/state"
   cp "$buildScript" "$fixtureRoot/scripts/build_local.sh"
+  cp "$preflightScript" "$fixtureRoot/scripts/codesign/preflight_local_signing.sh"
   cat >"$fixtureRoot/scripts/xcbeautify" <<'EOF'
 #!/usr/bin/env bash
 cat
@@ -56,7 +58,7 @@ printf '%s\t%s\n' '$guard' "\$1" >>"\${LOCAL_BUILD_TEST_ROOT:?}/state/guards.log
 echo "$guard check passed"
 EOF
   done
-  chmod +x "$fixtureRoot/scripts/"*.sh "$fixtureRoot/scripts/xcbeautify"
+  chmod +x "$fixtureRoot/scripts/"*.sh "$fixtureRoot/scripts/codesign/"*.sh "$fixtureRoot/scripts/xcbeautify"
 }
 
 write_mock_tools() {
@@ -64,6 +66,63 @@ write_mock_tools() {
 #!/usr/bin/env bash
 [[ $# -eq 1 && "$1" == "-m" ]] || exit 90
 printf '%s\n' "${LOCAL_BUILD_TEST_HOST_ARCH:-arm64}"
+EOF
+  cat >"$testRoot/bin/security" <<'EOF'
+#!/usr/bin/env bash
+set -euo pipefail
+mode="${LOCAL_BUILD_TEST_IDENTITY_MODE:-valid-local}"
+if [[ $# -ge 3 && "$1" == "find-identity" && "$2" == "-v" && "$3" == "-p" ]]; then
+  case "$mode" in
+    valid-local)
+      echo '  1) AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA "Local Self-Signed"'
+      echo '     1 valid identities found'
+      ;;
+    missing)
+      echo '     0 valid identities found'
+      ;;
+    duplicate)
+      echo '  1) AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA "Local Self-Signed"'
+      echo '  2) BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB "Local Self-Signed"'
+      echo '     2 valid identities found'
+      ;;
+    invalid-local)
+      echo '     0 valid identities found'
+      ;;
+    apple-dev)
+      echo '  1) CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC "Apple Development: Example"'
+      echo '     1 valid identities found'
+      ;;
+    *) exit 95 ;;
+  esac
+  exit 0
+fi
+if [[ $# -ge 2 && "$1" == "find-identity" && "$2" == "-p" ]]; then
+  case "$mode" in
+    valid-local)
+      echo '  1) AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA "Local Self-Signed"'
+      echo '     1 identities found'
+      ;;
+    missing)
+      echo '     0 identities found'
+      ;;
+    duplicate)
+      echo '  1) AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA "Local Self-Signed"'
+      echo '  2) BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB "Local Self-Signed"'
+      echo '     2 identities found'
+      ;;
+    invalid-local)
+      echo '  1) AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA "Local Self-Signed"'
+      echo '     1 identities found'
+      ;;
+    apple-dev)
+      echo '  1) CCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCCC "Apple Development: Example"'
+      echo '     1 identities found'
+      ;;
+    *) exit 95 ;;
+  esac
+  exit 0
+fi
+exit 96
 EOF
   cat >"$testRoot/bin/xcodebuild" <<'EOF'
 #!/usr/bin/env bash
@@ -77,7 +136,7 @@ fi
 derivedDataPath=""
 architecture=""
 onlyActiveArch=""
-identity="-"
+identity="Local Self-Signed"
 identityFromCommandLine=false
 teamId=""
 bundleId="dev.salasebas.AlTab"
@@ -155,6 +214,15 @@ case "${1:-}" in
       echo "TeamIdentifier=${teamId:-not set}" >&2
     fi
     ;;
+  -d)
+    # designated requirement dump for Local Self-Signed
+    identity="$(<"${LOCAL_BUILD_TEST_ROOT:?}/state/identity")"
+    if [[ "$identity" == "-" ]]; then
+      echo "designated => cdhash H\"00\"" >&2
+    else
+      echo "designated => anchor apple generic and identifier \"dev.salasebas.AlTab\" and certificate leaf[subject.CN] = \"Local Self-Signed\"" >&2
+    fi
+    ;;
   *) exit 94 ;;
 esac
 EOF
@@ -209,13 +277,21 @@ STRINGS
 }
 
 [[ -x "$buildScript" ]] || fail "$buildScript is missing or not executable"
+[[ -f "$preflightScript" ]] || fail "$preflightScript is missing"
 bash -n "$buildScript"
+bash -n "$preflightScript"
 bash -n "$repoRoot/scripts/check_local_build.sh"
+bash -n "$repoRoot/ai/build.sh"
+bash -n "$repoRoot/scripts/build_app.sh"
 if rg -n '(^|[^A-Za-z0-9_])rg([^A-Za-z0-9_]|$)' "$buildScript"; then fail "$buildScript requires non-platform ripgrep"; fi
-require_contains "$repoRoot/config/release.xcconfig" "CODE_SIGN_IDENTITY = -"
+require_contains "$repoRoot/config/release.xcconfig" "CODE_SIGN_IDENTITY = Local Self-Signed"
+require_contains "$repoRoot/config/debug.xcconfig" "CODE_SIGN_IDENTITY = Local Self-Signed"
 require_contains "$repoRoot/config/release.xcconfig" "CODE_SIGN_STYLE = Manual"
 require_contains "$repoRoot/config/release.xcconfig" "DEVELOPMENT_TEAM ="
 require_contains "$repoRoot/config/release.xcconfig" "OTHER_CODE_SIGN_FLAGS = --timestamp=none"
+require_contains "$repoRoot/scripts/build_app.sh" "CODE_SIGN_IDENTITY=-"
+require_contains "$repoRoot/scripts/build_app.sh" "CODE_SIGNING_ALLOWED=NO"
+require_contains "$repoRoot/ai/build.sh" "preflight_local_signing"
 require_contains "$repoRoot/README.md" "scripts/build_local.sh"
 require_contains "$repoRoot/README.md" "git clone https://github.com/salasebas/altab.git"
 require_contains "$repoRoot/README.md" "DerivedData/Local/Build/Products/Release/AlTab.app"
@@ -224,12 +300,15 @@ require_contains "$repoRoot/README.md" "git pull"
 require_contains "$repoRoot/README.md" "Accessibility"
 require_contains "$repoRoot/README.md" "Screen Recording"
 require_contains "$repoRoot/README.md" "Local Self-Signed"
+require_contains "$repoRoot/README.md" "scripts/codesign/setup_local.sh"
 require_contains "$repoRoot/README.md" "scripts/package_release.sh"
 require_contains "$repoRoot/README.md" "Do not disable Gatekeeper"
 require_contains "$repoRoot/docs/contributing.md" "ALTAB_CODE_SIGN_IDENTITY"
 require_contains "$repoRoot/docs/contributing.md" "ALTAB_TEAM_ID"
 require_contains "$repoRoot/docs/contributing.md" "ALTAB_BUNDLE_ID"
 require_contains "$repoRoot/docs/contributing.md" "README.md"
+require_contains "$repoRoot/docs/contributing.md" "setup once per Mac"
+require_contains "$repoRoot/docs/releasing.md" "Local Self-Signed"
 require_contains "$repoRoot/FORK.md" "scripts/build_local.sh"
 check_bundle_guard_coverage
 
@@ -241,49 +320,78 @@ cleanEnvironment=(
   -u ALTAB_BUNDLE_ID
   -u LOCAL_BUILD_TEST_HOST_ARCH
   -u LOCAL_BUILD_TEST_FAIL_GUARD
+  -u ALTAB_SKIP_SIGNING_PREFLIGHT
+  -u ALTAB_LOCAL_XCCONFIG
 )
 
 defaultOutput="$testRoot/default-output.log"
-run_build "$defaultOutput"
+env "${cleanEnvironment[@]}" LOCAL_BUILD_TEST_IDENTITY_MODE=valid-local LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh" >"$defaultOutput" 2>&1
 defaultApp="$fixtureRoot/DerivedData/Local/Build/Products/Release/AlTab.app"
 printf -v escapedDefaultApp '%q' "$defaultApp"
 require_output "$defaultOutput" "Architecture: arm64 (native)"
-require_output "$defaultOutput" "Signature: ad hoc"
+require_output "$defaultOutput" "Signature: identity (Local Self-Signed)"
 require_output "$defaultOutput" "Bundle ID: dev.salasebas.AlTab"
 require_output "$defaultOutput" "App: $defaultApp"
 require_output "$defaultOutput" "Launch: open $escapedDefaultApp"
 require_contains "$testRoot/state/build-arguments.log" "ARCHS=arm64"
 require_contains "$testRoot/state/build-arguments.log" "ONLY_ACTIVE_ARCH=YES"
-if rg -q '^CODE_SIGN_IDENTITY=' "$testRoot/state/build-arguments.log"; then fail "default build overrides tracked ad-hoc signing"; fi
+if rg -q '^CODE_SIGN_IDENTITY=' "$testRoot/state/build-arguments.log"; then fail "default build should use tracked Local Self-Signed without CLI override"; fi
 [[ "$(wc -l <"$testRoot/state/guards.log" | tr -d ' ')" == "3" ]] || fail "default build did not run all three bundle guards"
 
 : >"$testRoot/state/guards.log"
 x86Output="$testRoot/x86-output.log"
-env "${cleanEnvironment[@]}" LOCAL_BUILD_TEST_HOST_ARCH=x86_64 LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh" >"$x86Output" 2>&1
+env "${cleanEnvironment[@]}" LOCAL_BUILD_TEST_HOST_ARCH=x86_64 LOCAL_BUILD_TEST_IDENTITY_MODE=valid-local LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh" >"$x86Output" 2>&1
 require_output "$x86Output" "Architecture: x86_64 (native)"
 require_contains "$testRoot/state/build-arguments.log" "ARCHS=x86_64"
 require_contains "$testRoot/state/build-arguments.log" "ONLY_ACTIVE_ARCH=YES"
 
 : >"$testRoot/state/guards.log"
+adhocOutput="$testRoot/adhoc-output.log"
+env "${cleanEnvironment[@]}" ALTAB_CODE_SIGN_IDENTITY="-" LOCAL_BUILD_TEST_IDENTITY_MODE=missing LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh" >"$adhocOutput" 2>&1
+require_output "$adhocOutput" "Signature: ad hoc"
+require_output "$adhocOutput" "explicit ad-hoc signing"
+require_contains "$testRoot/state/build-arguments.log" "CODE_SIGN_IDENTITY=-"
+
+: >"$testRoot/state/guards.log"
 customOutput="$testRoot/custom-output.log"
-env "${cleanEnvironment[@]}" ALTAB_CODE_SIGN_IDENTITY="Local Self-Signed" ALTAB_TEAM_ID="A1B2C3D4E5" ALTAB_BUNDLE_ID="org.example.AlTab" LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh" --universal >"$customOutput" 2>&1
+env "${cleanEnvironment[@]}" ALTAB_CODE_SIGN_IDENTITY="Apple Development: Example" ALTAB_TEAM_ID="A1B2C3D4E5" ALTAB_BUNDLE_ID="org.example.AlTab" LOCAL_BUILD_TEST_IDENTITY_MODE=apple-dev LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh" --universal >"$customOutput" 2>&1
 customApp="$fixtureRoot/DerivedData/Local/Build/Products/Release/AlTab.app"
 require_output "$customOutput" "Architecture: arm64 x86_64 (universal)"
-require_output "$customOutput" "Signature: identity (Local Self-Signed)"
+require_output "$customOutput" "Signature: identity (Apple Development: Example)"
 require_output "$customOutput" "Team ID: A1B2C3D4E5"
 require_output "$customOutput" "Bundle ID: org.example.AlTab"
 require_contains "$testRoot/state/build-arguments.log" "ARCHS=arm64 x86_64"
 require_contains "$testRoot/state/build-arguments.log" "ONLY_ACTIVE_ARCH=NO"
-require_contains "$testRoot/state/build-arguments.log" "CODE_SIGN_IDENTITY=Local Self-Signed"
+require_contains "$testRoot/state/build-arguments.log" "CODE_SIGN_IDENTITY=Apple Development: Example"
 require_contains "$testRoot/state/build-arguments.log" "DEVELOPMENT_TEAM=A1B2C3D4E5"
 require_contains "$testRoot/state/build-arguments.log" "PRODUCT_BUNDLE_IDENTIFIER=org.example.AlTab"
 [[ "$(wc -l <"$testRoot/state/guards.log" | tr -d ' ')" == "3" ]] || fail "custom build did not run all three bundle guards"
 
+missingOutput="$testRoot/missing-identity.log"
+if env "${cleanEnvironment[@]}" LOCAL_BUILD_TEST_IDENTITY_MODE=missing LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh" >"$missingOutput" 2>&1; then
+  fail "missing Local Self-Signed identity unexpectedly succeeded"
+fi
+require_output "$missingOutput" "missing \"Local Self-Signed\""
+require_output "$missingOutput" "scripts/codesign/setup_local.sh"
+require_output "$missingOutput" "ALTAB_CODE_SIGN_IDENTITY=-"
+
+duplicateOutput="$testRoot/duplicate-identity.log"
+if env "${cleanEnvironment[@]}" LOCAL_BUILD_TEST_IDENTITY_MODE=duplicate LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh" >"$duplicateOutput" 2>&1; then
+  fail "duplicate Local Self-Signed identities unexpectedly succeeded"
+fi
+require_output "$duplicateOutput" "multiple \"Local Self-Signed\""
+
+invalidOutput="$testRoot/invalid-identity.log"
+if env "${cleanEnvironment[@]}" LOCAL_BUILD_TEST_IDENTITY_MODE=invalid-local LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh" >"$invalidOutput" 2>&1; then
+  fail "invalid Local Self-Signed identity unexpectedly succeeded"
+fi
+require_output "$invalidOutput" "incomplete or invalid"
+
 expect_failure "unknown option" run_build "$testRoot/unknown-option.log" --publish
-expect_failure "invalid host architecture" env "${cleanEnvironment[@]}" LOCAL_BUILD_TEST_HOST_ARCH=i386 LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh"
-expect_failure "empty identity" env "${cleanEnvironment[@]}" ALTAB_CODE_SIGN_IDENTITY= LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh"
-expect_failure "invalid team ID" env "${cleanEnvironment[@]}" ALTAB_TEAM_ID=bad-team LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh"
-expect_failure "invalid bundle ID" env "${cleanEnvironment[@]}" ALTAB_BUNDLE_ID=not_a_bundle LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh"
-expect_failure "failed guard" env "${cleanEnvironment[@]}" LOCAL_BUILD_TEST_FAIL_GUARD=unrestricted_features LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh"
+expect_failure "invalid host architecture" env "${cleanEnvironment[@]}" LOCAL_BUILD_TEST_HOST_ARCH=i386 LOCAL_BUILD_TEST_IDENTITY_MODE=valid-local LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh"
+expect_failure "empty identity" env "${cleanEnvironment[@]}" ALTAB_CODE_SIGN_IDENTITY= LOCAL_BUILD_TEST_IDENTITY_MODE=valid-local LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh"
+expect_failure "invalid team ID" env "${cleanEnvironment[@]}" ALTAB_TEAM_ID=bad-team LOCAL_BUILD_TEST_IDENTITY_MODE=valid-local LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh"
+expect_failure "invalid bundle ID" env "${cleanEnvironment[@]}" ALTAB_BUNDLE_ID=not_a_bundle LOCAL_BUILD_TEST_IDENTITY_MODE=valid-local LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh"
+expect_failure "failed guard" env "${cleanEnvironment[@]}" LOCAL_BUILD_TEST_FAIL_GUARD=unrestricted_features LOCAL_BUILD_TEST_IDENTITY_MODE=valid-local LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh"
 
 echo "local-build check passed"

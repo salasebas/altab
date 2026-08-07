@@ -45,8 +45,9 @@ class SystemPermissions {
     private static func checkPermissionsOnTimer() {
         AccessibilityPermission.update()
         let isPermissionsWindowVisible = PermissionsWindow.shared?.isVisible ?? false
+        // Timer ticks must never use prompt-capable Screen Recording APIs (issue #36).
         if !preStartupPermissionsPassed || isPermissionsWindowVisible {
-            ScreenRecordingPermission.update()
+            ScreenRecordingPermission.update(allowPrompt: false)
         }
         Logger.debug { "accessibility:\(AccessibilityPermission.status) screenRecording:\(ScreenRecordingPermission.status)" }
         if !preStartupPermissionsPassed {
@@ -129,27 +130,37 @@ class AccessibilityPermission {
 
 class ScreenRecordingPermission {
     static var status = PermissionStatus.notGranted
+    /// After one prompt-capable probe, stay quiet until process restart (Deny must not loop).
+    private static var hasIssuedPromptCapableProbe = false
 
     @discardableResult
-    static func update() -> PermissionStatus {
-        status = detect()
+    static func update(allowPrompt: Bool = false) -> PermissionStatus {
+        status = detect(allowPrompt: allowPrompt)
         return status
     }
 
-    private static func detect() -> PermissionStatus {
+    /// Explicit user action from the permissions UI: at most one prompt-capable probe per process.
+    @discardableResult
+    static func requestFromUserAction() -> PermissionStatus {
+        update(allowPrompt: true)
+        return status
+    }
+
+    private static func detect(allowPrompt: Bool) -> PermissionStatus {
         if #available(macOS 10.15, *) {
-            // The user opted out of the prompt (#5548), so we must not call isGrantedOnSomeDisplay()
-            // here — it shows the system prompt when ungranted. But probing silently with the
-            // non-prompting preflight lets us still pick up a permission granted later in System
-            // Settings, instead of staying stuck on app-icons-only forever (#5739). The skip flag
-            // only downgrades .notGranted to .skipped to suppress nagging; it never masks a real grant.
-            // CGPreflightScreenCaptureAccess is frozen per-process (see isGrantedOnSomeDisplay below),
-            // so this reads the true state at launch but won't see a mid-session grant; that case
-            // recovers via the menubar "Grant permission" callout, which clears the flag and restarts.
-            guard !Preferences.screenRecordingPermissionSkipped else {
-                return CGPreflightScreenCaptureAccess() ? .granted : .skipped
+            let skipped = Preferences.screenRecordingPermissionSkipped
+            let decided = ScreenRecordingPermissionDecision.resolve(.init(
+                preflightGranted: CGPreflightScreenCaptureAccess(),
+                skipped: skipped,
+                allowPrompt: allowPrompt,
+                hasIssuedPromptCapableProbe: hasIssuedPromptCapableProbe
+            ))
+            hasIssuedPromptCapableProbe = decided.hasIssuedPromptCapableProbe
+            if decided.shouldRunPromptCapableProbe {
+                return ScreenRecordingPermissionDecision.resolveAfterPromptCapableProbe(
+                    granted: isGrantedOnSomeDisplay(), skipped: skipped)
             }
-            return isGrantedOnSomeDisplay() ? .granted : .notGranted
+            return decided.status
         }
         return .granted
     }

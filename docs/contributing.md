@@ -6,25 +6,47 @@ This document gives a technical overview of the project, for newcomers who want 
 
 ## Building the project
 
-End users should follow the clone → build → permissions → update path in the root [README.md](../README.md). That path is the supported way to produce and run optimized `AlTab.app`. This section is the contributor view of the same build system.
+End users should follow the clone → setup once → build → permissions → update path in the root [README.md](../README.md). That path is the supported way to produce and run optimized `AlTab.app`. This section is the contributor view of the same build system.
 
 This project has minimal dependency on Xcode-only features (e.g. InterfaceBuilder, Playgrounds). Full Xcode 26 must be selected (`xcode-select` or `DEVELOPER_DIR`); Command Line Tools alone cannot build the app.
 
-* Local Release builds use ad-hoc signing by default. Run `scripts/build_local.sh` for the supported optimized app: it builds the current Mac's native architecture into `DerivedData/Local/Build/Products/Release/AlTab.app`, runs the bundle guards, and prints the app path and launch command. It requires no Apple account; `--universal` explicitly builds `arm64` and `x86_64`.
-* Ad-hoc signatures can change their designated requirement when the executable changes, so macOS may ask for Accessibility, Screen Recording, or other permissions again. For stable permissions, optionally run `scripts/codesign/setup_local.sh`, then set `CODE_SIGN_IDENTITY = Local Self-Signed` in ignored `config/local.xcconfig`. The helper explains and confirms its changes, installs one per-user code-signing identity in Keychain, and safely reuses it on later runs.
-* A Developer ID identity already installed in Keychain can be selected the same way. Optional `config/local.xcconfig` settings are `CODE_SIGN_IDENTITY`, `DEVELOPMENT_TEAM`, and `PRODUCT_BUNDLE_IDENTIFIER`. For a one-off build, the equivalent namespaced environment overrides are `ALTAB_CODE_SIGN_IDENTITY`, `ALTAB_TEAM_ID`, and `ALTAB_BUNDLE_ID`; the script passes only these non-secret values to Xcode.
-* Remove the optional self-signed identity, private key, and per-user trust entry with `scripts/codesign/remove_local.sh`, then remove its `CODE_SIGN_IDENTITY` setting from `config/local.xcconfig` to return to ad-hoc signing. If it was installed by the previous helper, use `scripts/codesign/remove_local.sh --include-legacy-admin-trust` to remove its administrative trust entry too. The legacy option requests administrator approval; neither command changes Gatekeeper.
-* Run the Debug/QA command from [`ai/build.sh`](../ai/build.sh) (or `xcodebuild -project alt-tab-macos.xcodeproj -scheme Debug -configuration Debug -derivedDataPath DerivedData`) for `AlTab Dev`. Debug remains separate from the optimized app intended for routine local use; do not document it as the normal user path.
+### Standard local signing (setup once per Mac)
+
+Interactive Debug and routine local Release use the tracked identity `CODE_SIGN_IDENTITY = Local Self-Signed`. That matches upstream's local-development model without restoring any upstream Developer ID, Team ID, or release infrastructure.
+
+```bash
+scripts/codesign/setup_local.sh   # once per Mac / user Keychain
+```
+
+* The helper is idempotent: it reuses a valid existing identity, refuses incomplete or duplicate residue, and never writes certificate material into the repository.
+* The identity is user-level Keychain state. Installing it from any Git worktree makes it available to every other worktree and clone for that macOS user. No per-worktree `config/local.xcconfig` is required for the standard path.
+* `scripts/build_local.sh` and `ai/build.sh` preflight the identity and fail early with remediation when it is missing, invalid, incomplete, or duplicated.
+* Run `scripts/build_local.sh` for optimized `AlTab.app` at `DerivedData/Local/Build/Products/Release/AlTab.app` (native architecture; `--universal` for arm64+x86_64).
+* Run `ai/build.sh` (or the Debug scheme with the same preflight) for QA `AlTab Dev`. Debug is not the normal end-user path.
+* Remove the identity with `scripts/codesign/remove_local.sh`. If it was installed by the previous helper, use `scripts/codesign/remove_local.sh --include-legacy-admin-trust` to remove its administrative trust entry too. The legacy option requests administrator approval; neither command changes Gatekeeper.
+
+### Explicit ad-hoc escape hatch
+
+Ad-hoc signing is never the silent default. Use it only for disposable diagnostics or when you knowingly accept that Accessibility / Screen Recording grants may not survive a rebuild:
+
+```bash
+ALTAB_CODE_SIGN_IDENTITY=- scripts/build_local.sh
+ALTAB_CODE_SIGN_IDENTITY=- bash ai/build.sh
+```
+
+### Advanced per-worktree overrides
+
+Optional ignored `config/local.xcconfig` may set `CODE_SIGN_IDENTITY`, `DEVELOPMENT_TEAM`, and `PRODUCT_BUNDLE_IDENTIFIER` for a personal Apple Development / Developer ID identity. Equivalent one-off environment overrides: `ALTAB_CODE_SIGN_IDENTITY`, `ALTAB_TEAM_ID`, `ALTAB_BUNDLE_ID`. Never auto-select an arbitrary personal identity; never commit private keys, certificates, Team IDs, or generated local config.
 
 The local build never accepts passwords, `.p12` files, private keys, or notarization credentials. It does not import identities, notarize, publish, or upload the app. A custom bundle ID creates a distinct macOS preferences and permissions identity. Source updates are `git pull`, rebuild with `scripts/build_local.sh`, and relaunch or replace the app; there is no Sparkle feed.
 
 ## Continuous integration
 
-GitHub Actions runs `scripts/validate_ci.sh` for every pull request and every push to `main`. The script validates property lists, the Xcode project, localizations, generated files, Swift formatting, repository whitespace, service isolation, unrestricted features, and legacy preference import behavior. It then runs the full test suite and builds both the Debug app and an optimized, unsigned Release app whose binary must contain the `arm64` and `x86_64` architectures.
+GitHub Actions runs `scripts/validate_ci.sh` for every pull request and every push to `main`. The script validates property lists, the Xcode project, localizations, generated files, Swift formatting, repository whitespace, service isolation, unrestricted features, local signing helpers, local build contracts, and legacy preference import behavior. It then runs the full test suite and builds both an **explicitly ad-hoc** Debug app and an optimized, **unsigned** Release app whose binary must contain the `arm64` and `x86_64` architectures (`scripts/build_app.sh` forces `CODE_SIGN_IDENTITY=-` for Debug and disables signing for Release). CI never requires a user Keychain identity.
 
 The workflow has read-only repository permissions, does not persist checkout credentials, and does not receive or require signing, notarization, update-feed, analytics, licensing, or publishing secrets. Superseded runs for the same pull request or branch are cancelled. When validation fails, the run uploads its validation log and any available Xcode logs for seven days.
 
-CI is validation only. Its unsigned app bundle is not a release, the workflow does not publish or contact upstream infrastructure, and system-wide macOS interactions still require manual QA. The workflow pins Xcode 26.0.1, pnpm 11.5.2, ripgrep 15.2.0, SwiftFormat 0.62.1, and every reusable action. Contributors can run the same validation locally with `corepack enable`, `corepack install`, `pnpm install --frozen-lockfile`, and `scripts/validate_ci.sh` from a machine with Xcode 26, ripgrep, and SwiftFormat 0.62.1 available.
+CI is validation only. Its ad-hoc/unsigned app bundles are not releases, the workflow does not publish or contact upstream infrastructure, and system-wide macOS interactions still require manual QA. The workflow pins Xcode 26.0.1, pnpm 11.5.2, ripgrep 15.2.0, SwiftFormat 0.62.1, and every reusable action. Contributors can run the same validation locally with `corepack enable`, `corepack install`, `pnpm install --frozen-lockfile`, and `scripts/validate_ci.sh` from a machine with Xcode 26, ripgrep, and SwiftFormat 0.62.1 available.
 
 ## Source milestones
 
