@@ -116,7 +116,10 @@ release_validate_unsigned_app() {
     local teamIdentifier
     teamIdentifier="$(sed -n 's/^TeamIdentifier=//p' "$signatureDetails")"
     [[ -z "$teamIdentifier" || "$teamIdentifier" == "not set" ]] || fail "app has TeamIdentifier $teamIdentifier"
-    codesign --verify --deep --strict "$appPath" || fail "app signature integrity validation failed"
+    local verificationDetails="$signatureDetails.verify"
+    if ! codesign --verify --deep --strict "$appPath" 2>"$verificationDetails"; then
+      rg -q 'code object is not signed at all' "$verificationDetails" || fail "app signature integrity validation failed"
+    fi
   else
     rg -q 'code object is not signed at all' "$signatureDetails" || fail "codesign could not establish that the app is unsigned"
   fi
