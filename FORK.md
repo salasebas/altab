@@ -37,7 +37,7 @@ Security-related upstream work receives priority, but there is no promise of imm
 ### Repository and identity
 
 - [x] Use [salasebas/altab](https://github.com/salasebas/altab) as the canonical fork and retain the earlier implementation as [salasebas/altab-archived](https://github.com/salasebas/altab-archived).
-- [x] Keep the fork as `origin`, the official project as read-only `upstream`, and the local branch tracking `origin/master`.
+- [x] Keep the fork as `origin`, the official project as read-only `upstream`, and the local branch tracking `origin/main`.
 - [x] Establish stable Release and Debug app names and bundle IDs, remove the activation URL scheme, and keep Team ID and signing credentials fork-configurable before the first public release.
 - [x] Replace in-app repository, support, funding, About, feedback, and website links.
 - [x] Replace the application and menu bar artwork with AlTab-owned assets and retain their provenance.

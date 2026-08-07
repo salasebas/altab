@@ -15,7 +15,7 @@ This project has minimal dependency on Xcode-only features (e.g. InterfaceBuilde
 
 ## Continuous integration
 
-GitHub Actions runs `scripts/validate_ci.sh` for every pull request and every push to `master`. The script validates property lists, the Xcode project, localizations, generated files, Swift formatting, repository whitespace, service isolation, unrestricted features, and legacy preference import behavior. It then runs the full test suite and builds both the Debug app and an optimized, unsigned Release app whose binary must contain the `arm64` and `x86_64` architectures.
+GitHub Actions runs `scripts/validate_ci.sh` for every pull request and every push to `main`. The script validates property lists, the Xcode project, localizations, generated files, Swift formatting, repository whitespace, service isolation, unrestricted features, and legacy preference import behavior. It then runs the full test suite and builds both the Debug app and an optimized, unsigned Release app whose binary must contain the `arm64` and `x86_64` architectures.
 
 The workflow has read-only repository permissions, does not persist checkout credentials, and does not receive or require signing, notarization, update-feed, analytics, licensing, or publishing secrets. Superseded runs for the same pull request or branch are cancelled. When validation fails, the run uploads its validation log and any available Xcode logs for seven days.
 
