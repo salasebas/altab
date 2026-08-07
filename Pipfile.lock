@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "3646221352b85667ac21f1b528dc8b29f56ff1e24cb97e7eaba79b5040c78e21"
+            "sha256": "734a9df8fc3934fc559e2f86e6b8d3d0d17bb369fd609e7934719587177b8435"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -30,15 +30,6 @@
                 "sha256:fc323ffcaeaed0e0a02bf4d117757b98aed530d9ed4531e3e15460124c106691"
             ],
             "version": "==3.0.4"
-        },
-        "fonttools": {
-            "hashes": [
-                "sha256:596c0e8399c650dbf1048b7ca6fc7b12bd79a7db0981f3b87743de8c2b7512de",
-                "sha256:6d241d319ea9eae4c4ee27cbd1db8656dbd496dd9aa884401debfab3a4c7d82b"
-            ],
-            "index": "pypi",
-            "markers": "python_version >= '3.6'",
-            "version": "==4.8.1"
         },
         "googletrans": {
             "hashes": [

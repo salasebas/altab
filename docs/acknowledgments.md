@@ -12,9 +12,11 @@ These third-party libraries are used:
 
 AlTab vendors source from [lwouis/ShortcutRecorder](https://github.com/lwouis/ShortcutRecorder) at commit `52c6273d233f7794e4fd5d22f50d2de0e4e41b19`, rearranged for Swift Package Manager and patched to locate its resource bundle. It is distributed under the [Creative Commons Attribution 4.0 International license](../vendor/ShortcutRecorder/LICENSE.txt).
 
-**Apple SF Symbols subset**
+**Tabler Icons**
 
-The app includes a tracked subset of Apple SF Pro Text glyphs used to render SF Symbols on supported Apple platforms. Its exact build input is `resources/SF-Pro-Text-Regular.otf` with SHA-256 `aa702e9da824bc3d251076afd93ed431dc9142d04b24411282e169bb07c98831`; use remains subject to [Apple's San Francisco font license and SF Symbols terms](https://developer.apple.com/fonts/). The release process does not regenerate this file from a maintainer's locally installed font.
+AlTab bundles 24 vector PDF fallbacks from [Tabler Icons](https://github.com/tabler/tabler-icons) 3.41.0. They were copied from the published `@tabler/icons-pdf` package after verifying its npm SHA-512 integrity (`+MjhJpigdr8/RR6u0iTTaUZbg5kbb5/983HDF2ayXfTrjVQand3Ib//JC5oq67/8zwe1c6PyP3Yfr/wgCbswKQ==`). Tabler Icons is distributed under the [MIT license](../scripts/licenses/Tabler-Icons-LICENSE.txt).
+
+On macOS 11 and newer, AlTab asks AppKit for system symbols at runtime and falls back to the bundled Tabler PDFs when a symbol or API is unavailable. Circled stars and Space numbers are drawn by AlTab with AppKit primitives. No Apple font or extracted Apple artwork is bundled.
 
 ## Build tools included with the source
 

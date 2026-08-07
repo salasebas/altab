@@ -1,8 +1,13 @@
 import Cocoa
 
 class StatusIconsView: FlippedView {
+    enum IconSymbol {
+        case named(Symbols)
+        case spaceNumber(Int)
+    }
+
     struct Icon {
-        var symbol: String
+        var symbol: IconSymbol
         var tooltip: String?
         var visible = false
     }
@@ -12,11 +17,11 @@ class StatusIconsView: FlippedView {
     static let fullscreenIdx = 2
     static let minimizedIdx = 3
 
-    private static let defaultSymbols: [(Symbols, String?)] = [
-        (.circledNumber0, nil),
-        (.circledSlashSign, NSLocalizedString("App is hidden", comment: "")),
-        (.circledPlusSign, NSLocalizedString("Window is fullscreen", comment: "")),
-        (.circledMinusSign, NSLocalizedString("Window is minimized", comment: "")),
+    private static let defaultSymbols: [(IconSymbol, String?)] = [
+        (.spaceNumber(0), nil),
+        (.named(.circledSlashSign), NSLocalizedString("App is hidden", comment: "")),
+        (.named(.circledPlusSign), NSLocalizedString("Window is fullscreen", comment: "")),
+        (.named(.circledMinusSign), NSLocalizedString("Window is minimized", comment: "")),
     ]
 
     var icons: [Icon]
@@ -34,15 +39,13 @@ class StatusIconsView: FlippedView {
     }
 
     override init(frame: NSRect) {
-        icons = Self.defaultSymbols.map { Icon(symbol: $0.0.rawValue, tooltip: $0.1) }
+        icons = Self.defaultSymbols.map { Icon(symbol: $0.0, tooltip: $0.1) }
         iconCellSize = Self.measureIconCellSize()
         super.init(frame: frame)
     }
 
     private static func measureIconCellSize() -> NSSize {
-        let font = NSFont(name: "SF Pro Text", size: (Appearance.fontHeight * 0.85).rounded())!
-        let measureAttrs: [NSAttributedString.Key: Any] = [.font: font, .paragraphStyle: TileFontIconView.paragraphStyle]
-        return NSAttributedString(string: Symbols.circledNumber0.rawValue, attributes: measureAttrs).size()
+        TileFontIconView.cachedSpaceNumberImage(0, size: Appearance.fontHeight, color: Appearance.fontColor).size
     }
 
     /// Re-apply appearance-baked metrics so a recycled instance survives an appearance change
@@ -52,19 +55,11 @@ class StatusIconsView: FlippedView {
         tooltipsDirty = true
     }
 
-    static func cachedAttrString(for symbol: String) -> NSAttributedString {
-        let size = Appearance.fontHeight
-        let color = Appearance.fontColor
-        let key = TileFontIconView.SymbolCacheKey(symbol: symbol, size: size, colorKey: TileFontIconView.symbolColorKey(color))
-        if let cached = TileFontIconView.symbolCache[key] { return cached }
-        let font = NSFont(name: "SF Pro Text", size: (size * 0.85).rounded())!
-        let str = NSAttributedString(string: symbol, attributes: [
-            .font: font,
-            .foregroundColor: color,
-            .paragraphStyle: TileFontIconView.paragraphStyle,
-        ])
-        TileFontIconView.symbolCache[key] = str
-        return str
+    static func cachedImage(for symbol: IconSymbol) -> NSImage {
+        switch symbol {
+            case let .named(named): return TileFontIconView.cachedImage(for: named, size: Appearance.fontHeight, color: Appearance.fontColor)
+            case let .spaceNumber(number): return TileFontIconView.cachedSpaceNumberImage(number, size: Appearance.fontHeight, color: Appearance.fontColor)
+        }
     }
 
     required init?(coder: NSCoder) { fatalError() }
@@ -80,20 +75,13 @@ class StatusIconsView: FlippedView {
     }
 
     func setSpaceStar() {
-        icons[Self.spaceIdx].symbol = Symbols.circledStar.rawValue
+        icons[Self.spaceIdx].symbol = .named(.circledStar)
         icons[Self.spaceIdx].tooltip = NSLocalizedString("Window is on every Space", comment: "")
     }
 
     func setSpaceNumber(_ number: Int) {
-        icons[Self.spaceIdx].symbol = Self.symbolForSpace(number)
+        icons[Self.spaceIdx].symbol = .spaceNumber(number)
         icons[Self.spaceIdx].tooltip = String(format: NSLocalizedString("Window is on Space %d", comment: ""), number)
-    }
-
-    static func symbolForSpace(_ number: Int) -> String {
-        let (base, offset) = number <= 9
-            ? (Symbols.circledNumber0.rawValue, number * 2)
-            : (Symbols.circledNumber10.rawValue, number - 10)
-        return String(UnicodeScalar(Int(base.unicodeScalars.first!.value) + offset)!)
     }
 
     var spaceVisible: Bool { icons[Self.spaceIdx].visible }
@@ -145,7 +133,7 @@ class StatusIconsView: FlippedView {
             guard icon.visible else { continue }
             offset += iconWidth
             let x = isLTR ? frame.width - offset : offset - iconWidth
-            Self.cachedAttrString(for: icon.symbol).draw(at: NSPoint(x: x, y: yOffset))
+            Self.cachedImage(for: icon.symbol).draw(at: NSPoint(x: x, y: yOffset), from: .zero, operation: .sourceOver, fraction: 1)
         }
     }
 }

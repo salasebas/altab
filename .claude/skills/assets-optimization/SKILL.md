@@ -1,6 +1,6 @@
 ---
 name: assets-optimization
-description: Audit and optimize every image asset shipped with AltTab. Apply the right format per asset class (PDF for vectors, HEIC for raster) and the right post-processing (strip Figma cruft from PDFs, extract SF Symbols as minimal vector PDFs, encode raster sources to HEIC at q50 with visual review). Use whenever new assets are added, when the bundle size needs shrinking, or whenever you want a full assets audit.
+description: Audit and optimize every image asset shipped with AltTab. Apply the right format per asset class (licensed PDF fallbacks for semantic symbols and other vectors, HEIC for raster) and the right post-processing (strip Figma cruft from PDFs, encode raster sources to HEIC at q50 with visual review). Use whenever new assets are added, when the bundle size needs shrinking, or whenever you want a full assets audit.
 ---
 
 # /assets-optimization — AltTab asset audit and optimization
@@ -40,7 +40,7 @@ For each asset, decide what category it falls into:
 | Source content | Right format | Why |
 |---|---|---|
 | Custom vector design (Figma/Sketch/Illustrator) | **PDF** | macOS 10.13 doesn't accept SVG; PDF is the universal vector container AppKit reads natively. |
-| SF Symbol (Apple system glyph) | **Font glyph** in the bundled `SF-Pro-Text-Regular.otf` subset | Render via `NSImage.fromSymbol(.foo, pointSize:)` (or as text via the `Symbols` enum). Smaller than per-icon PDFs, picks up Apple's latest glyph refinements automatically when the developer updates SF Symbols.app. |
+| System-style interface icon | **Semantic catalog + licensed PDF fallback** | Ask AppKit for the system symbol on macOS 11+, then fall back to an audited Tabler PDF on every unsupported API or name. |
 | Photographic / screenshot-heavy | **HEIC** | HEIC at q50 beats JPEG by ~30% at the same perceptual quality. |
 | Tiny pixel-precise UI sprite | **PNG @2x** | Below ~40×40px the PDF overhead exceeds the bitmap savings. PNG wins. |
 | App icon (the macOS bundle one) | **`.icns`** | Required by `CFBundleIconFile`. |
@@ -82,33 +82,19 @@ done
 
 Open the PNGs in Preview to confirm nothing visual changed.
 
-## Step 3: SF Symbols via font subset
+## Step 3: Semantic symbols with licensed fallbacks
 
-Every SF Symbol shipped in AltTab — switcher status icons, sidebar tab icons, button icons, permission/feedback icons — is rendered as a text glyph from a subsetted SF Pro Text font. There are no SF-Symbol PDFs in the bundle.
+Interface icons are declared in `src/switcher/main-window/SymbolCatalog.swift`. Each case has a public AppKit symbol name and either a Tabler fallback asset or a locally drawn fallback. The renderer tries the system API on macOS 11 and newer, then always falls back when the API or individual name is unavailable. This preserves the macOS 10.13 deployment target without bundling proprietary fonts or extracted system artwork.
 
-How it works: SF Symbols are glyphs in the Private Use Area of SF Pro Text. Apple's `SF-Pro-Text-Regular.otf` contains every symbol they've ever shipped. We subset it down to just the codepoints AltTab needs (currently ~36 glyphs, ~17 KB) into `resources/SF-Pro-Text-Regular.otf`, and register it via `Info.plist:ATSApplicationFontsPath = ""`. At runtime, `NSFont(name: "SF Pro Text", size:)` resolves to the bundled subset on macOS <11 (where the system font isn't installed) and to the system font on macOS 11+, with identical glyph appearance either way.
+The audited PDFs live in `resources/icons/symbols/`. They come from `@tabler/icons-pdf` 3.41.0 and are covered by `scripts/licenses/Tabler-Icons-LICENSE.txt`. Space numbers and circled stars are drawn with AppKit primitives instead of shipping one asset per variant.
 
-To add a new SF Symbol:
+To add a symbol:
 
-1. Open [SF Symbols.app](https://developer.apple.com/sf-symbols/), search for the symbol, press **Cmd-C** to copy the symbol character to the clipboard. (Apple's name→codepoint mapping is not exposed via public API, and the SF Pro Text font's cmap uses `uniXXXXXX.medium`-style names rather than semantic ones, so this manual lookup is the authoritative path.)
-2. Paste the character into a new case on the `Symbols` enum in [src/switcher/main-window/TileFontIconView.swift](src/switcher/main-window/TileFontIconView.swift) — e.g., `case foo = "􀝥"  // SF Symbol name`.
-3. Paste the same character at the end of the `--text=` argument in [scripts/assets/subset_font.sh](scripts/assets/subset_font.sh).
-4. Run `bash scripts/assets/subset_font.sh`. It reads `/Library/Fonts/SF-Pro-Text-Regular.otf` (installed by SF Symbols.app — a standard developer prerequisite) and writes the regenerated subset to `resources/SF-Pro-Text-Regular.otf`. Picks up Apple's latest glyph refinements automatically.
-5. Use it in code: `NSImage.fromSymbol(.foo, pointSize: 14)` returns a template `NSImage`; or `TileFontIconView(symbol: .foo, ...)` for the cached-attributed-string path in the switcher hot loop.
-
-The script runs `pyftsubset` via the project's pipenv environment. Warnings about `MERG`/`meta`/`trak` tables being dropped are normal — those tables aren't relevant to glyph rendering.
-
-### Historical note: SF Symbols via PDF (deprecated, scripts removed)
-
-A previous pipeline shipped each SF Symbol as a per-glyph PDF in `resources/icons/`. The pipeline lives only in git history now (`scripts/assets/export_sf_symbol_pdf.swift` was deleted alongside the migrated PDFs). The technique is worth knowing in case a future need arises (e.g., a multi-color symbol that fonts can't represent):
-
-- The naive route — `NSImage(systemSymbolName:).draw(in:)` against a PDF `CGContext` — produces a **black rectangle**, because Quartz emits `image-mask + fill-rectangle` operators where the rectangle paints over the mask. AppKit bug at the PDF emission level; `paletteColors` config does not fix it.
-- The working route was to extract the symbol's vector path directly via private selectors that have been stable across macOS 11–15:
-  `NSImage(systemSymbolName:).representations[0] (NSSymbolImageRep) → .perform("vectorGlyph") (CUINamedVectorGlyph) → .perform("CGPath") (real CGPath)`.
-- The CGPath lives in CUI's internal coordinate space (~2× display points, Y-down) — scale to fit the canvas and flip Y. Walk the path via `CGPath.applyWithBlock` and emit raw PDF operators (`m`, `l`, `c`, `h`, `f`). Non-zero winding fill. Fill with DeviceGray (`0 g`), **not** `NSColor.black.cgColor`, which drags in a ~3.4 KB ICC color profile.
-- Final PDF wrapper: 4 objects (Catalog, Pages, Page, Content), no `/Info`, no `/Metadata`, no `/Resources/ColorSpace`. ~750–1800 bytes per icon.
-
-Git: see commit `990c1e79` ("feat: pro improve assets") for the PDF pipeline as-it-was; subsequent commit migrated the SF-Symbol PDFs back to font glyphs.
+1. Add a semantic case, system name, and fallback mapping in `SymbolCatalog.swift`.
+2. Copy the matching PDF from the pinned Tabler package into `resources/icons/symbols/`. Never export or extract a proprietary system glyph as the fallback.
+3. Add the filename to `scripts/check_symbol_assets.sh`; the guard treats the asset list as an audited allowlist.
+4. Run the focused `SymbolCatalogTests` and both Debug/Release bundle guards.
+5. Update the Tabler version, npm integrity, and license only when intentionally upgrading the source package.
 
 ## Step 4: Raster → HEIC at q50
 

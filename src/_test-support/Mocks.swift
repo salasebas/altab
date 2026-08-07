@@ -1,24 +1,8 @@
 import Cocoa
 import ShortcutRecorder
 
-// Stubs for test-target sources that render symbol-backed controls. The real Symbols enum and
-// NSImage.fromSymbol live in TileFontIconView.swift and HelperExtensions.swift respectively, neither
-// of which is in the test target's source membership. Tests never render an icon, so a minimal stub
-// satisfying the signatures is enough.
-enum Symbols: String {
-    case stub = ""
-    case cursorarrowRays
-    case laptopcomputer
-    case magnifyingglass
-    case moonFill
-    case moonphaseLastQuarterInverse
-    case moonphaseWaningCrescentInverse
-    case moonphaseWaningGibbousInverse
-    case pauseRectangle
-    case sparkles
-    case sunMax
-}
-
+// The test target compiles the production symbol catalog. HelperExtensions.swift remains app-only,
+// so tests use this small signature-compatible stand-in for controls that don't exercise rendering.
 extension NSImage {
     static func fromSymbol(_ symbol: Symbols, pointSize: CGFloat, rotated180: Bool = false) -> NSImage {
         let image = NSImage()

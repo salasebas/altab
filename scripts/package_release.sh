@@ -115,6 +115,7 @@ release_validate_binaries "$appBinary" "$dSYMPath" "$dSYMBinary"
   cd "$sourceRoot"
   scripts/check_service_isolation.sh "$appPath"
   scripts/check_unrestricted_features.sh "$appPath"
+  scripts/check_symbol_assets.sh "$appPath"
 )
 signatureDetails="$workRoot/codesign-details.txt"
 release_validate_unsigned_app "$appPath" "$signatureDetails"
@@ -156,6 +157,7 @@ cat > "$publishRoot/$manifestFilename" <<EOF
 - Notarization status: **not notarized** (not requested)
 - Service-isolation guard: **passed against the packaged app**
 - Unrestricted-feature guard: **passed against the packaged app**
+- Symbol-asset compliance guard: **passed against the packaged app**
 EOF
 
 notes="$(<"$sourceRoot/.github/RELEASE_NOTES_TEMPLATE.md")"
@@ -179,6 +181,7 @@ cp "$sourceRoot/NOTICE.md" "$packageRoot/NOTICE.md"
 cp "$sourceRoot/docs/acknowledgments.md" "$packageRoot/THIRD-PARTY-NOTICES.md"
 cp "$sourceRoot/docs/contributors.md" "$packageRoot/CONTRIBUTORS.md"
 cp "$sourceRoot/docs/brand/ALTAB-BRAND-LICENSE.txt" "$packageRoot/licenses/ALTAB-BRAND-LICENSE.txt"
+cp "$sourceRoot/scripts/licenses/Tabler-Icons-LICENSE.txt" "$packageRoot/licenses/Tabler-Icons-LICENSE.txt"
 cp "$sourceRoot/scripts/licenses/createicns-LICENSE.txt" "$packageRoot/licenses/createicns-LICENSE.txt"
 cp "$sourceRoot/scripts/licenses/xcbeautify-LICENSE.txt" "$packageRoot/licenses/xcbeautify-LICENSE.txt"
 cp "$sourceRoot/vendor/ShortcutRecorder/LICENSE.txt" "$packageRoot/licenses/ShortcutRecorder-LICENSE.txt"

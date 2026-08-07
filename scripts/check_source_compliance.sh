@@ -39,10 +39,12 @@ requiredPaths=(
   docs/contributors.md
   docs/brand/README.md
   docs/brand/ALTAB-BRAND-LICENSE.txt
-  resources/SF-Pro-Text-Regular.otf
+  scripts/check_symbol_assets.sh
   scripts/forbidden_service_contracts.sh
+  scripts/licenses/Tabler-Icons-LICENSE.txt
   scripts/licenses/createicns-LICENSE.txt
   scripts/licenses/xcbeautify-LICENSE.txt
+  scripts/symbol-assets.sha256
   vendor/ShortcutRecorder/LICENSE.txt
   vendor/ShortcutRecorder/UPSTREAM
   vendor/scripts/update_shortcut_recorder.sh
@@ -73,4 +75,5 @@ fi
 
 scripts/check_service_isolation.sh
 scripts/check_unrestricted_features.sh
+scripts/check_symbol_assets.sh
 echo "source-compliance check passed"

@@ -112,6 +112,7 @@ release_validate_binaries "$appBinary" "$dSYMPath" "$dSYMBinary"
 (
   cd "$sourceRoot"
   scripts/check_service_isolation.sh "$appPath"
+  scripts/check_symbol_assets.sh "$appPath"
   scripts/check_unrestricted_features.sh "$appPath"
 )
 signatureDetails="$verifyRoot/codesign-details.txt"
