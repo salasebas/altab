@@ -9,47 +9,159 @@ An independent, community-maintained fork of [AltTab for macOS](https://github.c
 </div>
 
 > [!IMPORTANT]
-> This repository is in the fork-bootstrap stage. It is not affiliated with or endorsed by the AltTab maintainers. Please report problems with this fork in [AlTab Issues](https://github.com/salasebas/altab/issues), not to the upstream project.
+> This repository is not affiliated with or endorsed by the AltTab maintainers. Please report problems with this fork in [AlTab Issues](https://github.com/salasebas/altab/issues), not to the upstream project. This repository does **not** publish official binaries and has **no** in-app updater.
 
 ## Direction
 
-AlTab preserves AltTab's fast AppKit window-switching experience and includes every locally implemented user-facing feature. Search, Search on Release, Auto size, App Icons and Titles, additional shortcuts, and per-shortcut options are available to everyone while remaining controlled by each user's preferences.
+AlTab preserves AltTab's fast AppKit window-switching experience. Every locally implemented user-facing feature is available to everyone: Search, Search on Release, Auto size, App Icons and Titles, additional shortcuts, and per-shortcut options remain controlled by your preferences only.
 
-AlTab has no paid-access state, activation, trial, checkout, or account integration. The repository is still in the fork-bootstrap stage because signing, notarization, release validation, and a fork-owned update path remain incomplete. Until the remaining items in [FORK.md](FORK.md) are resolved, builds are for development and evaluation only and must not be presented as public AlTab releases.
+There is no paid-access state, activation, trial, checkout, account, license Keychain path, or environment variable that unlocks features. Building from source is the supported way to run AlTab. Public binary signing, notarization, and a fork-owned update feed are tracked separately in [FORK.md](FORK.md) and are not required for local use.
 
-## Privacy and updates
+## Run AlTab from source
 
-AlTab does not bundle or initialize Sparkle, has no in-app updater, and cannot download or install an upstream AltTab release. Updates must be obtained and installed manually until a fork-owned update path is designed and validated.
+### Requirements
 
-This build does not bundle or initialize AppCenter and does not send crash reports or analytics to AppCenter. No replacement crash-reporting, analytics, or telemetry service has been added. It has no licensing, trial, checkout, or account network path and does not contact upstream services for feature access.
+- A Mac running a recent macOS that can install full **Xcode 26** (Command Line Tools alone are not enough).
+- [Xcode 26](https://developer.apple.com/xcode/) from the Mac App Store or Apple Developer downloads.
+- Git.
+- No Apple Developer account is required for the default build.
 
-On its first launch, AlTab locally imports compatible user configuration from the official AltTab defaults domain. This is a one-time copy, including after Reset Settings or restoring an AlTab settings backup: existing explicit AlTab choices win, unsupported and identity-specific state is excluded, and AltTab's preferences, license data, and Keychain items remain untouched. Login-item and permission/onboarding state are not transferred because those behaviors belong to the new bundle identity.
+If `xcodebuild -version` fails or reports that only Command Line Tools are selected, point the active developer directory at full Xcode:
+
+```bash
+sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+xcodebuild -version
+```
+
+For a single command without changing the system selection:
+
+```bash
+DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer scripts/build_local.sh
+```
+
+### Clone and build
+
+```bash
+git clone https://github.com/salasebas/altab.git
+cd altab
+scripts/build_local.sh
+```
+
+The script builds an optimized Release `AlTab.app` for the current Mac (native architecture), verifies the bundle, and prints the exact path and launch command. It does not launch, upload, notarize, or publish the app.
+
+Default output path:
+
+```text
+DerivedData/Local/Build/Products/Release/AlTab.app
+```
+
+Open it with the path printed by the script, for example:
+
+```bash
+open DerivedData/Local/Build/Products/Release/AlTab.app
+```
+
+Pass `--universal` only when you need both `arm64` and `x86_64` in one binary. Contributors who need the Debug/QA build (`AlTab Dev`) should use the separate path in [docs/contributing.md](docs/contributing.md); that is not the normal user workflow.
+
+### Permissions
+
+On first launch, AlTab opens a permissions window when required:
+
+| Permission | Required? | Purpose |
+|---|---|---|
+| **Accessibility** | Yes | Focus the window you select after releasing the shortcut. |
+| **Screen Recording** | Optional | Show live window thumbnails and previews. |
+
+Grant Accessibility in **System Settings → Privacy & Security → Accessibility**. Without it, AlTab cannot switch windows usefully and will ask again until permission is granted.
+
+Screen Recording is optional. If you skip it, AlTab still runs; thumbnails and previews will not show. You can enable Screen Recording later in **System Settings → Privacy & Security → Screen Recording**, or keep using icon/title-only styles that do not need capture.
+
+After ad-hoc rebuilds, macOS may ask for permissions again because the code signature's designated requirement can change when the executable changes. See [Signing](#signing) for the optional stable local identity.
+
+### Login item
+
+AlTab can start at login through its own preference (**Settings → General → Start at login**). That setting only affects this fork's bundle identity (`dev.salasebas.AlTab` by default). It does not enable or disable official AltTab, and first-launch preference import does not copy login-item or permission state from AltTab.
+
+### Signing
+
+Three supported cases:
+
+1. **Default ad hoc (recommended for a first build).**
+   `scripts/build_local.sh` uses an ad-hoc signature. No Apple account, Keychain change, or certificate is required.
+
+2. **Optional stable local self-signed identity.**
+   To keep Accessibility and Screen Recording grants stable across rebuilds, install a per-user identity and select it:
+
+   ```bash
+   scripts/codesign/setup_local.sh
+   ```
+
+   Then create ignored `config/local.xcconfig` (gitignored) with:
+
+   ```text
+   CODE_SIGN_IDENTITY = Local Self-Signed
+   ```
+
+   Rebuild with `scripts/build_local.sh`. Remove the identity later with `scripts/codesign/remove_local.sh` and delete that `CODE_SIGN_IDENTITY` line to return to ad hoc. Details: [docs/contributing.md](docs/contributing.md).
+
+3. **Advanced: your own Apple / Developer ID identity.**
+   If an identity is already installed in your Keychain, select it for one build without editing tracked files:
+
+   ```bash
+   ALTAB_CODE_SIGN_IDENTITY="Developer ID Application: Example" \
+   ALTAB_TEAM_ID="ABCDEFGHIJ" \
+   scripts/build_local.sh
+   ```
+
+   You may also set `ALTAB_BUNDLE_ID` or put `CODE_SIGN_IDENTITY`, `DEVELOPMENT_TEAM`, and `PRODUCT_BUNDLE_IDENTIFIER` in ignored `config/local.xcconfig`. A custom bundle ID creates a separate preferences and permissions identity. Never pass passwords, `.p12` files, private keys, or notarization credentials to the build scripts.
+
+### Updates
+
+There is no Sparkle feed and no in-app updater. Update from source:
+
+```bash
+cd altab
+git pull
+scripts/build_local.sh
+open DerivedData/Local/Build/Products/Release/AlTab.app
+```
+
+If you copied `AlTab.app` elsewhere, replace that copy with the newly built app and relaunch. Preferences for the same bundle ID are preserved by macOS; a different signing identity or bundle ID can require re-granting permissions.
+
+### Troubleshooting
+
+| Problem | What to try |
+|---|---|
+| `xcodebuild` says only Command Line Tools are selected | Select full Xcode with `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`, or prefix the build with `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`. |
+| Xcode / SDK too old or missing | Install Xcode 26, open it once to finish setup, accept the license, then retry. |
+| Signing identity not found / codesign failed | Unset `ALTAB_CODE_SIGN_IDENTITY` / remove the override from `config/local.xcconfig` for default ad hoc, or install the intended identity first (`scripts/codesign/setup_local.sh` for the local self-signed case). |
+| Permissions prompts every rebuild | Expected with ad-hoc signing when the binary changes. Use the optional local self-signed identity for stable grants. After changing identity or bundle ID, re-grant Accessibility (and Screen Recording if you use thumbnails). |
+| Stale or confusing build products | Delete local build data and rebuild: `rm -rf DerivedData/Local && scripts/build_local.sh`. |
+| Want Debug/QA UI or `AlTab Dev` | That is a contributor path only; see [docs/contributing.md](docs/contributing.md). |
+
+Do not disable Gatekeeper or other system-wide security protections to run a local build.
+
+## Privacy
+
+AlTab does not bundle or initialize Sparkle, AppCenter, crash reporting, analytics, or telemetry. It has no licensing, trial, checkout, or account network path and does not contact upstream services for feature access.
+
+On first launch, AlTab may locally import compatible settings from the official AltTab defaults domain into missing AlTab keys. Existing AlTab choices win; unsupported and identity-specific state is skipped. AltTab's preferences, license data, and Keychain items are left untouched. Login-item and permission state are not transferred.
+
+## Optional redistribution packaging
+
+The repository does not publish official binaries. Maintainers who need to assemble optional unsigned redistribution artifacts (app ZIP, matching dSYM, exact source archive, manifest, notes, checksums) from an explicit tag or full commit can use:
+
+```bash
+scripts/package_release.sh <tag-or-commit>
+```
+
+That tool is separate from the normal local build. See [docs/releasing.md](docs/releasing.md). If anyone publishes preview binaries before Developer ID signing and notarization exist, each build must be labeled **unsigned and not notarized**. Users must never be told to disable system-wide security protections.
 
 ## Relationship with upstream
 
 This fork began at AltTab `v11.4.3` (`10af70aaaaac0a2dbb7d0aaa61cda21b065c203f`). The original Git history is retained so authorship and provenance remain visible.
 
 Upstream changes are reviewed periodically, with security, crash, compatibility, and performance fixes prioritized. Changes are integrated selectively; AlTab is not automatically synchronized and may lag behind upstream. See [UPSTREAM.md](UPSTREAM.md) for the last reviewed revision and the integration policy.
-
-## Build from source
-
-Build an optimized app for the current Mac with the supported local command:
-
-```bash
-scripts/build_local.sh
-```
-
-The command produces a native-architecture `AlTab.app` with an ad-hoc signature, so it needs no Apple Developer account. It validates the bundle and prints its exact path and `open` command without launching, uploading, notarizing, or publishing it. Pass `--universal` to build both `arm64` and `x86_64`. An identity already installed in Keychain, Team ID, or custom bundle ID can be selected with `ALTAB_CODE_SIGN_IDENTITY`, `ALTAB_TEAM_ID`, and `ALTAB_BUNDLE_ID`; ignored `config/local.xcconfig` settings are also supported. See [the contributor build guide](docs/contributing.md) for stable-permission signing and Debug/QA builds.
-
-The routine local build stops with the app in `DerivedData`; it does not create redistribution artifacts. Maintainers can separately invoke the optional packager to create an unsigned Release binary, matching dSYM, exact corresponding source archive, build manifest, release notes, and SHA-256 checksums from an explicit tag or full commit with:
-
-```bash
-scripts/package_release.sh <tag-or-commit>
-```
-
-The packager builds from a clean `git archive` of that revision, not from ignored or modified local files. See [the release packaging guide](docs/releasing.md) for prerequisites, artifact contents, validation, and rebuilding instructions.
-
-No public binary is currently offered by this fork. If preview binaries are published before Developer ID signing and notarization are available, each release must be labeled clearly as **unsigned and not notarized**. macOS Gatekeeper may block such builds, and users should not be instructed to disable system-wide security protections.
 
 ## License and attribution
 

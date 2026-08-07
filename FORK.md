@@ -13,7 +13,9 @@ This file distinguishes current facts from the intended AlTab product. Do not ma
 
 ## Product model
 
-AlTab provides the locally implemented functionality in this codebase to every user. Feature behavior remains preference-driven, but availability never depends on a license, trial, account, purchase, elapsed time, or network response. There is no activation flow, paid-access state, upgrade prompt, checkout integration, or upstream licensing dependency.
+AlTab provides the locally implemented functionality in this codebase to every user. Feature behavior remains preference-driven, but availability never depends on a license, trial, account, purchase, elapsed time, network response, or environment variable. There is no activation flow, paid-access state, upgrade prompt, checkout integration, or upstream licensing dependency.
+
+The supported way to run AlTab is to clone the repository and build locally with `scripts/build_local.sh`. The repository does not publish official binaries and has no Sparkle updater; updates are `git pull`, rebuild, and relaunch. End-user steps for requirements, permissions, signing choices, troubleshooting, and optional redistribution packaging live in [README.md](README.md).
 
 ## Relationship with the earlier MIT AlTab codebase
 
@@ -64,6 +66,7 @@ Security-related upstream work receives priority, but there is no promise of imm
 
 - [x] Correct all root metadata so it consistently declares the GPL license.
 - [x] Keep corresponding source, build scripts, copyright notices, Git history, and third-party licenses available with every binary distribution.
+- [x] Document the source-first clone, local Release build, permissions, signing choices, and `git pull` update path in the README (no official binary distribution required for local use).
 - [ ] Test a clean install, upgrade, uninstall, Accessibility permissions, Screen Recording permissions, login item behavior, and side-by-side behavior with official AltTab.
 - [ ] Either sign and notarize releases with the fork maintainer's stable Developer ID or label every unsigned preview prominently in the README and release notes.
 - [x] Publish checksums and describe exactly how each release artifact was built.
