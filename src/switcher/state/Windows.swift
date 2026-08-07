@@ -289,13 +289,14 @@ class Windows {
         guard let session = SwitcherSession.current else { return }
         guard list.contains(where: { shouldDisplay($0) }) else { return }
         let nextIndex = selectedWindowIndexAfterCycling(step)
-        // don't wrap-around at the end, if key-repeat
-        if (((step > 0 && nextIndex < session.selectedIndex) || (step < 0 && nextIndex > session.selectedIndex)) &&
-            (!allowWrap || ATShortcut.lastEventIsARepeat || !KeyRepeatTimer.timerIsSuspended))
-               // don't cycle to another row, if !allowWrap
-               || (!allowWrap && list[nextIndex].rowIndex != list[session.selectedIndex].rowIndex) {
-            return
-        }
+        let crossesBoundary = (step > 0 && nextIndex < session.selectedIndex) || (step < 0 && nextIndex > session.selectedIndex)
+        let allowsBoundaryWrap = ContinuousNavigationResolver.allowsBoundaryWrap(
+            interactionAllowsWrap: allowWrap,
+            nativeRepeat: ATShortcut.lastEventIsARepeat,
+            timerIsSuspended: KeyRepeatTimer.timerIsSuspended,
+            preferenceEnabled: Preferences.wrapContinuousKeyboardNavigation)
+        guard !crossesBoundary || allowsBoundaryWrap else { return }
+        guard allowWrap || list[nextIndex].rowIndex == list[session.selectedIndex].rowIndex else { return }
         updateSelectedAndHoveredWindowIndex(nextIndex)
     }
 

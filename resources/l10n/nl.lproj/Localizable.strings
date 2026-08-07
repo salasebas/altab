@@ -196,6 +196,7 @@
 "Window previews" = "Venstervoorvertoningen";
 "Window Title" = "Venstertitel";
 "Window title contains" = "Venstertitel bevat";
+"Wrap continuous keyboard navigation" = "Doorlopende toetsenbordnavigatie laten omlopen";
 "You can’t undo this action." = "Je kunt deze actie niet ongedaan maken.";
 "You may need to disable some conflicting system gestures" = "Mogelijk moet je enkele conflicterende systeemgebaren uitschakelen";
 "Your settings reset every time AlTab restarts." = "Je instellingen worden bij elke herstart van AlTab teruggezet.";

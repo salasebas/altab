@@ -196,6 +196,7 @@
 "Window previews" = "Pencere önizlemeleri";
 "Window Title" = "Pencere Başlığı";
 "Window title contains" = "Pencere başlığı şunu içeriyor";
+"Wrap continuous keyboard navigation" = "Sürekli klavye gezinmesini döngüye al";
 "You can’t undo this action." = "Bu eylemi geri alamazsınız.";
 "You may need to disable some conflicting system gestures" = "Çakışan bazı sistem hareketlerini devre dışı bırakmanız gerekebilir";
 "Your settings reset every time AlTab restarts." = "Ayarların her AlTab yeniden başlatıldığında sıfırlanıyor.";

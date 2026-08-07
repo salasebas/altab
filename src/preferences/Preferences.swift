@@ -47,6 +47,7 @@ class Preferences {
         schema.add("searchShortcut", defaultShortcut("S"))
         schema.add("arrowKeysEnabled", "true")
         schema.add("vimKeysEnabled", "false")
+        schema.add("wrapContinuousKeyboardNavigation", "false")
         schema.add("mouseHoverEnabled", "false")
         schema.add("cursorFollowFocus", CursorFollowFocus.never.indexAsString)
         schema.add("hideColoredCircles", "false")
@@ -135,6 +136,7 @@ class Preferences {
     static var arrowKeysEnabled: Bool { CachedUserDefaults.bool("arrowKeysEnabled") }
     // periphery:ignore
     static var vimKeysEnabled: Bool { CachedUserDefaults.bool("vimKeysEnabled") }
+    static var wrapContinuousKeyboardNavigation: Bool { CachedUserDefaults.bool("wrapContinuousKeyboardNavigation") }
     static var mouseHoverEnabled: Bool { CachedUserDefaults.bool("mouseHoverEnabled") }
     static var cursorFollowFocus: CursorFollowFocus { CachedUserDefaults.macroPref("cursorFollowFocus", CursorFollowFocus.allCases) }
     static var trackpadHapticFeedbackEnabled: Bool { CachedUserDefaults.bool("trackpadHapticFeedbackEnabled") }

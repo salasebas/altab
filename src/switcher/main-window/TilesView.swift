@@ -92,7 +92,7 @@ class TilesView {
         }
     }
 
-    static func handleSearchEditingKeyDown(_ event: NSEvent) -> SearchKeyResult {
+    static func handleSearchEditingKeyDown(_ event: NSEvent, _ isARepeat: Bool) -> SearchKeyResult {
         let isPrintable = eventProducesText(event)
         let decision = SearchModeResolver.routeKey(
             hasMarkedText: hasMarkedText(),
@@ -102,6 +102,7 @@ class TilesView {
             matchesShortcut: matchesAnyWhenActiveShortcut(event, isPrintable))
         switch decision {
             case .cycleSelection(let direction):
+                ATShortcut.lastEventIsARepeat = isARepeat
                 App.cycleSelection(cycleToDirection(direction))
                 return .handled
             case .handled: return .handled
@@ -352,22 +353,17 @@ class TilesView {
         let step = direction == .down ? 1 : -1
         if let currentRow = Windows.selectedWindow()?.rowIndex {
             var nextRow = currentRow + step
+            let allowsBoundaryWrap = ContinuousNavigationResolver.allowsBoundaryWrap(
+                interactionAllowsWrap: allowWrap,
+                nativeRepeat: ATShortcut.lastEventIsARepeat,
+                timerIsSuspended: KeyRepeatTimer.timerIsSuspended,
+                preferenceEnabled: Preferences.wrapContinuousKeyboardNavigation)
             if nextRow >= rows.count {
-                if allowWrap {
-                    nextRow = nextRow % rows.count
-                } else {
-                    return nil
-                }
+                guard allowsBoundaryWrap else { return nil }
+                nextRow = nextRow % rows.count
             } else if nextRow < 0 {
-                if allowWrap {
-                    nextRow = rows.count + nextRow
-                } else {
-                    return nil
-                }
-            }
-            if ((step > 0 && nextRow < currentRow) || (step < 0 && nextRow > currentRow)) &&
-                   (ATShortcut.lastEventIsARepeat || !KeyRepeatTimer.timerIsSuspended) {
-                return nil
+                guard allowsBoundaryWrap else { return nil }
+                nextRow = rows.count + nextRow
             }
             return rows[nextRow]
         }

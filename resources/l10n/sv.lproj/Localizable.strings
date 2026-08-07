@@ -196,6 +196,7 @@
 "Window previews" = "Fönsterförhandsvisningar";
 "Window Title" = "Fönstertitel";
 "Window title contains" = "Fönstertitel innehåller";
+"Wrap continuous keyboard navigation" = "Låt kontinuerlig tangentbordsnavigering gå runt";
 "You can’t undo this action." = "Den här åtgärden kan inte ångras.";
 "You may need to disable some conflicting system gestures" = "Du kan behöva inaktivera vissa motstridiga systemgester";
 "Your settings reset every time AlTab restarts." = "Dina inställningar återställs varje gång AlTab startas om.";

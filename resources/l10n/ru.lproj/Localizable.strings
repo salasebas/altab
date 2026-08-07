@@ -196,6 +196,7 @@
 "Window previews" = "Превью окон";
 "Window Title" = "Заголовок окна";
 "Window title contains" = "Заголовок окна содержит";
+"Wrap continuous keyboard navigation" = "Зацикливать непрерывную навигацию с клавиатуры";
 "You can’t undo this action." = "Это действие нельзя отменить.";
 "You may need to disable some conflicting system gestures" = "Возможно, потребуется отключить некоторые конфликтующие системные жесты";
 "Your settings reset every time AlTab restarts." = "Ваши настройки сбрасываются при каждом перезапуске AlTab.";

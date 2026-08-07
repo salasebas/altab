@@ -196,6 +196,7 @@
 "Window previews" = "Podglądy okien";
 "Window Title" = "Tytuł okna";
 "Window title contains" = "Tytuł okna zawiera";
+"Wrap continuous keyboard navigation" = "Zapętl ciągłą nawigację klawiaturą";
 "You can’t undo this action." = "Nie można cofnąć tej akcji.";
 "You may need to disable some conflicting system gestures" = "Możesz musieć wyłączyć niektóre sprzeczne gesty systemowe";
 "Your settings reset every time AlTab restarts." = "Twoje ustawienia są resetowane przy każdym ponownym uruchomieniu AlTab.";

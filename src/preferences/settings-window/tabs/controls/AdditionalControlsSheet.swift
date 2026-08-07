@@ -8,6 +8,7 @@ class AdditionalControlsSheet: SheetWindow {
     private static let titleMiscellaneous = NSLocalizedString("Miscellaneous", comment: "")
     private static let labelArrows = NSLocalizedString("Select windows using arrow keys", comment: "")
     private static let labelVim = NSLocalizedString("Select windows using vim keys", comment: "")
+    private static let labelWrap = NSLocalizedString("Wrap continuous keyboard navigation", comment: "")
     private static let labelMouse = NSLocalizedString("Select windows on mouse hover", comment: "")
     private static let labelCursorFollow = NSLocalizedString("Cursor follows focus", comment: "")
     private static let labelTrackpad = NSLocalizedString("Trackpad haptic feedback", comment: "")
@@ -15,7 +16,7 @@ class AdditionalControlsSheet: SheetWindow {
     /// Pre-build search index for the open-button. See `SettingsSearchIndex.sheetSearchableStrings`.
     static let searchableStrings: [String] = [
         title, titleMiscellaneous,
-        labelArrows, labelVim, labelMouse,
+        labelArrows, labelVim, labelWrap, labelMouse,
         labelCursorFollow, labelTrackpad,
     ] + CursorFollowFocus.allCases.map { $0.localizedString }
 
@@ -24,6 +25,8 @@ class AdditionalControlsSheet: SheetWindow {
             rightViews: [LabelAndControl.makeSwitch("arrowKeysEnabled", extraAction: ControlsTab.arrowKeysEnabledCallback)])
         let enableVimKeys = TableGroupView.Row(leftTitle: Self.labelVim,
             rightViews: [LabelAndControl.makeSwitch("vimKeysEnabled", extraAction: ControlsTab.vimKeysEnabledCallback)])
+        let enableContinuousNavigationWrap = TableGroupView.Row(leftTitle: Self.labelWrap,
+            rightViews: [LabelAndControl.makeSwitch("wrapContinuousKeyboardNavigation")])
         let enableMouse = TableGroupView.Row(leftTitle: Self.labelMouse,
             rightViews: [LabelAndControl.makeSwitch("mouseHoverEnabled")])
         let enableCursorFollowFocus = TableGroupView.Row(leftTitle: Self.labelCursorFollow,
@@ -37,6 +40,7 @@ class AdditionalControlsSheet: SheetWindow {
         let table1 = TableGroupView(title: Self.title, width: SheetWindow.width)
         _ = table1.addRow(enableArrows)
         _ = table1.addRow(enableVimKeys)
+        _ = table1.addRow(enableContinuousNavigationWrap)
         _ = table1.addRow(enableMouse)
         let table2 = TableGroupView(title: Self.titleMiscellaneous, width: SheetWindow.width)
         _ = table2.addRow(enableCursorFollowFocus)

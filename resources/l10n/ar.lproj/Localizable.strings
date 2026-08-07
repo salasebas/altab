@@ -196,6 +196,7 @@
 "Window previews" = "معاينات النوافذ";
 "Window Title" = "عنوان النافذة";
 "Window title contains" = "عنوان النافذة يحتوي على";
+"Wrap continuous keyboard navigation" = "التفاف التنقل المستمر بلوحة المفاتيح";
 "You can’t undo this action." = "لا يمكنك التراجع عن هذا الإجراء.";
 "You may need to disable some conflicting system gestures" = "قد تحتاج إلى تعطيل بعض إيماءات النظام المتعارضة";
 "Your settings reset every time AlTab restarts." = "تتم إعادة تعيين إعداداتك في كل مرة يُعاد فيها تشغيل AlTab.";

@@ -160,6 +160,27 @@ final class KeyboardEventsUtilsTests: XCTestCase {
         XCTAssertEqual(ControlsTab.shortcutsActionsTriggered, ["nextWindowShortcut", "nextWindowShortcut2", "holdShortcut2"])
     }
 
+    func testSearchEditingRoutesRepeatStateToNavigationHandler() throws {
+        resetState()
+        SwitcherSession.current = SwitcherSession()
+        TilesPanel.shared.isKeyWindow = true
+        TilesView.isSearchEditing = true
+        App.app.tilesPanel.tilesView.searchKeyResult = .handled
+        let event = NSEvent.keyEvent(
+            with: .keyDown,
+            location: .zero,
+            modifierFlags: [],
+            timestamp: 0,
+            windowNumber: 0,
+            context: nil,
+            characters: "",
+            charactersIgnoringModifiers: "",
+            isARepeat: true,
+            keyCode: 124)!
+        XCTAssertTrue(handleKeyboardEvent(nil, nil, 124, [], true, event))
+        XCTAssertEqual(App.app.tilesPanel.tilesView.receivedSearchRepeatStates, [true])
+    }
+
     private func resetState() {
         SwitcherSession.current = nil
         Preferences.defaults.removePersistentDomain(forName: Preferences.defaultsDomainName)
@@ -168,6 +189,10 @@ final class KeyboardEventsUtilsTests: XCTestCase {
         Preferences.set("shortcutStyle", ShortcutStylePreference.focusOnRelease.indexAsString, false)
         ControlsTab.shortcuts.values.forEach { $0.state = .up }
         ControlsTab.shortcutsActionsTriggered = []
+        TilesView.isSearchEditing = false
+        TilesPanel.shared.isKeyWindow = false
+        App.app.tilesPanel.tilesView.searchKeyResult = .passToField
+        App.app.tilesPanel.tilesView.receivedSearchRepeatStates = []
     }
 
     // Issue #5585: Escape (kVK_Escape = 53) reaches the matcher via the cghid event tap in

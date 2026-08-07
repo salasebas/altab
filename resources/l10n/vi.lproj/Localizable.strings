@@ -196,6 +196,7 @@
 "Window previews" = "Bản xem trước cửa sổ";
 "Window Title" = "Tiêu đề cửa sổ";
 "Window title contains" = "Tiêu đề cửa sổ chứa";
+"Wrap continuous keyboard navigation" = "Lặp lại điều hướng bàn phím liên tục";
 "You can’t undo this action." = "Bạn không thể hoàn tác hành động này.";
 "You may need to disable some conflicting system gestures" = "Bạn có thể cần tắt một số cử chỉ hệ thống xung đột";
 "Your settings reset every time AlTab restarts." = "Cài đặt của bạn bị đặt lại mỗi khi AlTab khởi động lại.";
