@@ -15,6 +15,7 @@ class CustomizeStyleSheet: SheetWindow {
         ShowHideIllustratedView.hideStatusIconsSubtitle,
         ShowHideIllustratedView.hideSpaceNumberLabelsLabel,
         ShowHideIllustratedView.hideColoredCirclesLabel,
+        ShowHideIllustratedView.showSymbolsInHoverControlsLabel,
         IllustratedImageThemeView.placeholderLabelText,
     ] + ShowTitlesPreference.allCases.map { $0.localizedString }
       + TitleTruncationPreference.allCases.map { $0.localizedString }

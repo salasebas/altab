@@ -144,6 +144,7 @@
 "Show on" = "แสดงบน";
 "Show separate window for each tab" = "แสดงหน้าต่างแยกสำหรับแต่ละแท็บ";
 "Show single window for all tabs" = "แสดงหน้าต่างเดียวสำหรับทุกแท็บ";
+"Show symbols in hover controls" = "แสดงสัญลักษณ์ในตัวควบคุมเมื่อชี้เมาส์";
 "Show titles" = "แสดงชื่อ";
 "Show windows from applications" = "แสดงหน้าต่างจากแอปพลิเคชัน";
 "Show windows from screens" = "แสดงหน้าต่างจากหน้าจอ";

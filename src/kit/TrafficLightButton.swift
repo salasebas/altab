@@ -21,6 +21,14 @@ class TrafficLightButton: NSButton {
         fatalError("Class only supports programmatic initialization")
     }
 
+    static func shouldDrawSymbol(_ showSymbols: Bool, _ hideColoredCircles: Bool) -> Bool {
+        showSymbols && !hideColoredCircles
+    }
+
+    static func symbolPreferenceIsEnabled(_ style: AppearanceStylePreference, _ hideColoredCircles: Bool) -> Bool {
+        style == .thumbnails && !hideColoredCircles
+    }
+
     @objc func onClick() {
         if (type == .fullscreen) {
             window_?.toggleFullscreen()
@@ -36,11 +44,11 @@ class TrafficLightButton: NSButton {
     override func draw(_ dirtyRect: NSRect) {
         let (diskBackgroundColor, diskStrokeColor, symbolColor) = colors()
         let disk = drawDisk(diskBackgroundColor, diskStrokeColor)
-        drawSymbol(symbolColor)
+        if TrafficLightButton.shouldDrawSymbol(Preferences.showSymbolsInHoverControls, Preferences.hideColoredCircles) { drawSymbol(symbolColor) }
         drawDimming(disk)
     }
 
-    private func drawDimming(_ disk: NSBezierPath) {
+    func drawDimming(_ disk: NSBezierPath) {
         disk.lineWidth = 1
         if (isHighlighted) {
             NSColor.black.withAlphaComponent(0.5).setFill()
@@ -51,7 +59,7 @@ class TrafficLightButton: NSButton {
         }
     }
 
-    private func drawDisk(_ backgroundGradient: NSGradient, _ strokeColor: NSColor) -> NSBezierPath {
+    func drawDisk(_ backgroundGradient: NSGradient, _ strokeColor: NSColor) -> NSBezierPath {
         let disk = NSBezierPath()
         disk.appendOval(in: NSMakeRect(bounds.origin.x + 0.5, bounds.origin.y + 0.5, bounds.width - 1, bounds.height - 1))
         backgroundGradient.draw(in: disk, relativeCenterPosition: .zero)
@@ -107,7 +115,7 @@ class TrafficLightButton: NSButton {
         )
     }
 
-    private func drawSymbol(_ lineColor: NSColor) {
+    func drawSymbol(_ lineColor: NSColor) {
         let symbol = NSBezierPath()
         if (type == .fullscreen) {
             var firstPointA, firstPointB, firstPointC, secondPointA, secondPointB, secondPointC: NSPoint!

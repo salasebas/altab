@@ -197,6 +197,8 @@
 		BF0C8C0EDECEA32BBCE5B27D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BF0C8849751E65B51A470278 /* Localizable.strings */; };
 		BF0C8C5FA4B401A8C0F75B7A /* KeyboardEventsTestable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8643F524515224BF1618 /* KeyboardEventsTestable.swift */; };
 		BF0C8C7E96DB48120462DA00 /* TrafficLightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8DF400A1AF64EB0CD0B3 /* TrafficLightButton.swift */; };
+		240000000000000000000001 /* TrafficLightButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240000000000000000000002 /* TrafficLightButtonTests.swift */; };
+		240000000000000000000004 /* TrafficLightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8DF400A1AF64EB0CD0B3 /* TrafficLightButton.swift */; };
 		BF0C8CC5057406014FD612CC /* ATShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8BA452332236D972C60E /* ATShortcut.swift */; };
 		BF0C8CEBBC2E851D16FF4757 /* CustomRecorderControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8308B436837FA3EDED86 /* CustomRecorderControlTests.swift */; };
 		BF0C8DD7EBC3BA1E86BF4BDB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BF0C841E403C1C6E8C65727E /* InfoPlist.strings */; };
@@ -520,6 +522,8 @@
 		BF0C8DCAC388B07C369E9771 /* test-base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "test-base.xcconfig"; sourceTree = "<group>"; };
 		BF0C8FACE000000000000001 /* WindowServerEvents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowServerEvents.swift; sourceTree = "<group>"; };
 		BF0C8DF400A1AF64EB0CD0B3 /* TrafficLightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrafficLightButton.swift; sourceTree = "<group>"; };
+		240000000000000000000002 /* TrafficLightButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficLightButtonTests.swift; sourceTree = "<group>"; };
+		240000000000000000000003 /* TrafficLightButtonSpecs.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TrafficLightButtonSpecs.md; sourceTree = "<group>"; };
 		BF0C8E63BE7394A6591E74E0 /* LightImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LightImageView.swift; sourceTree = "<group>"; };
 		BF0C8E64BE7394A6591E74E1 /* LightImageLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LightImageLayer.swift; sourceTree = "<group>"; };
 		BF0C8EAF02309B9C489E65F4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -1175,6 +1179,8 @@
 				D04BAE333F7170E87C5AC0EF /* CustomRecorderControl.swift */,
 				D04BA8AC77465E1B2BC947CF /* StackView.swift */,
 				BF0C8DF400A1AF64EB0CD0B3 /* TrafficLightButton.swift */,
+				240000000000000000000002 /* TrafficLightButtonTests.swift */,
+				240000000000000000000003 /* TrafficLightButtonSpecs.md */,
 				D04BA00000000000C0DE0040 /* Tooltips.swift */,
 				BF0C8B2C057099EDABE46779 /* Button.swift */,
 				BF0C8343C1F6FCA82552DCB7 /* TableView.swift */,
@@ -1791,6 +1797,8 @@
 				BF0C875A28B98904F8F4A66A /* ATShortcut.swift in Sources */,
 				D04BA00000000000C0DE0022 /* SwitcherSession.swift in Sources */,
 				BF0C84E5AC1D423625ABF3E6 /* Mocks.swift in Sources */,
+				240000000000000000000004 /* TrafficLightButton.swift in Sources */,
+				240000000000000000000001 /* TrafficLightButtonTests.swift in Sources */,
 				BF0C8F9B8014AD21E68B1349 /* HelperExtensionsTestable.swift in Sources */,
 				BF0C8CEBBC2E851D16FF4757 /* CustomRecorderControlTests.swift in Sources */,
 				BF0C87B5EDCFC573CE220137 /* Helpers.swift in Sources */,

@@ -226,6 +226,7 @@ final class WindowApplication {
 
 final class Window {
     let application = WindowApplication()
+    var isFullscreen = false
 
     func close() {
         ControlsTab.shortcutsActionsTriggered.append("closeWindowShortcut")

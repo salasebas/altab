@@ -144,6 +144,7 @@
 "Show on" = "Показывать на";
 "Show separate window for each tab" = "Отдельное окно для каждой вкладки";
 "Show single window for all tabs" = "Одно окно для всех вкладок";
+"Show symbols in hover controls" = "Показывать символы в элементах управления при наведении";
 "Show titles" = "Показывать заголовки";
 "Show windows from applications" = "Показывать окна приложений";
 "Show windows from screens" = "Показывать окна с экранов";

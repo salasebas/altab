@@ -144,6 +144,7 @@
 "Show on" = "Hiển thị trên";
 "Show separate window for each tab" = "Hiển thị cửa sổ riêng cho mỗi tab";
 "Show single window for all tabs" = "Hiển thị một cửa sổ cho tất cả tab";
+"Show symbols in hover controls" = "Hiển thị biểu tượng trong các điều khiển khi di chuột";
 "Show titles" = "Hiển thị tiêu đề";
 "Show windows from applications" = "Hiển thị cửa sổ từ các ứng dụng";
 "Show windows from screens" = "Hiển thị cửa sổ từ các màn hình";

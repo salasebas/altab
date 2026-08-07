@@ -144,6 +144,7 @@
 "Show on" = "الإظهار على";
 "Show separate window for each tab" = "إظهار نافذة منفصلة لكل علامة تبويب";
 "Show single window for all tabs" = "إظهار نافذة واحدة لجميع علامات التبويب";
+"Show symbols in hover controls" = "إظهار الرموز في عناصر التحكم عند التمرير";
 "Show titles" = "إظهار العناوين";
 "Show windows from applications" = "إظهار النوافذ من التطبيقات";
 "Show windows from screens" = "إظهار النوافذ من الشاشات";

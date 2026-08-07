@@ -144,6 +144,7 @@
 "Show on" = "显示于";
 "Show separate window for each tab" = "每个标签显示单独的窗口";
 "Show single window for all tabs" = "所有标签显示单个窗口";
+"Show symbols in hover controls" = "在悬停控件中显示符号";
 "Show titles" = "显示标题";
 "Show windows from applications" = "显示来自应用的窗口";
 "Show windows from screens" = "显示来自屏幕的窗口";
