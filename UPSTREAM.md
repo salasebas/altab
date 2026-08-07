@@ -11,6 +11,9 @@ This log records how far upstream has been reviewed. “Reviewed” does not mea
 | Fork commit | `10af70aaaaac0a2dbb7d0aaa61cda21b065c203f` |
 | Last reviewed commit | `081f3ee4014e03557c2ab39e9e168dac308fa49b` |
 | Last review date | 2026-08-07 |
+| AlTab source milestone at this baseline | `altab-v1.0.0` (product `1.0.0`) |
+
+“Reviewed” and “source milestone” do **not** mean AlTab has automatic security updates or feature parity with upstream.
 
 ## Review procedure
 

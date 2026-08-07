@@ -42,7 +42,10 @@ label="$gitTag"
 [[ "$label" != "untagged" ]] || label="$(git rev-parse --short=12 "$commit")"
 [[ "$label" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || fail "release label is unsafe for artifact names: $label"
 releaseBundleVersion="0"
-if [[ "$gitTag" =~ ^v?([0-9]+(\.[0-9]+){0,2})$ ]]; then
+# Prefer AlTab milestone tags (altab-vN.N.N) so retained upstream v* tags never set the bundle version.
+if [[ "$gitTag" =~ ^altab-v([0-9]+(\.[0-9]+){0,2})$ ]]; then
+  releaseBundleVersion="${BASH_REMATCH[1]}"
+elif [[ "$gitTag" =~ ^v([0-9]+(\.[0-9]+){0,2})$ ]]; then
   releaseBundleVersion="${BASH_REMATCH[1]}"
 fi
 if git ls-tree -r "$commit" | awk '$1 == "160000" { found = 1 } END { exit !found }'; then

@@ -10,12 +10,13 @@ This file distinguishes current facts from the intended AlTab product. Do not ma
 - Fork commit: `10af70aaaaac0a2dbb7d0aaa61cda21b065c203f`
 - License: GPL-3.0
 - Relationship: independent fork; no affiliation or endorsement
+- First source milestone: `altab-v1.0.0` (product version `1.0.0`; see [docs/releasing.md](docs/releasing.md))
 
 ## Product model
 
 AlTab provides the locally implemented functionality in this codebase to every user. Feature behavior remains preference-driven, but availability never depends on a license, trial, account, purchase, elapsed time, network response, or environment variable. There is no activation flow, paid-access state, upgrade prompt, checkout integration, or upstream licensing dependency.
 
-The supported way to run AlTab is to clone the repository and build locally with `scripts/build_local.sh`. The repository does not publish official binaries and has no Sparkle updater; updates are `git pull`, rebuild, and relaunch. End-user steps for requirements, permissions, signing choices, troubleshooting, and optional redistribution packaging live in [README.md](README.md).
+The supported way to run AlTab is to clone the repository and build locally with `scripts/build_local.sh`. Official milestones are source-only Git tags (`altab-v*`) plus release notes—no compiled application is published. There is no Sparkle updater; updates are `git fetch`/`git pull` (or checkout a milestone tag), rebuild, and relaunch. End-user steps for requirements, permissions, signing choices, troubleshooting, and optional redistribution packaging live in [README.md](README.md).
 
 ## Relationship with the earlier MIT AlTab codebase
 
@@ -68,11 +69,11 @@ Security-related upstream work receives priority, but there is no promise of imm
 - [x] Keep corresponding source, build scripts, copyright notices, Git history, and third-party licenses available with every binary distribution.
 - [x] Document the source-first clone, local Release build, permissions, signing choices, and `git pull` update path in the README (no official binary distribution required for local use).
 - [x] Test a clean install, upgrade, uninstall, Accessibility permissions, Screen Recording permissions, login item behavior, and side-by-side behavior with official AltTab.
-- [ ] Either sign and notarize releases with the fork maintainer's stable Developer ID or label every unsigned preview prominently in the README and release notes.
-- [x] Publish checksums and describe exactly how each release artifact was built.
+- [x] Either sign and notarize releases with the fork maintainer's stable Developer ID or label every unsigned preview prominently in the README and release notes. **Source-only path chosen for the first milestone:** no official binary is published; README and milestone notes state that local builds are ad-hoc/unsigned by default and that any third-party binary redistribution must be labeled **unsigned and not notarized**.
+- [x] Publish checksums and describe exactly how each release artifact was built. Optional packager emits `SHA256SUMS` when used; official milestones attach no binaries.
 
 ## Suggested public wording
 
-Use wording with this level of precision once public releases exist:
+Use wording with this level of precision for source milestones:
 
-> AlTab is an independent GPL-3.0 fork of AltTab for macOS. It is not affiliated with or endorsed by the upstream project. Upstream reliability and security changes are reviewed and selectively ported, but updates are not automatic and this fork may lag behind upstream. The signing and notarization status of each binary is stated in its release notes.
+> AlTab is an independent GPL-3.0 fork of AltTab for macOS. It is not affiliated with or endorsed by the upstream project. Upstream reliability and security changes are reviewed and selectively ported, but updates are not automatic and this fork may lag behind upstream. Official milestones are source-only: clone the tagged revision and build locally. There is no official compiled binary, Sparkle feed, or automatic security update channel.
