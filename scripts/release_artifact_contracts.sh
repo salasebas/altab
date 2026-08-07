@@ -12,6 +12,7 @@ releaseRequiredSourcePaths=(
   scripts/forbidden_service_contracts.sh
   scripts/release_artifact_contracts.sh
   scripts/check_service_isolation.sh
+  scripts/check_symbol_assets.sh
   scripts/check_unrestricted_features.sh
   .github/RELEASE_NOTES_TEMPLATE.md
   package.json
@@ -22,9 +23,10 @@ releaseRequiredSourcePaths=(
   docs/contributors.md
   docs/brand/README.md
   docs/brand/ALTAB-BRAND-LICENSE.txt
-  resources/SF-Pro-Text-Regular.otf
+  scripts/licenses/Tabler-Icons-LICENSE.txt
   scripts/licenses/createicns-LICENSE.txt
   scripts/licenses/xcbeautify-LICENSE.txt
+  scripts/symbol-assets.sha256
   vendor/ShortcutRecorder/LICENSE.txt
   vendor/ShortcutRecorder/UPSTREAM
   vendor/scripts/update_shortcut_recorder.sh
@@ -47,6 +49,7 @@ releaseManifestFields=(
   'Signing status: **unsigned**'
   'Notarization status: **not notarized**'
   'Service-isolation guard: **passed against the packaged app**'
+  'Symbol-asset compliance guard: **passed against the packaged app**'
   'Unrestricted-feature guard: **passed against the packaged app**'
 )
 releasePackagedNotices=(
@@ -55,6 +58,7 @@ releasePackagedNotices=(
   THIRD-PARTY-NOTICES.md
   CONTRIBUTORS.md
   licenses/ALTAB-BRAND-LICENSE.txt
+  licenses/Tabler-Icons-LICENSE.txt
   licenses/createicns-LICENSE.txt
   licenses/xcbeautify-LICENSE.txt
   licenses/ShortcutRecorder-LICENSE.txt

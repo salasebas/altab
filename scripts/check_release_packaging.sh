@@ -23,7 +23,7 @@ require_text() {
 source scripts/release_artifact_contracts.sh
 [[ "${releaseArtifactContractsVersion:-}" == "1" ]] || fail "unsupported release artifact contracts version"
 for path in "${releaseRequiredSourcePaths[@]}" docs/releasing.md; do require_file "$path"; done
-for path in scripts/package_release.sh scripts/verify_release_artifacts.sh scripts/check_release_packaging.sh scripts/check_source_compliance.sh scripts/check_service_isolation.sh scripts/check_unrestricted_features.sh; do
+for path in scripts/package_release.sh scripts/verify_release_artifacts.sh scripts/check_release_packaging.sh scripts/check_source_compliance.sh scripts/check_service_isolation.sh scripts/check_symbol_assets.sh scripts/check_unrestricted_features.sh; do
   [[ -x "$path" ]] || fail "$path is not executable"
   bash -n "$path"
 done
@@ -36,5 +36,6 @@ for placeholder in RELEASE TAG COMMIT BINARY_ARTIFACT SOURCE_ARTIFACT MANIFEST; 
 done
 require_text scripts/package_release.sh 'scripts/verify_release_artifacts.sh'
 require_text scripts/package_release.sh 'scripts/check_service_isolation.sh'
+require_text scripts/package_release.sh 'scripts/check_symbol_assets.sh'
 require_text scripts/package_release.sh 'scripts/check_unrestricted_features.sh'
 echo "release-packaging check passed"

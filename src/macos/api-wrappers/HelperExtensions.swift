@@ -215,40 +215,20 @@ extension NSImage {
         return NSImage(named: name)!.copy() as! NSImage
     }
 
-    /// Render an SF Symbol from the bundled `SF Pro Text` subset font as a template NSImage.
-    /// Tint at the call site via `NSImageView.contentTintColor` (macOS 10.14+) or by drawing
-    /// into a tinted container. The image is rasterised at `pointSize`; for crisp Retina output,
-    /// pass the displayed point size — AppKit handles @2x via the backing scale.
-    ///
-    /// The image is cropped to the glyph's ink bounds (the actual visible pixels), not the
-    /// font's typographic box. This makes `NSSegmentedControl` and similar containers center
-    /// the glyph correctly — math symbols like `+`/`−` sit on the math axis, which doesn't
-    /// match the typographic midline, so a typographic-box image renders visibly off-centre.
-    ///
-    /// `rotated180` flips the glyph 180° around the image centre — used e.g. for the override
-    /// indicator where the upright `arrow.triangle.branch` glyph reads better pointing
-    /// downward ("this value branches to other shortcuts").
+    /// Resolve a semantic symbol through AppKit or the bundled redistributable fallback catalog.
     static func fromSymbol(_ symbol: Symbols, pointSize: CGFloat, rotated180: Bool = false) -> NSImage {
-        let font = NSFont(name: "SF Pro Text", size: pointSize)!
-        let attrs: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: NSColor.black]
-        let attrStr = NSAttributedString(string: symbol.rawValue, attributes: attrs)
-        let line = CTLineCreateWithAttributedString(attrStr)
-        let inkBounds = CTLineGetImageBounds(line, nil)
-        let imageSize = NSSize(width: ceil(inkBounds.width), height: ceil(inkBounds.height))
-        let image = NSImage(size: imageSize)
-        image.lockFocus()
-        if let ctx = NSGraphicsContext.current?.cgContext {
-            if rotated180 {
-                ctx.translateBy(x: imageSize.width / 2, y: imageSize.height / 2)
-                ctx.rotate(by: .pi)
-                ctx.translateBy(x: -imageSize.width / 2, y: -imageSize.height / 2)
-            }
-            ctx.translateBy(x: -inkBounds.origin.x, y: -inkBounds.origin.y)
-            CTLineDraw(line, ctx)
+        let image = SymbolImages.image(for: symbol, pointSize: pointSize)
+        guard rotated180 else { return image }
+        let rotated = NSImage(size: image.size, flipped: false) { rect in
+            guard let context = NSGraphicsContext.current?.cgContext else { return false }
+            context.translateBy(x: rect.midX, y: rect.midY)
+            context.rotate(by: .pi)
+            context.translateBy(x: -rect.midX, y: -rect.midY)
+            image.draw(in: rect, from: .zero, operation: .sourceOver, fraction: 1)
+            return true
         }
-        image.unlockFocus()
-        image.isTemplate = true
-        return image
+        rotated.isTemplate = true
+        return rotated
     }
 
     func tinted(_ color: NSColor) -> NSImage {

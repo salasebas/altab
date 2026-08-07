@@ -1,51 +1,5 @@
 import Cocoa
 
-// To add an SF Symbol: open SF Symbols.app, search for the symbol, press Cmd-C to copy
-// its character, paste the rawValue below, then add the same character to the --text=
-// argument of scripts/assets/subset_font.sh so it ships in the bundled font subset.
-enum Symbols: String {
-    // Switcher status icons
-    case circledPlusSign = "􀁌"       // plus.circle
-    case circledMinusSign = "􀁎"      // minus.circle
-    case circledSlashSign = "􀕧"      // circle.slash
-    case circledNumber0 = "􀀸"        // 0.circle
-    case circledNumber10 = "􀓵"       // 10.circle
-    case circledStar = "􀕬"           // star.circle
-    case filledCircledStar = "􀕭"     // star.circle.fill
-    case circledInfo = "􀅴"           // info.circle
-    // Preferences sidebar tab icons
-    case paintpalette = "􀝥"          // paintpalette
-    case command = "􀆔"               // command
-    case gearshape = "􀣋"             // gearshape
-    case handRaised = "􀉻"            // hand.raised
-    // Inline button icons
-    case link = "􀉣"                  // link
-    case arrowTriangleBranch = "􀙠"  // arrow.triangle.branch
-    // Permission window icons
-    case accessibility = "􀕾"         // accessibility
-    case display = "􀢹"               // display
-    // Feedback window icons
-    case ladybug = "􀯔"               // ladybug
-    case lightbulb = "􀛭"             // lightbulb
-    // Segmented-control / button icons (previously gated by macOS 11)
-    case plus = "􀅼"                  // plus
-    case minus = "􀅽"                 // minus
-    case minusCircleFill = "􀁏"       // minus.circle.fill
-    // ShortcutStylePreference
-    case cursorarrowRays = "􀇰"       // cursorarrow.rays
-    case pauseRectangle = "􀊛"        // pause.rectangle
-    case magnifyingglass = "􀊫"       // magnifyingglass
-    // AppearanceSizePreference
-    case moonphaseWaningGibbousInverse = "􁐎"   // moonphase.waning.gibbous.inverse
-    case moonphaseLastQuarterInverse = "􁐏"     // moonphase.last.quarter.inverse
-    case moonphaseWaningCrescentInverse = "􁐐"  // moonphase.waning.crescent.inverse
-    case sparkles = "􀆿"              // sparkles
-    // AppearanceThemePreference
-    case sunMax = "􀆭"                // sun.max
-    case moonFill = "􀆺"              // moon.fill
-    case laptopcomputer = "􀟛"        // laptopcomputer
-}
-
 class TileFontIconView: NSView {
     enum Rendering {
         case symbol
@@ -57,12 +11,6 @@ class TileFontIconView: NSView {
         var size: CGFloat
         var colorKey: String
     }
-
-    static let paragraphStyle = {
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.lineHeightMultiple = 0.85
-        return paragraphStyle
-    }()
 
     private struct BadgeSizing {
         static let containerFromIconRatio = CGFloat(0.43)
@@ -81,7 +29,7 @@ class TileFontIconView: NSView {
         let textHeight: CGFloat
     }
 
-    static var symbolCache = [SymbolCacheKey: NSAttributedString]()
+    static var symbolCache = [SymbolCacheKey: NSImage]()
 
     static func badgeBaseSize(forIconSize iconSize: CGFloat) -> CGFloat {
         max((iconSize * BadgeSizing.containerFromIconRatio).rounded(), BadgeSizing.minContainerHeight)
@@ -92,29 +40,30 @@ class TileFontIconView: NSView {
     private let symbolColor: NSColor
     private let badgeFillColor: NSColor
     private let badgeTextColor: NSColor
-    private let symbolFont: NSFont
     private let badgeFont: NSFont
     private let badgeContainerHeight: CGFloat
     private let badgeHorizontalPadding: CGFloat
     private var text = ""
-    private var cachedSymbolAttributedString: NSAttributedString?
+    private var symbol: Symbols?
+    private var cachedSymbolImage: NSImage?
     private var cachedBadgeAttributedString: NSAttributedString?
     private var cachedBadgeTextSize = NSSize.zero
 
     convenience init(symbol: Symbols, tooltip: String? = nil, size: CGFloat = Appearance.fontHeight, color: NSColor = Appearance.fontColor) {
-        self.init(rendering: .symbol, initialText: symbol.rawValue, size: size, symbolColor: color, badgeFillColor: .clear, badgeTextColor: .clear)
+        self.init(rendering: .symbol, initialSymbol: symbol, initialText: "", size: size, symbolColor: color, badgeFillColor: .clear, badgeTextColor: .clear)
         toolTip = tooltip
-        frame.size = symbolSizeForCurrentText()
+        frame.size = symbolSizeForCurrentImage()
     }
 
     convenience init(badgeSize: CGFloat,
                      fillColor: NSColor = NSColor(srgbRed: 1, green: 0.25, blue: 0.2, alpha: 0.9),
                      textColor: NSColor = .white) {
-        self.init(rendering: .badge, initialText: "0", size: badgeSize, symbolColor: .clear, badgeFillColor: fillColor, badgeTextColor: textColor)
+        self.init(rendering: .badge, initialSymbol: nil, initialText: "0", size: badgeSize, symbolColor: .clear, badgeFillColor: fillColor, badgeTextColor: textColor)
         frame.size = badgeFrameSize(textWidth: maxBadgeTextWidth(), text: String(repeating: "8", count: BadgeSizing.maxDigits))
     }
 
     init(rendering: Rendering,
+         initialSymbol: Symbols?,
          initialText: String,
          size: CGFloat,
          symbolColor: NSColor,
@@ -125,14 +74,14 @@ class TileFontIconView: NSView {
         self.symbolColor = symbolColor
         self.badgeFillColor = badgeFillColor
         self.badgeTextColor = badgeTextColor
-        symbolFont = NSFont(name: "SF Pro Text", size: (size * 0.85).rounded())!
         let badgeMetrics = Self.badgeMetrics(size)
         badgeContainerHeight = badgeMetrics.containerHeight
         badgeHorizontalPadding = Self.badgeHorizontalPadding(badgeMetrics.containerHeight)
         badgeFont = NSFont.systemFont(ofSize: badgeMetrics.textHeight)
         text = initialText
+        symbol = initialSymbol
         super.init(frame: .zero)
-        cachedSymbolAttributedString = rendering == .symbol ? cachedSymbolText(initialText) : nil
+        cachedSymbolImage = initialSymbol.map { Self.cachedImage(for: $0, size: size, color: symbolColor) }
         if rendering == .badge {
             cachedBadgeAttributedString = badgeAttributedText(initialText)
             cachedBadgeTextSize = cachedBadgeAttributedString!.size()
@@ -146,17 +95,9 @@ class TileFontIconView: NSView {
     override var isOpaque: Bool { false }
     override var intrinsicContentSize: NSSize { frame.size }
 
-    static func warmCaches(symbols: [Symbols], extraStrings: [String] = [], size: CGFloat, color: NSColor) {
-        let font = NSFont(name: "SF Pro Text", size: (size * 0.85).rounded())!
-        let attributes: [NSAttributedString.Key: Any] = [.font: font, .foregroundColor: color, .paragraphStyle: paragraphStyle]
-        let colorKey = symbolColorKey(color)
-        let strings = symbols.map { $0.rawValue } + extraStrings
-        for s in strings {
-            let key = SymbolCacheKey(symbol: s, size: size, colorKey: colorKey)
-            if symbolCache[key] == nil {
-                symbolCache[key] = NSAttributedString(string: s, attributes: attributes)
-            }
-        }
+    static func warmCaches(symbols: [Symbols], spaceNumbers: [Int] = [], size: CGFloat, color: NSColor) {
+        for symbol in symbols { _ = cachedImage(for: symbol, size: size, color: color) }
+        for number in spaceNumbers { _ = cachedSpaceNumberImage(number, size: size, color: color) }
     }
 
     func setText(_ text: String) {
@@ -181,18 +122,20 @@ class TileFontIconView: NSView {
     }
 
     private func setStarLike(_ filled: Bool) {
-        let star = rendering == .badge ? "" : (filled ? Symbols.filledCircledStar.rawValue : Symbols.circledStar.rawValue)
-        replaceTextIfNeeded(star)
+        guard rendering == .symbol else { replaceTextIfNeeded(""); return }
+        let newSymbol = filled ? Symbols.filledCircledStar : Symbols.circledStar
+        guard symbol != newSymbol else { return }
+        symbol = newSymbol
+        cachedSymbolImage = Self.cachedImage(for: newSymbol, size: symbolSize, color: symbolColor)
+        frame.size = symbolSizeForCurrentImage()
+        invalidateIntrinsicContentSize()
+        needsDisplay = true
     }
 
     private func replaceTextIfNeeded(_ newText: String) {
         guard newText != text else { return }
         text = newText
-        if rendering == .symbol {
-            cachedSymbolAttributedString = cachedSymbolText(newText)
-            frame.size = symbolSizeForCurrentText()
-            invalidateIntrinsicContentSize()
-        } else {
+        if rendering == .badge {
             cachedBadgeAttributedString = badgeAttributedText(newText)
             cachedBadgeTextSize = cachedBadgeAttributedString!.size()
         }
@@ -200,8 +143,7 @@ class TileFontIconView: NSView {
     }
 
     private func drawSymbol() {
-        guard let cachedSymbolAttributedString else { return }
-        cachedSymbolAttributedString.draw(at: .zero)
+        cachedSymbolImage?.draw(at: .zero, from: .zero, operation: .sourceOver, fraction: 1)
     }
 
     private func drawBadge() {
@@ -221,8 +163,8 @@ class TileFontIconView: NSView {
         return NSRect(x: (frame.width - size.width).rounded(), y: 0, width: size.width, height: size.height)
     }
 
-    private func symbolSizeForCurrentText() -> NSSize {
-        cachedSymbolAttributedString?.size() ?? .zero
+    private func symbolSizeForCurrentImage() -> NSSize {
+        cachedSymbolImage?.size ?? .zero
     }
 
     private func badgeFrameSize(textWidth: CGFloat, text: String) -> NSSize {
@@ -264,14 +206,28 @@ class TileFontIconView: NSView {
         min(max((rawContainerHeight * BadgeSizing.textFromContainerRatio).rounded(), BadgeSizing.minTextHeight), BadgeSizing.maxTextHeight)
     }
 
-    private func cachedSymbolText(_ value: String) -> NSAttributedString {
-        let key = SymbolCacheKey(symbol: value, size: symbolSize, colorKey: Self.symbolColorKey(symbolColor))
-        if let cached = Self.symbolCache[key] {
-            return cached
+    static func cachedImage(for symbol: Symbols, size: CGFloat, color: NSColor) -> NSImage {
+        cachedImage(identifier: symbol.rawValue, size: size, color: color) {
+            SymbolImages.image(for: symbol, pointSize: renderPointSize(size))
         }
-        let cached = NSAttributedString(string: value, attributes: [.font: symbolFont, .foregroundColor: symbolColor, .paragraphStyle: Self.paragraphStyle])
-        Self.symbolCache[key] = cached
-        return cached
+    }
+
+    static func cachedSpaceNumberImage(_ number: Int, size: CGFloat, color: NSColor) -> NSImage {
+        cachedImage(identifier: "space:\(number)", size: size, color: color) {
+            SymbolImages.spaceNumber(number, pointSize: renderPointSize(size))
+        }
+    }
+
+    private static func cachedImage(identifier: String, size: CGFloat, color: NSColor, makeTemplate: () -> NSImage) -> NSImage {
+        let key = SymbolCacheKey(symbol: identifier, size: size, colorKey: symbolColorKey(color))
+        if let cached = symbolCache[key] { return cached }
+        let image = makeTemplate().tinted(color)
+        symbolCache[key] = image
+        return image
+    }
+
+    private static func renderPointSize(_ size: CGFloat) -> CGFloat {
+        (size * 0.85).rounded()
     }
 
     static func symbolColorKey(_ color: NSColor) -> String {

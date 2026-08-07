@@ -14,3 +14,4 @@ file "$releaseBinaryPath"
 lipo "$releaseBinaryPath" -verify_arch arm64 x86_64
 scripts/check_service_isolation.sh "$debugAppPath" "$releaseAppPath"
 scripts/check_unrestricted_features.sh "$debugAppPath" "$releaseAppPath"
+scripts/check_symbol_assets.sh "$debugAppPath" "$releaseAppPath"
