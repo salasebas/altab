@@ -182,7 +182,8 @@ if [[ "$allIdentityCount" -gt 0 || "$certificateCount" -gt 0 ]]; then
 fi
 
 cat <<EOF
-This optional setup will add a "$identityName" identity to your default user Keychain and trust it only for code signing.
+This once-per-Mac setup adds a "$identityName" identity to your default user Keychain and trusts it only for code signing.
+Every clone and Git worktree for this user can then use the same stable signer (no per-worktree config/local.xcconfig).
 macOS may request authentication. No system-wide Gatekeeper setting will be changed.
 EOF
 printf 'Continue? [y/N] '

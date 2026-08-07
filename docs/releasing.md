@@ -1,6 +1,6 @@
 # Source milestones and optional packaging
 
-AlTab is a **source-first**, **source-only** product at the official distribution layer. The supported way to run it is to clone this repository and build locally. Public milestones are Git tags plus GitHub release notes that point at source. The maintainer does **not** publish an official `.app`, installer, Sparkle feed, signing identity, notarization ticket, or update server.
+AlTab is a **source-first**, **source-only** product at the official distribution layer. The supported way to run it is to clone this repository, install the once-per-Mac **Local Self-Signed** identity (`scripts/codesign/setup_local.sh`), and build locally with `scripts/build_local.sh`. Public milestones are Git tags plus GitHub release notes that point at source. The maintainer does **not** publish an official `.app`, installer, Sparkle feed, signing identity, notarization ticket, or update server. `Local Self-Signed` is never a distributable identity; optional redistribution packaging remains explicitly unsigned (see below).
 
 ## Source milestone versioning
 
@@ -40,7 +40,7 @@ Before tagging a milestone, set the product version in:
    ```
 
 6. Publish a GitHub release from that tag with notes derived from [`.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md`](../.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md). Attach **no** binaries, DMGs, PKGs, dSYMs, appcasts, or signatures.
-7. Verify the public tag resolves to the intended commit and that a clean clone of the tag builds with `scripts/build_local.sh`.
+7. Verify the public tag resolves to the intended commit and that a clean clone of the tag builds after `scripts/codesign/setup_local.sh` (once per Mac) and `scripts/build_local.sh`.
 
 ### How users update after a milestone
 
@@ -49,7 +49,7 @@ There is no in-app updater. From an existing clone:
 ```bash
 git fetch origin --tags
 git checkout altab-vMAJOR.MINOR.PATCH   # or: git pull on main
-scripts/build_local.sh
+scripts/build_local.sh                 # setup_local.sh only if this Mac never installed Local Self-Signed
 open DerivedData/Local/Build/Products/Release/AlTab.app
 ```
 
@@ -67,9 +67,9 @@ Or stay on `main` and rebuild after `git pull`. Preferences for the same bundle 
 
 This section is an **optional** downstream tool for people who assemble their own unsigned redistribution artifacts. It is **not** AlTab's normal local build and is **not** how official milestones are published.
 
-Routine use builds an optimized app with `scripts/build_local.sh`. Development and QA use the Debug command in `ai/build.sh`. Both leave products in `DerivedData` and neither packages or publishes anything. Normal pull-request CI validates source, tests, and Debug/Release compilation without invoking the packager.
+Routine local use builds an optimized app with `scripts/build_local.sh` under the tracked **Local Self-Signed** identity (setup once per Mac). Development and QA use `ai/build.sh` with the same identity. Both leave products in `DerivedData` and neither packages or publishes anything. Normal pull-request CI validates source, tests, and Debug/Release compilation with **explicit ad-hoc Debug and unsigned Release** (`scripts/build_app.sh`) and never needs a user Keychain identity; it does not invoke the packager.
 
-Redistribution artifacts are assembled from an explicit Git tag or full 40-character commit. The packager exports that revision with `git archive`, builds inside the exported tree at a stable commit-derived path, normalizes package ordering and timestamps, and places that exact source beside the binary. Ignored local configuration such as `config/local.xcconfig`, signing identities, and maintainer secrets cannot enter the build.
+Redistribution artifacts are assembled from an explicit Git tag or full 40-character commit. The packager exports that revision with `git archive`, builds inside the exported tree at a stable commit-derived path, normalizes package ordering and timestamps, and places that exact source beside the binary. Ignored local configuration such as `config/local.xcconfig`, Keychain identities, and maintainer secrets cannot enter the build.
 
 ### Prerequisites
 

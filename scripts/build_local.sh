@@ -4,10 +4,14 @@ set -euo pipefail
 
 repoRoot="$(cd -P "$(dirname "$0")/.." && pwd -P)"
 derivedDataPath="$repoRoot/DerivedData/Local"
+# shellcheck source=codesign/preflight_local_signing.sh
+ALTAB_REPO_ROOT="$repoRoot" source "$repoRoot/scripts/codesign/preflight_local_signing.sh"
 
 usage() {
   echo "Usage: scripts/build_local.sh [--universal]"
   echo "Builds an optimized local AlTab.app without publishing or notarizing it."
+  echo "Requires the once-per-Mac Local Self-Signed identity (scripts/codesign/setup_local.sh),"
+  echo "unless ALTAB_CODE_SIGN_IDENTITY is set (use '-' for explicit ad-hoc)."
 }
 
 fail() {
@@ -47,13 +51,15 @@ if [[ $# -eq 1 ]]; then
   esac
 fi
 
-for dependency in codesign lipo plutil xcodebuild; do
+for dependency in codesign lipo plutil security xcodebuild; do
   command -v "$dependency" >/dev/null || fail "missing required dependency: $dependency"
 done
 if ! xcodeVersion="$(xcodebuild -version 2>&1)"; then
   printf '%s\n' "$xcodeVersion" >&2
   fail "full Xcode is unavailable; select it with DEVELOPER_DIR or xcode-select before building"
 fi
+
+preflight_local_signing
 
 nativeArchitecture="$(uname -m)"
 if [[ "$nativeArchitecture" == "x86_64" ]] && [[ "$(sysctl -in sysctl.proc_translated 2>/dev/null || true)" == "1" ]] && [[ "$(sysctl -in hw.optional.arm64 2>/dev/null || true)" == "1" ]]; then
@@ -134,8 +140,9 @@ signatureDetails="$(codesign --display --verbose=4 "$appPath" 2>&1)" || fail "co
 authority="$(printf '%s\n' "$signatureDetails" | sed -n 's/^Authority=//p' | sed -n '1p')"
 teamId="$(printf '%s\n' "$signatureDetails" | sed -n 's/^TeamIdentifier=//p' | sed -n '1p')"
 [[ "$teamId" != "not set" ]] || teamId=""
+designatedRequirement="$(codesign -d -r- "$appPath" 2>&1)" || fail "could not inspect the designated requirement"
 if [[ "$resolvedSigningIdentity" == "-" ]]; then
-  printf '%s\n' "$signatureDetails" | grep -q '^Signature=adhoc$' || fail "default Release did not receive an ad-hoc signature"
+  printf '%s\n' "$signatureDetails" | grep -q '^Signature=adhoc$' || fail "ad-hoc Release did not receive an ad-hoc signature"
   [[ -z "$authority" ]] || fail "ad-hoc Release unexpectedly has a signing authority"
   [[ -z "$teamId" ]] || fail "ad-hoc Release unexpectedly has Team ID $teamId"
   signatureMode="ad hoc"
@@ -143,6 +150,12 @@ else
   if printf '%s\n' "$signatureDetails" | grep -q '^Signature=adhoc$'; then fail "the requested signing identity produced an ad-hoc signature"; fi
   [[ -n "$authority" ]] || fail "the signed Release does not report a signing authority"
   signatureMode="identity ($authority)"
+  if [[ "$resolvedSigningIdentity" == "Local Self-Signed" ]]; then
+    printf '%s\n' "$designatedRequirement" | grep -Eq 'certificate|anchor apple|identifier "' || fail "Local Self-Signed build did not produce a certificate/identifier-based designated requirement"
+    if printf '%s\n' "$designatedRequirement" | grep -q 'cdhash' && ! printf '%s\n' "$designatedRequirement" | grep -Eq 'certificate|identifier "'; then
+      fail "Local Self-Signed build appears cdhash-only; privacy grants will not survive rebuilds"
+    fi
+  fi
 fi
 
 scripts/check_service_isolation.sh --bundle-only "$appPath"
