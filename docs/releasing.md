@@ -1,6 +1,6 @@
 # Packaging redistribution artifacts
 
-This is an optional downstream redistribution tool, not AlTab's normal local build. Routine development uses the Debug command in `ai/build.sh` and leaves its products in `DerivedData`; it does not package or publish anything. Normal pull-request CI validates source, tests, and Debug/Release compilation without invoking this tool or requiring its release prose and templates.
+This is an optional downstream redistribution tool, not AlTab's normal local build. Routine use builds an optimized app with `scripts/build_local.sh`, while development and QA use the Debug command in `ai/build.sh`; both leave products in `DerivedData` and neither packages or publishes anything. Normal pull-request CI validates source, tests, and Debug/Release compilation without invoking this tool or requiring its release prose and templates.
 
 Redistribution artifacts are assembled from an explicit Git tag or full 40-character commit. The packager exports that revision with `git archive`, builds inside the exported tree at a stable commit-derived path, normalizes package ordering and timestamps, and places that exact source beside the binary. Ignored local configuration such as `config/local.xcconfig`, signing identities, and maintainer secrets cannot enter the build.
 
@@ -42,7 +42,7 @@ The script verifies arm64 and x86_64 slices, matching app/dSYM UUIDs, absence of
 
 ## Rebuilding
 
-Extract the corresponding source archive, select the Xcode version recorded in the manifest, and run the exact `xcodebuild` command recorded there. The command uses the Release scheme with code signing disabled and `ARCHS='arm64 x86_64'`. The tracked Apple font subset is a build input and is not regenerated during packaging.
+Extract the corresponding source archive, select the Xcode version recorded in the manifest, and run the exact `xcodebuild` command recorded there. The command uses the Release scheme with code signing disabled and `ARCHS='arm64 x86_64'`. The audited PDF symbol assets are tracked build inputs and are not regenerated during packaging.
 
 Verify downloaded checksums before using the artifacts:
 

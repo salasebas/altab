@@ -8,10 +8,13 @@ This document gives a technical overview of the project, for newcomers who want 
 
 This project has minimal dependency on Xcode-only features (e.g. InterfaceBuilder, Playgrounds). You can build it by doing:
 
-* Debug builds use ad-hoc signing by default. This requires no Keychain changes. To keep macOS permissions stable across repeated local builds, optionally run `scripts/codesign/setup_local.sh`, then set `CODE_SIGN_IDENTITY = Local Self-Signed` in `config/local.xcconfig`. The helper explains and confirms its changes, installs one per-user code-signing identity, and safely reuses it on later runs.
-* Remove the optional identity, private key, and per-user trust entry with `scripts/codesign/remove_local.sh`, then remove `CODE_SIGN_IDENTITY = Local Self-Signed` from `config/local.xcconfig` to return to ad-hoc signing. If it was installed by the previous helper, use `scripts/codesign/remove_local.sh --include-legacy-admin-trust` to remove its administrative trust entry too. The legacy option requests administrator approval; neither command changes Gatekeeper.
-* To verify stable permissions manually, build twice with the optional identity and compare `codesign --display --requirements - "DerivedData/Build/Products/Debug/AlTab Dev.app"` after each build. Both designated requirements must match.
-* Run `xcodebuild -project alt-tab-macos.xcodeproj -scheme Debug` to build the app with the Debug configuration.
+* Local Release builds use ad-hoc signing by default. Run `scripts/build_local.sh` for the supported optimized app: it builds the current Mac's native architecture, runs the bundle guards, and prints the app path and launch command. It requires no Apple account; `--universal` explicitly builds `arm64` and `x86_64`.
+* Ad-hoc signatures can change their designated requirement when the executable changes, so macOS may ask for Accessibility, Screen Recording, or other permissions again. For stable permissions, optionally run `scripts/codesign/setup_local.sh`, then set `CODE_SIGN_IDENTITY = Local Self-Signed` in ignored `config/local.xcconfig`. The helper explains and confirms its changes, installs one per-user code-signing identity in Keychain, and safely reuses it on later runs.
+* A Developer ID identity already installed in Keychain can be selected the same way. Optional `config/local.xcconfig` settings are `CODE_SIGN_IDENTITY`, `DEVELOPMENT_TEAM`, and `PRODUCT_BUNDLE_IDENTIFIER`. For a one-off build, the equivalent namespaced environment overrides are `ALTAB_CODE_SIGN_IDENTITY`, `ALTAB_TEAM_ID`, and `ALTAB_BUNDLE_ID`; the script passes only these non-secret values to Xcode.
+* Remove the optional self-signed identity, private key, and per-user trust entry with `scripts/codesign/remove_local.sh`, then remove its `CODE_SIGN_IDENTITY` setting from `config/local.xcconfig` to return to ad-hoc signing. If it was installed by the previous helper, use `scripts/codesign/remove_local.sh --include-legacy-admin-trust` to remove its administrative trust entry too. The legacy option requests administrator approval; neither command changes Gatekeeper.
+* Run `xcodebuild -project alt-tab-macos.xcodeproj -scheme Debug` for the developer/QA `AlTab Dev` build. Debug remains separate from the optimized app intended for routine local use.
+
+The local build never accepts passwords, `.p12` files, private keys, or notarization credentials. It does not import identities, notarize, publish, or upload the app. A custom bundle ID creates a distinct macOS preferences and permissions identity.
 
 ## Continuous integration
 
