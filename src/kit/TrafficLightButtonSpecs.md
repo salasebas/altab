@@ -16,3 +16,7 @@ setting, so symbol drawing is irrelevant while `hideColoredCircles` is enabled.
 The global switch lives in Appearance → Customize more and retains its persisted value when it is
 disabled. It is enabled only for the Thumbnails appearance while colored circles are visible. Its
 localized label participates in Settings search before and after the sheet is built.
+
+Hovering the setting previews the existing Safari/AltTab thumbnail illustration in both states.
+The enabled preview keeps the four glyphs, while the disabled preview keeps the same colored disks
+and removes only their inner glyphs.

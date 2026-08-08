@@ -222,6 +222,8 @@ class ShowHideIllustratedView {
         showHideRows.append(hideColoredCircles)
         var showSymbolsInHoverControls = ShowHideRowInfo()
         showSymbolsInHoverControls.rowId = "showSymbolsInHoverControls"
+        showSymbolsInHoverControls.uncheckedImage = "hide_hover_control_symbols"
+        showSymbolsInHoverControls.checkedImage = "show_colored_circles"
         showSymbolsInHoverControls.supportedStyles = [.thumbnails]
         showSymbolsInHoverControls.leftViews = [TableGroupView.makeText(ShowHideIllustratedView.showSymbolsInHoverControlsLabel)]
         showSymbolsInHoverControlsSwitch = LabelAndControl.makeSwitch(showSymbolsInHoverControls.rowId, extraAction: { sender in
