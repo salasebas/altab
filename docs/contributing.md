@@ -6,7 +6,7 @@ This document gives a technical overview of the project, for newcomers who want 
 
 ## Building the project
 
-End users should follow the clone → setup once → build → permissions → update path in the root [README.md](../README.md). That path is the supported way to produce and run optimized `AlTab.app`. This section is the contributor view of the same build system.
+The illustrated [building and troubleshooting guide](building-and-troubleshooting.md) is the canonical clone → setup once → build → permissions path. The root [README](../README.md) keeps the supported product and source-milestone overview concise. This section covers contributor-specific details.
 
 This project has minimal dependency on Xcode-only features (e.g. InterfaceBuilder, Playgrounds). Full Xcode 26 must be selected (`xcode-select` or `DEVELOPER_DIR`); Command Line Tools alone cannot build the app.
 
@@ -21,18 +21,9 @@ scripts/codesign/setup_local.sh   # once per Mac / user Keychain
 * The helper is idempotent: it reuses a valid existing identity, refuses incomplete or duplicate residue, and never writes certificate material into the repository.
 * The identity is user-level Keychain state. Installing it from any Git worktree makes it available to every other worktree and clone for that macOS user. No per-worktree `config/local.xcconfig` is required for the standard path.
 * `scripts/build_local.sh` and `ai/build.sh` preflight the identity and fail early with remediation when it is missing, invalid, incomplete, or duplicated.
-* Run `scripts/build_local.sh` for optimized `AlTab.app` at `DerivedData/Local/Build/Products/Release/AlTab.app` (native architecture; `--universal` for arm64+x86_64).
-* Run `scripts/run_debug.sh` to build QA `AlTab Dev`, safely replace `/Applications/AlTab Dev.app`, and launch that canonical copy. Use `ai/build.sh` only when you need the generated bundle in `DerivedData` without installing or opening it. Debug is not the normal end-user path.
+* Run `scripts/build_local.sh` for optimized `AlTab.app` at `DerivedData/Local/Build/Products/Release/AlTab.app` (native architecture; `--universal` for arm64+x86_64). The guide documents [Release verification](building-and-troubleshooting.md#4-verify-the-result).
+* Run `scripts/run_debug.sh` to build QA `AlTab Dev`, safely replace `/Applications/AlTab Dev.app`, and launch that canonical copy. Use `ai/build.sh` only when you need the generated bundle in `DerivedData` without installing or opening it. The guide shows [how to distinguish the canonical app](building-and-troubleshooting.md#3-build-and-launch). Debug is not the normal end-user path.
 * Remove the identity with `scripts/codesign/remove_local.sh`. If it was installed by the previous helper, use `scripts/codesign/remove_local.sh --include-legacy-admin-trust` to remove its administrative trust entry too. The legacy option requests administrator approval; neither command changes Gatekeeper.
-
-### Explicit ad-hoc escape hatch
-
-Ad-hoc signing is never the silent default. Use it only for disposable diagnostics or when you knowingly accept that Accessibility / Screen Recording grants may not survive a rebuild:
-
-```bash
-ALTAB_CODE_SIGN_IDENTITY=- scripts/build_local.sh
-ALTAB_CODE_SIGN_IDENTITY=- bash ai/build.sh
-```
 
 ### Canonical Debug QA installation
 
@@ -44,7 +35,7 @@ scripts/run_debug.sh
 
 The command builds with `ai/build.sh`, verifies the `dev.salasebas.AlTabDev` bundle and its stable signing requirement, closes a running `AlTab Dev`, serializes concurrent worktree installations, replaces `/Applications/AlTab Dev.app` through a verified staging copy, and opens only the installed app. Replacement rolls back if final signature validation fails. The generated bundle remains in `DerivedData`, and the installed copy keeps the same bundle ID and signing requirement across worktrees, so macOS privacy grants do not depend on an ephemeral worktree path. The installer rejects an unexpected bundle or a different stable signing identity instead of silently resetting that continuity.
 
-Use `scripts/run_debug.sh --no-build` to reinstall an existing Debug product or `--no-open` to install without launching. The script refuses ad-hoc builds and does not invoke `sudo`; it fails with an actionable message if `/Applications` is not writable. `AlTab Dev` intentionally does not use the Release app's in-process move prompt because moving a running Debug product would interrupt debugger sessions and could remove the product from `DerivedData`.
+Use `scripts/run_debug.sh --no-build` to reinstall an existing Debug product or `--no-open` to install without launching. The script requires a certificate-backed build and does not invoke `sudo`; it fails with an actionable message if `/Applications` is not writable. `AlTab Dev` intentionally does not use the Release app's in-process move prompt because moving a running Debug product would interrupt debugger sessions and could remove the product from `DerivedData`.
 
 ### Advanced per-worktree overrides
 
@@ -54,11 +45,11 @@ The local build never accepts passwords, `.p12` files, private keys, or notariza
 
 ## Continuous integration
 
-GitHub Actions runs `scripts/validate_ci.sh` for every pull request and every push to `main`. The script validates property lists, the Xcode project, localizations, generated files, Swift formatting, repository whitespace, service isolation, unrestricted features, local signing helpers, local build contracts, and legacy preference import behavior. It then runs the full test suite and builds both an **explicitly ad-hoc** Debug app and an optimized, **unsigned** Release app whose binary must contain the `arm64` and `x86_64` architectures (`scripts/build_app.sh` forces `CODE_SIGN_IDENTITY=-` for Debug and disables signing for Release). CI never requires a user Keychain identity.
+GitHub Actions runs `scripts/validate_ci.sh` for every pull request and every push to `main`. The script validates property lists, the Xcode project, localizations, generated files, Swift formatting, repository whitespace, service isolation, unrestricted features, local signing helpers, local build contracts, and legacy preference import behavior. It then runs the full test suite and builds credential-free Debug and Release apps whose Release binary must contain the `arm64` and `x86_64` architectures. CI never requires a user Keychain identity.
 
 The workflow has read-only repository permissions, does not persist checkout credentials, and does not receive or require signing, notarization, update-feed, analytics, licensing, or publishing secrets. Superseded runs for the same pull request or branch are cancelled. When validation fails, the run uploads its validation log and any available Xcode logs for seven days.
 
-CI is validation only. Its ad-hoc/unsigned app bundles are not releases, the workflow does not publish or contact upstream infrastructure, and system-wide macOS interactions still require manual QA. The workflow pins Xcode 26.0.1, pnpm 11.5.2, ripgrep 15.2.0, SwiftFormat 0.62.1, and every reusable action. Contributors can run the same validation locally with `corepack enable`, `corepack install`, `pnpm install --frozen-lockfile`, and `scripts/validate_ci.sh` from a machine with Xcode 26, ripgrep, and SwiftFormat 0.62.1 available.
+CI is validation only. Its app bundles are not releases, the workflow does not publish or contact upstream infrastructure, and system-wide macOS interactions still require manual QA. The workflow pins Xcode 26.0.1, pnpm 11.5.2, ripgrep 15.2.0, SwiftFormat 0.62.1, and every reusable action. Contributors can run the same validation locally with `corepack enable`, `corepack install`, `pnpm install --frozen-lockfile`, and `scripts/validate_ci.sh` from a machine with Xcode 26, ripgrep, and SwiftFormat 0.62.1 available.
 
 ## Source milestones
 
@@ -66,7 +57,7 @@ Official AlTab milestones are **source-only** Git tags (`altab-vMAJOR.MINOR.PATC
 
 ## Mac development
 
-Mac development ecosystem is pretty terrible in general. They keep piling on the tech stacks on top of each other, so you have C APIs, ObjC APIs, Swift APIs, Interface builder, Playgrounds, Swift UI, Mac Catalyst. All these are bridging with each other with a bunch of macros, SDKs glue, compiler flags, compatibility mode, XCode legacy build system, etc. For alt-tab, we are on Swift 5.0. Note that swift just recently started being stable, but overall any change of version breaks a lot of stuff. Swift itself is the mainstream language with the worst governance I’ve seen in modern times.
+Mac development ecosystem is pretty terrible in general. They keep piling on the tech stacks on top of each other, so you have C APIs, ObjC APIs, Swift APIs, Interface builder, Playgrounds, Swift UI, Mac Catalyst. All these are bridging with each other with a bunch of macros, SDKs glue, compiler flags, compatibility mode, Xcode legacy build system, etc. AlTab sets `SWIFT_VERSION = 5.8` in `config/base.xcconfig`; full Xcode 26 supplies the selected compiler, SDK, and supporting toolchain. Swift itself is the mainstream language with the worst governance I’ve seen in modern times.
 
 Regarding SDKs, it’s very different from other (better) ecosystems like Java. Here the SDK is bundled with XCode, and XCode is bundled with the OS. This means that from a machine running let’s say macOS 10.10, you have access to only a specific range of XCode versions (you can’t run the latest for instance), and these give you access to a specific range of SDKs (i.e. Swift + objc + c + bridges + compiler + toolchain + etc)
 

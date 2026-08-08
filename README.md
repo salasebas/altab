@@ -33,27 +33,11 @@ There is no paid-access state, activation, trial, checkout, account, license Key
 
 ## Run AlTab from source
 
-### Requirements
+You need a Mac with full [Xcode 26](https://developer.apple.com/xcode/) selected and Git. Command Line Tools alone are not enough. No Apple Account, provisioning profile, Team ID, Apple Development identity, or Developer ID identity is required for routine local builds.
 
-- A Mac running a recent macOS that can install full **Xcode 26** (Command Line Tools alone are not enough).
-- [Xcode 26](https://developer.apple.com/xcode/) from the Mac App Store or Apple Developer downloads.
-- Git.
-- No Apple Developer account is required. Standard local builds use a **once-per-Mac** self-signed identity in your Keychain (`scripts/codesign/setup_local.sh`), not an Apple Developer Program membership.
+The illustrated [building and troubleshooting guide](docs/building-and-troubleshooting.md) is the canonical walkthrough for selecting Xcode, understanding local signing, running Debug/Release builds, repairing Keychain state, and fixing macOS permissions.
 
-If `xcodebuild -version` fails or reports that only Command Line Tools are selected, point the active developer directory at full Xcode:
-
-```bash
-sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
-xcodebuild -version
-```
-
-For a single command without changing the system selection:
-
-```bash
-DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer scripts/build_local.sh
-```
-
-### Clone and build
+### Quick start
 
 ```bash
 git clone https://github.com/salasebas/altab.git
@@ -62,36 +46,22 @@ scripts/codesign/setup_local.sh   # once per Mac (shared by every clone/worktree
 scripts/build_local.sh
 ```
 
-`setup_local.sh` installs the canonical **Local Self-Signed** identity in your user Keychain (outside the repository). It is not required again for other clones or Git worktrees on the same Mac. `scripts/build_local.sh` preflights that identity, builds an optimized Release `AlTab.app` for the current Mac (native architecture), verifies the bundle, and prints the exact path and launch command. It does not launch, upload, notarize, or publish the app.
-
-Default output path:
-
-```text
-DerivedData/Local/Build/Products/Release/AlTab.app
-```
-
-Open it with the path printed by the script, for example:
+`setup_local.sh` installs the canonical **Local Self-Signed** identity in the user Keychain, outside the repository. It is shared by every clone and worktree for that macOS user. `scripts/build_local.sh` builds and verifies an optimized native-architecture Release app, then prints its exact path and launch command:
 
 ```bash
-open DerivedData/Local/Build/Products/Release/AlTab.app
+open "DerivedData/Local/Build/Products/Release/AlTab.app"
 ```
 
-Pass `--universal` only when you need both `arm64` and `x86_64` in one binary. Contributors who need the Debug/QA build (`AlTab Dev`) should use the separate path in [docs/contributing.md](docs/contributing.md); that is not the normal user workflow.
+Contributors should use `scripts/run_debug.sh` to build, install, and open the canonical `/Applications/AlTab Dev.app`. Pass `--universal` to `scripts/build_local.sh` only when one Release bundle must contain both `arm64` and `x86_64`.
 
 ### Permissions
-
-On first launch, AlTab opens a permissions window when required:
 
 | Permission | Required? | Purpose |
 |---|---|---|
 | **Accessibility** | Yes | Focus the window you select after releasing the shortcut. |
 | **Screen Recording** | Optional | Show live window thumbnails and previews. |
 
-Grant Accessibility in **System Settings → Privacy & Security → Accessibility**. Without it, AlTab cannot switch windows usefully and will ask again until permission is granted.
-
-Screen Recording is optional. If you skip it (**Use the app without this permission. Thumbnails won’t show.**), AlTab still runs; thumbnails and previews will not show. You can enable Screen Recording later in **System Settings → Privacy & Security → Screen Recording**, or keep using icon/title-only styles that do not need capture. The app does not re-show the system Screen Recording dialog on a timer after **Deny**; use the permissions button for an explicit retry, or the skip checkbox.
-
-With the default **Local Self-Signed** identity, Accessibility and Screen Recording grants survive ordinary rebuilds. Ad-hoc builds can lose those grants when the binary changes (see [Signing](#signing)).
+The default `Local Self-Signed` identity lets these grants survive ordinary rebuilds. Screen Recording may be skipped with **Use the app without this permission. Thumbnails won’t show.** The visual recovery steps for stale or duplicate permission rows are in the [building and troubleshooting guide](docs/building-and-troubleshooting.md#example-3-repair-accessibility-and-screen-recording).
 
 ### Login item
 
@@ -99,36 +69,7 @@ AlTab can start at login through its own preference (**Settings → General → 
 
 ### Signing
 
-Three supported cases:
-
-1. **Default: Local Self-Signed (once per Mac).**
-   Interactive Debug and routine local Release use the tracked identity `Local Self-Signed`. Install it once:
-
-   ```bash
-   scripts/codesign/setup_local.sh
-   ```
-
-   Then build from any clone or worktree with `scripts/build_local.sh` or `ai/build.sh`. No `config/local.xcconfig` is required. The certificate lives in your Keychain, not in the repository. Remove it later with `scripts/codesign/remove_local.sh`. This is **not** a distributable identity and is never used for public release packaging.
-
-2. **Explicit ad-hoc escape hatch.**
-   For CI-like disposable builds only. Privacy grants may not survive a rebuild:
-
-   ```bash
-   ALTAB_CODE_SIGN_IDENTITY=- scripts/build_local.sh
-   ```
-
-   Ad-hoc is never selected silently.
-
-3. **Advanced: your own Apple / Developer ID identity.**
-   If an identity is already installed in your Keychain, select it for one build without editing tracked files:
-
-   ```bash
-   ALTAB_CODE_SIGN_IDENTITY="Developer ID Application: Example" \
-   ALTAB_TEAM_ID="ABCDEFGHIJ" \
-   scripts/build_local.sh
-   ```
-
-   You may also set `ALTAB_BUNDLE_ID` or put `CODE_SIGN_IDENTITY`, `DEVELOPMENT_TEAM`, and `PRODUCT_BUNDLE_IDENTIFIER` in ignored `config/local.xcconfig` (per-worktree advanced override only). A custom bundle ID creates a separate preferences and permissions identity. Never pass passwords, `.p12` files, private keys, or notarization credentials to the build scripts.
+Interactive Debug and routine local Release use `Local Self-Signed`, installed once with `scripts/codesign/setup_local.sh`. It is not a distributable identity. The [canonical guide](docs/building-and-troubleshooting.md) covers the supported local workflow; [releasing.md](docs/releasing.md) covers redistribution artifacts and the current signing limitation.
 
 ### Updates
 
@@ -143,16 +84,6 @@ open DerivedData/Local/Build/Products/Release/AlTab.app
 ```
 
 If you copied `AlTab.app` elsewhere, replace that copy with the newly built app and relaunch. Preferences for the same bundle ID are preserved by macOS; a different signing identity or bundle ID can require re-granting permissions. Milestone tags and the versioning policy live in [docs/releasing.md](docs/releasing.md).
-
-### Migrating from older ad-hoc local builds
-
-If you previously built with ad-hoc signing and see repeated permission prompts after this change:
-
-1. Quit all AlTab / AlTab Dev processes.
-2. Run `scripts/codesign/setup_local.sh` once on this Mac.
-3. Rebuild from any worktree (`scripts/build_local.sh` or `ai/build.sh`).
-4. Remove stale Accessibility / Screen Recording rows still tied to the old ad-hoc binary if macOS shows duplicates.
-5. Grant permissions once to the stable local identity and relaunch.
 
 ### Uninstall
 
@@ -170,16 +101,9 @@ Debug builds use `dev.salasebas.AlTabDev` with the same pattern. AlTab never del
 
 ### Troubleshooting
 
-| Problem | What to try |
-|---|---|
-| `xcodebuild` says only Command Line Tools are selected | Select full Xcode with `sudo xcode-select -s /Applications/Xcode.app/Contents/Developer`, or prefix the build with `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer`. |
-| Xcode / SDK too old or missing | Install Xcode 26, open it once to finish setup, accept the license, then retry. |
-| Signing identity not found / preflight fails | Run `scripts/codesign/setup_local.sh` once, or use explicit `ALTAB_CODE_SIGN_IDENTITY=-` for ad-hoc (TCC may reset on rebuild). Fix incomplete/duplicate Local Self-Signed items with Keychain Access or `scripts/codesign/remove_local.sh` before retrying. |
-| Permissions prompts every rebuild | Expected only with ad-hoc signing when the binary changes. Prefer the default Local Self-Signed path. After changing identity or bundle ID, re-grant Accessibility (and Screen Recording if you use thumbnails). |
-| Stale or confusing build products | Delete local build data and rebuild: `rm -rf DerivedData/Local && scripts/build_local.sh`. |
-| Want Debug/QA UI or `AlTab Dev` | Run `scripts/run_debug.sh` to build, install, and open the canonical `/Applications/AlTab Dev.app`; see [docs/contributing.md](docs/contributing.md). |
+Use the guide's [three visual examples](docs/building-and-troubleshooting.md#example-1-prepare-a-mac-and-run-the-right-app) and [decision table](docs/building-and-troubleshooting.md#troubleshooting-table). They cover Xcode selection, `Local Self-Signed`, Keychain errors, stale app copies, Accessibility, Screen Recording, and validation failures.
 
-Do not disable Gatekeeper or other system-wide security protections to run a local build.
+Do not disable Gatekeeper or other system-wide security protections, and never use upstream credentials or release infrastructure to make a local build run.
 
 ## Privacy
 

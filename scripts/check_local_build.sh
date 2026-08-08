@@ -292,10 +292,11 @@ require_contains "$repoRoot/config/release.xcconfig" "OTHER_CODE_SIGN_FLAGS = --
 require_contains "$repoRoot/scripts/build_app.sh" "CODE_SIGN_IDENTITY=-"
 require_contains "$repoRoot/scripts/build_app.sh" "CODE_SIGNING_ALLOWED=NO"
 require_contains "$repoRoot/ai/build.sh" "preflight_local_signing"
+require_contains "$repoRoot/ai/build.sh" "docs/building-and-troubleshooting.md#1-select-full-xcode"
 require_contains "$repoRoot/README.md" "scripts/build_local.sh"
 require_contains "$repoRoot/README.md" "git clone https://github.com/salasebas/altab.git"
 require_contains "$repoRoot/README.md" "DerivedData/Local/Build/Products/Release/AlTab.app"
-require_contains "$repoRoot/README.md" "sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"
+require_contains "$repoRoot/README.md" "docs/building-and-troubleshooting.md"
 require_contains "$repoRoot/README.md" "git pull"
 require_contains "$repoRoot/README.md" "Accessibility"
 require_contains "$repoRoot/README.md" "Screen Recording"
@@ -308,6 +309,13 @@ require_contains "$repoRoot/docs/contributing.md" "ALTAB_TEAM_ID"
 require_contains "$repoRoot/docs/contributing.md" "ALTAB_BUNDLE_ID"
 require_contains "$repoRoot/docs/contributing.md" "README.md"
 require_contains "$repoRoot/docs/contributing.md" "setup once per Mac"
+require_contains "$repoRoot/docs/building-and-troubleshooting.md" "sudo xcode-select -s /Applications/Xcode.app/Contents/Developer"
+require_contains "$repoRoot/docs/building-and-troubleshooting.md" "scripts/run_debug.sh"
+require_contains "$repoRoot/docs/building-and-troubleshooting.md" "scripts/codesign/setup_local.sh"
+require_contains "$repoRoot/docs/building-and-troubleshooting.md" "scripts/codesign/remove_local.sh"
+for image in xcode-command-line-tools altab-dev-applications local-self-signed-keychain accessibility-altab-dev screen-recording-altab-dev; do
+  [[ -s "$repoRoot/docs/images/building-and-troubleshooting/$image.png" ]] || fail "documentation image is missing or empty: $image.png"
+done
 require_contains "$repoRoot/docs/releasing.md" "Local Self-Signed"
 require_contains "$repoRoot/FORK.md" "scripts/build_local.sh"
 check_bundle_guard_coverage
@@ -374,6 +382,7 @@ fi
 require_output "$missingOutput" "missing \"Local Self-Signed\""
 require_output "$missingOutput" "scripts/codesign/setup_local.sh"
 require_output "$missingOutput" "ALTAB_CODE_SIGN_IDENTITY=-"
+require_output "$missingOutput" "docs/building-and-troubleshooting.md#example-2-repair-local-self-signed"
 
 duplicateOutput="$testRoot/duplicate-identity.log"
 if env "${cleanEnvironment[@]}" LOCAL_BUILD_TEST_IDENTITY_MODE=duplicate LOCAL_BUILD_TEST_ROOT="$testRoot" PATH="$testRoot/bin:$PATH" "$fixtureRoot/scripts/build_local.sh" >"$duplicateOutput" 2>&1; then

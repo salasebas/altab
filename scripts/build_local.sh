@@ -56,7 +56,7 @@ for dependency in codesign lipo plutil security xcodebuild; do
 done
 if ! xcodeVersion="$(xcodebuild -version 2>&1)"; then
   printf '%s\n' "$xcodeVersion" >&2
-  fail "full Xcode is unavailable; select it with DEVELOPER_DIR or xcode-select before building"
+  fail "full Xcode is unavailable; select it with DEVELOPER_DIR or xcode-select before building; see docs/building-and-troubleshooting.md#1-select-full-xcode"
 fi
 
 preflight_local_signing
