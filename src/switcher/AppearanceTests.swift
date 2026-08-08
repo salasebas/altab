@@ -1,10 +1,10 @@
 import XCTest
 
 final class AppearanceTests: XCTestCase {
-    func testTileSpacingValuesAreBoundedAndKeepOnePointDefault() {
+    func testTileSpacingValuesAreBoundedAndKeepEightPointDefault() {
         XCTAssertEqual(TileSpacingPreference.validRange, 0...16)
-        XCTAssertEqual(Preferences.defaultValues["tileSpacingPoints"] as? String, "1")
-        XCTAssertEqual(TileSpacingPreference.defaultValue, 1)
+        XCTAssertEqual(Preferences.defaultValues["tileSpacingPoints"] as? String, "8")
+        XCTAssertEqual(TileSpacingPreference.defaultValue, 8)
         XCTAssertEqual(TileSpacingPreference.clamped(-1), 0)
         XCTAssertEqual(TileSpacingPreference.clamped(17), 16)
     }

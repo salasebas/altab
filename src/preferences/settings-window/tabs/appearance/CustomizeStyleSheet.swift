@@ -2,7 +2,7 @@ import Cocoa
 
 private let tileSpacingResetTitle = NSLocalizedString("Default", comment: "Restore tile spacing to its default value")
 private let tileSpacingAccessibilityHelp = NSLocalizedString("Horizontal and vertical space between tiles, from 0 to 16 points.", comment: "Tile spacing slider accessibility help")
-private let tileSpacingResetHelp = NSLocalizedString("Restore tile spacing to 1 point.", comment: "Tile spacing reset button help")
+private let tileSpacingResetHelp = NSLocalizedString("Restore tile spacing to 8 points.", comment: "Tile spacing reset button help")
 private let tileSpacingValueFormat = NSLocalizedString("%d pt", comment: "Tile spacing value in points")
 
 private final class TileSpacingPreviewView: NSView {
