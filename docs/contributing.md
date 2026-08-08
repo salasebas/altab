@@ -22,7 +22,7 @@ scripts/codesign/setup_local.sh   # once per Mac / user Keychain
 * The identity is user-level Keychain state. Installing it from any Git worktree makes it available to every other worktree and clone for that macOS user. No per-worktree `config/local.xcconfig` is required for the standard path.
 * `scripts/build_local.sh` and `ai/build.sh` preflight the identity and fail early with remediation when it is missing, invalid, incomplete, or duplicated.
 * Run `scripts/build_local.sh` for optimized `AlTab.app` at `DerivedData/Local/Build/Products/Release/AlTab.app` (native architecture; `--universal` for arm64+x86_64).
-* Run `ai/build.sh` (or the Debug scheme with the same preflight) for QA `AlTab Dev`. Debug is not the normal end-user path.
+* Run `scripts/run_debug.sh` to build QA `AlTab Dev`, safely replace `/Applications/AlTab Dev.app`, and launch that canonical copy. Use `ai/build.sh` only when you need the generated bundle in `DerivedData` without installing or opening it. Debug is not the normal end-user path.
 * Remove the identity with `scripts/codesign/remove_local.sh`. If it was installed by the previous helper, use `scripts/codesign/remove_local.sh --include-legacy-admin-trust` to remove its administrative trust entry too. The legacy option requests administrator approval; neither command changes Gatekeeper.
 
 ### Explicit ad-hoc escape hatch
@@ -33,6 +33,18 @@ Ad-hoc signing is never the silent default. Use it only for disposable diagnosti
 ALTAB_CODE_SIGN_IDENTITY=- scripts/build_local.sh
 ALTAB_CODE_SIGN_IDENTITY=- bash ai/build.sh
 ```
+
+### Canonical Debug QA installation
+
+Use the canonical installer when testing `AlTab Dev` across Git worktrees:
+
+```bash
+scripts/run_debug.sh
+```
+
+The command builds with `ai/build.sh`, verifies the `dev.salasebas.AlTabDev` bundle and its stable signing requirement, closes a running `AlTab Dev`, serializes concurrent worktree installations, replaces `/Applications/AlTab Dev.app` through a verified staging copy, and opens only the installed app. Replacement rolls back if final signature validation fails. The generated bundle remains in `DerivedData`, and the installed copy keeps the same bundle ID and signing requirement across worktrees, so macOS privacy grants do not depend on an ephemeral worktree path. The installer rejects an unexpected bundle or a different stable signing identity instead of silently resetting that continuity.
+
+Use `scripts/run_debug.sh --no-build` to reinstall an existing Debug product or `--no-open` to install without launching. The script refuses ad-hoc builds and does not invoke `sudo`; it fails with an actionable message if `/Applications` is not writable. `AlTab Dev` intentionally does not use the Release app's in-process move prompt because moving a running Debug product would interrupt debugger sessions and could remove the product from `DerivedData`.
 
 ### Advanced per-worktree overrides
 

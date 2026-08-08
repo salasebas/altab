@@ -177,7 +177,7 @@ Debug builds use `dev.salasebas.AlTabDev` with the same pattern. AlTab never del
 | Signing identity not found / preflight fails | Run `scripts/codesign/setup_local.sh` once, or use explicit `ALTAB_CODE_SIGN_IDENTITY=-` for ad-hoc (TCC may reset on rebuild). Fix incomplete/duplicate Local Self-Signed items with Keychain Access or `scripts/codesign/remove_local.sh` before retrying. |
 | Permissions prompts every rebuild | Expected only with ad-hoc signing when the binary changes. Prefer the default Local Self-Signed path. After changing identity or bundle ID, re-grant Accessibility (and Screen Recording if you use thumbnails). |
 | Stale or confusing build products | Delete local build data and rebuild: `rm -rf DerivedData/Local && scripts/build_local.sh`. |
-| Want Debug/QA UI or `AlTab Dev` | That is a contributor path only; see [docs/contributing.md](docs/contributing.md). |
+| Want Debug/QA UI or `AlTab Dev` | Run `scripts/run_debug.sh` to build, install, and open the canonical `/Applications/AlTab Dev.app`; see [docs/contributing.md](docs/contributing.md). |
 
 Do not disable Gatekeeper or other system-wide security protections to run a local build.
 
