@@ -113,13 +113,21 @@ On first launch, AlTab may locally import compatible settings from the official 
 
 ## Optional redistribution packaging
 
-Official milestones ship **source only** (Git tag + release notes). Maintainers who still need to assemble optional unsigned redistribution artifacts (app ZIP, matching dSYM, exact source archive, manifest, notes, checksums) from an explicit tag or full commit can use:
+Official milestones ship **source only** (Git tag + release notes) unless a distributor intentionally attaches reviewed artifacts. Optional packaging tools (separate from the normal local build):
 
 ```bash
+# Unsigned universal ZIP + exact source + checksums (no Apple credentials)
 scripts/package_release.sh <tag-or-commit>
+
+# Bring-your-own Developer ID + notarization (never silently falls back to unsigned)
+scripts/package_notarized_release.sh <tag-or-commit> \
+  --identity "Developer ID Application: Your Name (TEAMID)" \
+  --team-id TEAMID \
+  --bundle-id your.stable.bundle.id \
+  --notary-profile YourNotaryProfile
 ```
 
-That tool is separate from the normal local build and is not used for official milestone publication. See [docs/releasing.md](docs/releasing.md). If anyone publishes preview binaries before Developer ID signing and notarization exist, each build must be labeled **unsigned and not notarized**. Users must never be told to disable system-wide security protections.
+GitHub Actions: manual workflow [Release packaging](.github/workflows/release.yml) with explicit `unsigned` or `notarized` mode. Configure the secrets documented in [docs/releasing.md](docs/releasing.md). Users must never be told to disable system-wide security protections.
 
 ## Relationship with upstream
 
