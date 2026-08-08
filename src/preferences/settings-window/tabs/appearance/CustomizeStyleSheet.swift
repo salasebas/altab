@@ -14,14 +14,14 @@ private final class TileSpacingPreviewView: NSView {
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
         widthAnchor.constraint(equalToConstant: 460).isActive = true
-        heightAnchor.constraint(equalToConstant: 58).isActive = true
+        heightAnchor.constraint(equalToConstant: 136).isActive = true
         wantsLayer = true
-        layer?.cornerRadius = TableGroupView.cornerRadius
+        layer?.cornerRadius = 10
         layer?.backgroundColor = NSColor.quaternaryLabelColor.cgColor
         setAccessibilityElement(false)
         for tile in tiles {
             tile.wantsLayer = true
-            tile.layer?.cornerRadius = 4
+            tile.layer?.cornerRadius = 8
             tile.layer?.backgroundColor = NSColor.systemBlue.withAlphaComponent(0.75).cgColor
             addSubview(tile)
         }
@@ -38,7 +38,7 @@ private final class TileSpacingPreviewView: NSView {
 
     override func layout() {
         super.layout()
-        let tileSize = CGSize(width: 92, height: 20)
+        let tileSize = CGSize(width: 78, height: 52)
         let gridSize = CGSize(width: tileSize.width * 3 + spacing * 2, height: tileSize.height * 2 + spacing)
         let origin = CGPoint(x: ((bounds.width - gridSize.width) / 2).rounded(), y: ((bounds.height - gridSize.height) / 2).rounded())
         for (index, tile) in tiles.enumerated() {
