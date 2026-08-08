@@ -201,6 +201,7 @@
 "Window previews" = "Window previews";
 "Window Title" = "Window Title";
 "Window title contains" = "Window title contains";
+"Wrap continuous keyboard navigation" = "Wrap continuous keyboard navigation";
 "You can’t undo this action." = "You can’t undo this action.";
 "You may need to disable some conflicting system gestures" = "You may need to disable some conflicting system gestures";
 "Your settings reset every time AlTab restarts." = "Your settings reset every time AlTab restarts.";

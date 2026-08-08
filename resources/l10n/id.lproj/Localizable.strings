@@ -196,6 +196,7 @@
 "Window previews" = "Pratinjau jendela";
 "Window Title" = "Judul Jendela";
 "Window title contains" = "Judul jendela mengandung";
+"Wrap continuous keyboard navigation" = "Putar navigasi keyboard berkelanjutan";
 "You can’t undo this action." = "Anda tidak dapat membatalkan tindakan ini.";
 "You may need to disable some conflicting system gestures" = "Anda mungkin perlu menonaktifkan beberapa gestur sistem yang bertentangan";
 "Your settings reset every time AlTab restarts." = "Pengaturan Anda diatur ulang setiap kali AlTab dimulai ulang.";

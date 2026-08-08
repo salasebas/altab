@@ -38,6 +38,7 @@ class LegacyPreferencesImporter {
             "nextWindowGesture": .enumeration(GesturePreference.allCases.count),
             "arrowKeysEnabled": .boolean,
             "vimKeysEnabled": .boolean,
+            "wrapContinuousKeyboardNavigation": .boolean,
             "mouseHoverEnabled": .boolean,
             "cursorFollowFocus": .enumeration(CursorFollowFocus.allCases.count),
             "hideColoredCircles": .boolean,

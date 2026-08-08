@@ -109,7 +109,13 @@ enum SearchKeyResult {
 
 class TilesViewMock {
     var isSearchEditing = false
-    func handleSearchEditingKeyDown(_ event: NSEvent) -> SearchKeyResult { return .passToField }
+    var searchKeyResult = SearchKeyResult.passToField
+    var receivedSearchRepeatStates = [Bool]()
+
+    func handleSearchEditingKeyDown(_ event: NSEvent, _ isARepeat: Bool) -> SearchKeyResult {
+        receivedSearchRepeatStates.append(isARepeat)
+        return searchKeyResult
+    }
 }
 
 class TilesPanelMock {
@@ -201,8 +207,8 @@ class TilesView {
         set { App.app.tilesPanel.tilesView.isSearchEditing = newValue }
     }
 
-    static func handleSearchEditingKeyDown(_ event: NSEvent) -> SearchKeyResult {
-        return App.app.tilesPanel.tilesView.handleSearchEditingKeyDown(event)
+    static func handleSearchEditingKeyDown(_ event: NSEvent, _ isARepeat: Bool) -> SearchKeyResult {
+        return App.app.tilesPanel.tilesView.handleSearchEditingKeyDown(event, isARepeat)
     }
 
     static func disableSearchMode() {

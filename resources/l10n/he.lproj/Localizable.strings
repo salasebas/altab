@@ -196,6 +196,7 @@
 "Window previews" = "תצוגות מקדימות של חלונות";
 "Window Title" = "כותרת חלון";
 "Window title contains" = "כותרת החלון מכילה";
+"Wrap continuous keyboard navigation" = "גלישת ניווט רציף במקלדת";
 "You can’t undo this action." = "לא ניתן לבטל פעולה זו.";
 "You may need to disable some conflicting system gestures" = "ייתכן שתצטרך להשבית מחוות מערכת מתנגשות מסוימות";
 "Your settings reset every time AlTab restarts." = "ההגדרות שלך מתאפסות בכל פעם ש‑AlTab מופעל מחדש.";

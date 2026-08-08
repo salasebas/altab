@@ -196,6 +196,7 @@
 "Window previews" = "ウィンドウプレビュー";
 "Window Title" = "ウインドウタイトル";
 "Window title contains" = "ウインドウタイトルに含まれる";
+"Wrap continuous keyboard navigation" = "連続キーボードナビゲーションを循環";
 "You can’t undo this action." = "この操作は取り消せません。";
 "You may need to disable some conflicting system gestures" = "競合するシステムのジェスチャを一部無効にする必要があるかもしれません";
 "Your settings reset every time AlTab restarts." = "AlTab を再起動するたびに設定がリセットされます。";

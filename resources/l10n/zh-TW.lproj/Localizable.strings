@@ -196,6 +196,7 @@
 "Window previews" = "視窗預覽";
 "Window Title" = "視窗標題";
 "Window title contains" = "視窗標題包含";
+"Wrap continuous keyboard navigation" = "循環連續鍵盤導覽";
 "You can’t undo this action." = "此動作無法復原。";
 "You may need to disable some conflicting system gestures" = "您可能需要停用某些衝突的系統手勢";
 "Your settings reset every time AlTab restarts." = "每次重新啟動 AlTab 時，你的設定都會重設。";

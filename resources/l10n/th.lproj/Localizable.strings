@@ -196,6 +196,7 @@
 "Window previews" = "ตัวอย่างหน้าต่าง";
 "Window Title" = "ชื่อหน้าต่าง";
 "Window title contains" = "ชื่อหน้าต่างมี";
+"Wrap continuous keyboard navigation" = "วนการนำทางต่อเนื่องด้วยแป้นพิมพ์";
 "You can’t undo this action." = "คุณไม่สามารถเลิกทำการกระทำนี้ได้";
 "You may need to disable some conflicting system gestures" = "คุณอาจต้องปิดท่าทางของระบบบางอย่างที่ขัดแย้งกัน";
 "Your settings reset every time AlTab restarts." = "การตั้งค่าของคุณจะถูกรีเซ็ตทุกครั้งที่ AlTab เริ่มทำงานใหม่";

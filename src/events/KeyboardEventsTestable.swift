@@ -12,7 +12,7 @@ class KeyboardEventsTestable {
 @discardableResult
 func handleKeyboardEvent(_ globalId: Int?, _ shortcutState: ShortcutState?, _ keyCode: UInt32?, _ modifiers: NSEvent.ModifierFlags?, _ isARepeat: Bool, _ event: NSEvent? = nil) -> Bool {
     if let event, shouldAbsorbSearchEditingKeyDown(event) {
-        switch TilesView.handleSearchEditingKeyDown(event) {
+        switch TilesView.handleSearchEditingKeyDown(event, isARepeat) {
         case .handled: return true
         case .passToField: return false
         case .passToShortcuts: break
