@@ -1,6 +1,6 @@
 # Source milestones and optional packaging
 
-AlTab is a **source-first**, **source-only** product at the official distribution layer. The supported way to run it is to clone this repository, install the once-per-Mac **Local Self-Signed** identity (`scripts/codesign/setup_local.sh`), and build locally with `scripts/build_local.sh`. Public milestones are Git tags plus GitHub release notes that point at source. The maintainer does **not** publish an official `.app`, installer, Sparkle feed, signing identity, notarization ticket, or update server. `Local Self-Signed` is never a distributable identity; optional redistribution packaging remains explicitly unsigned (see below).
+AlTab is a **source-first**, **source-only** product at the official distribution layer. The supported way to run it is to follow the [building and troubleshooting guide](building-and-troubleshooting.md): clone this repository, install the once-per-Mac **Local Self-Signed** identity, and build locally with `scripts/build_local.sh`. Public milestones are Git tags plus GitHub release notes that point at source. The maintainer does **not** publish an official `.app`, installer, Sparkle feed, signing identity, notarization ticket, or update server. `Local Self-Signed` is never a distributable identity; optional redistribution packaging remains explicitly unsigned (see below).
 
 ## Source milestone versioning
 
@@ -67,7 +67,7 @@ Or stay on `main` and rebuild after `git pull`. Preferences for the same bundle 
 
 This section is an **optional** downstream tool for people who assemble their own unsigned redistribution artifacts. It is **not** AlTab's normal local build and is **not** how official milestones are published.
 
-Routine local use builds an optimized app with `scripts/build_local.sh` under the tracked **Local Self-Signed** identity (setup once per Mac). Development and QA use `ai/build.sh` with the same identity. Both leave products in `DerivedData` and neither packages or publishes anything. Normal pull-request CI validates source, tests, and Debug/Release compilation with **explicit ad-hoc Debug and unsigned Release** (`scripts/build_app.sh`) and never needs a user Keychain identity; it does not invoke the packager.
+Routine local use builds an optimized app with `scripts/build_local.sh` under the tracked **Local Self-Signed** identity (setup once per Mac). Development and QA use `scripts/run_debug.sh`, which builds through `ai/build.sh` and installs the stable `/Applications/AlTab Dev.app`. Neither path packages or publishes anything. Normal pull-request CI validates source, tests, and credential-free Debug/Release compilation; it never needs a user Keychain identity and does not invoke the packager.
 
 Redistribution artifacts are assembled from an explicit Git tag or full 40-character commit. The packager exports that revision with `git archive`, builds inside the exported tree at a stable commit-derived path, normalizes package ordering and timestamps, and places that exact source beside the binary. Ignored local configuration such as `config/local.xcconfig`, Keychain identities, and maintainer secrets cannot enter the build.
 
@@ -105,7 +105,7 @@ The command creates `dist/AlTab-<release>/` containing:
 
 The current packager intentionally produces an **unsigned and not notarized** universal Release build. Signing and notarization require a separately designed fork-owned identity and workflow. No repository workflow invokes this packager, receives release secrets, or publishes its output. Anyone who redistributes those artifacts must label them **unsigned and not notarized** and must not tell users to disable system-wide security protections.
 
-The script verifies arm64 and x86_64 slices, matching app/dSYM UUIDs, absence of a Developer ID authority and Team ID, complete checksums and notices, source-archive identity, and both service-isolation and unrestricted-feature guards after extracting the final ZIP. Xcode may emit a non-identifying ad hoc Mach-O signature even when code signing is disabled; the verifier accepts only that state or a fully unsigned bundle. It rejects known upstream signing identities, update or licensing endpoints, analytics credentials, and release-secret markers.
+The script verifies arm64 and x86_64 slices, matching app/dSYM UUIDs, absence of a Developer ID authority and Team ID, complete checksums and notices, source-archive identity, and both service-isolation and unrestricted-feature guards after extracting the final ZIP. Xcode may emit a non-identifying Mach-O signature even when code signing is disabled; the verifier accepts only that state or a fully unsigned bundle. It rejects known upstream signing identities, update or licensing endpoints, analytics credentials, and release-secret markers.
 
 ### Rebuilding packaged artifacts
 

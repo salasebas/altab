@@ -12,8 +12,9 @@ class SystemPermissions {
     // every System Settings action (toggle off, remove from list, etc.) is not reliably
     // characterised in public sources, so we also keep a sparse 60s backstop timer below.
     // Infra requirements: NSDistributedNotificationCenter since 10.15 ignores nil-name
-    // observers (we pass a name) and since macOS 15 silently fails for unsigned binaries
-    // (AltTab is Developer ID signed). macOS 13+ has a known bug where `AXIsProcessTrusted`
+    // observers (we pass a name) and since macOS 15 silently fails for unsigned binaries.
+    // Interactive AlTab builds use the certificate-backed Local Self-Signed identity; macOS 13+
+    // has a known bug where `AXIsProcessTrusted`
     // can return stale values right after a toggle; we call `AccessibilityPermission.update()`
     // which re-runs the API rather than caching.
     private static let axRevokeNotificationName = "com.apple.accessibility.api"

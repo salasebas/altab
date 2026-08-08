@@ -64,6 +64,7 @@ Screen Recording) may not survive a rebuild when using ad-hoc signatures:
   ALTAB_CODE_SIGN_IDENTITY=- bash ai/build.sh
 
 Remove the local identity later with scripts/codesign/remove_local.sh.
+Guide: docs/building-and-troubleshooting.md#example-2-repair-local-self-signed
 EOF
 }
 
