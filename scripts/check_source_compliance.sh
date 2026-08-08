@@ -59,18 +59,58 @@ require_text vendor/scripts/update_shortcut_recorder.sh 'LICENSE.txt'
 
 source scripts/forbidden_service_contracts.sh
 operationalPaths=(package.json Info.plist config alt-tab-macos.xcodeproj/project.pbxproj .github/workflows ai scripts src resources/l10n)
-if rg -n -i --hidden --glob '!scripts/forbidden_service_contracts.sh' --glob '!scripts/check_source_compliance.sh' --glob '!scripts/check_service_isolation.sh' --glob '!scripts/check_unrestricted_features.sh' "$forbiddenServiceIdentityPattern" "${operationalPaths[@]}"; then
+if rg -n -i --hidden \
+  --glob '!scripts/forbidden_service_contracts.sh' \
+  --glob '!scripts/check_source_compliance.sh' \
+  --glob '!scripts/check_service_isolation.sh' \
+  --glob '!scripts/check_unrestricted_features.sh' \
+  --glob '!scripts/release_artifact_contracts.sh' \
+  --glob '!scripts/check_notarized_release.sh' \
+  --glob '!scripts/package_notarized_release.sh' \
+  --glob '!scripts/verify_release_artifacts.sh' \
+  --glob '!scripts/check_release_packaging.sh' \
+  "$forbiddenServiceIdentityPattern" "${operationalPaths[@]}"; then
   fail "operational source contains an upstream service, licensing identity, credential, or release secret"
 else
   scanStatus=$?
   [[ $scanStatus -eq 1 ]] || fail "could not scan operational source for forbidden identities"
 fi
-workflowMutationPattern='scripts/package_release\.sh|codesign|notarytool|CODE_SIGN|DEVELOPMENT_TEAM|xcodebuild[[:space:]]+archive|gh[[:space:]]+(release|api)|create-release|action-gh-release|uploads\.github\.com|api\.github\.com/repos/.*/releases|secrets(\.|\[)'
-if rg -n -i "$workflowMutationPattern" .github/workflows; then
-  fail "normal CI contains signing, packaging, release publication, or secret access"
-else
-  scanStatus=$?
-  [[ $scanStatus -eq 1 ]] || fail "could not scan normal CI for signing or publication behavior"
+# Credential-free validation CI must stay free of packaging/signing/publication.
+# Optional release packaging lives only in .github/workflows/release.yml.
+workflowMutationPattern='scripts/package_release\.sh|scripts/package_notarized_release\.sh|codesign|notarytool|CODE_SIGN|DEVELOPMENT_TEAM|xcodebuild[[:space:]]+archive|gh[[:space:]]+(release|api)|create-release|action-gh-release|uploads\.github\.com|api\.github\.com/repos/.*/releases|secrets(\.|\[)'
+if [[ -f .github/workflows/ci.yml ]]; then
+  if rg -n -i "$workflowMutationPattern" .github/workflows/ci.yml; then
+    fail "normal CI contains signing, packaging, release publication, or secret access"
+  else
+    scanStatus=$?
+    [[ $scanStatus -eq 1 ]] || fail "could not scan normal CI for signing or publication behavior"
+  fi
+fi
+if [[ -f .github/workflows/release.yml ]]; then
+  require_text .github/workflows/release.yml 'workflow_dispatch'
+  require_text .github/workflows/release.yml 'distribution_mode'
+  require_text .github/workflows/release.yml 'scripts/package_release.sh'
+  require_text .github/workflows/release.yml 'scripts/package_notarized_release.sh'
+  if rg -n -- '-----BEGIN |MI[IL][A-Za-z0-9+/]{40,}' .github/workflows/release.yml; then
+    fail "release workflow appears to hardcode credential material"
+  else
+    scanStatus=$?
+    [[ $scanStatus -eq 1 ]] || fail "could not scan release workflow for hardcoded credentials"
+  fi
+fi
+# No other workflows may perform release packaging or secret-backed publication.
+otherWorkflows=()
+while IFS= read -r workflowPath; do
+  [[ -n "$workflowPath" ]] || continue
+  otherWorkflows+=("$workflowPath")
+done < <(find .github/workflows -type f \( -name '*.yml' -o -name '*.yaml' \) ! -name 'ci.yml' ! -name 'release.yml' -print | LC_ALL=C sort)
+if [[ ${#otherWorkflows[@]} -gt 0 ]]; then
+  if rg -n -i "$workflowMutationPattern" "${otherWorkflows[@]}"; then
+    fail "unexpected workflow performs signing, packaging, or secret-backed publication"
+  else
+    scanStatus=$?
+    [[ $scanStatus -eq 1 ]] || fail "could not scan unexpected workflows for release behavior"
+  fi
 fi
 
 scripts/check_service_isolation.sh

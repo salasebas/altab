@@ -14,6 +14,8 @@ done
 plutil -lint Info.plist alt_tab_macos.entitlements alt-tab-macos.xcodeproj/project.pbxproj
 find resources/l10n -type f -name '*.strings' -exec plutil -lint {} +
 scripts/check_source_compliance.sh
+scripts/check_release_packaging.sh
+scripts/check_notarized_release.sh
 xcodebuild -project alt-tab-macos.xcodeproj -scheme Release -list -derivedDataPath "$derivedDataPath"
 pnpm run format:check
 scripts/ensure_generated_files_are_up_to_date.sh

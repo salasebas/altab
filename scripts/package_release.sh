@@ -23,6 +23,8 @@ outputRoot="${2:-$repoRoot/dist}"
 for dependency in codesign ditto file git gzip lipo plutil rg shasum tar xcodebuild xcrun zip; do
   command -v "$dependency" >/dev/null || fail "missing required dependency: $dependency"
 done
+source "$repoRoot/scripts/release_artifact_contracts.sh"
+[[ "${releaseArtifactContractsVersion:-}" == "1" ]] || fail "unsupported release artifact contracts version"
 
 gitTag="untagged"
 if git show-ref --verify --quiet "refs/tags/$revision"; then
@@ -64,7 +66,7 @@ publishRoot="$workRoot/publish"
 sourceExtractRoot="$workRoot/source"
 sourcePrefix="AlTab-$label-source"
 sourceFilename="$sourcePrefix.tar.gz"
-packageName="AlTab-$label-macOS-unsigned"
+packageName="$(release_package_name "$label" unsigned)"
 binaryFilename="$packageName.zip"
 manifestFilename="AlTab-$label-BUILD-MANIFEST.md"
 notesFilename="AlTab-$label-RELEASE-NOTES.md"

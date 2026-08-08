@@ -1,0 +1,225 @@
+# Optional redistribution packaging workflow.
+#
+# Official AlTab milestones remain source-only by default. This workflow is a
+# bring-your-own-identity helper for maintainers or downstream distributors.
+# It never silently falls back from notarized to unsigned: choose the mode
+# explicitly. Validation CI (ci.yml) stays credential-free and does not call
+# this workflow.
+#
+# Recommended trigger: workflow_dispatch only (manual). Automatic tag→publish
+# is intentionally omitted so a failed build, missing secret, or rejected
+# notarization cannot create a partial public release. Prefer:
+#   1) cut/audit the tag
+#   2) run this workflow
+#   3) inspect artifacts / draft release
+#   4) publish the draft only after human review
+#
+# ---------------------------------------------------------------------------
+# Repository secrets / variables to configure for notarized mode
+# ---------------------------------------------------------------------------
+# Store these under Settings → Secrets and variables → Actions. Prefer a
+# GitHub Environment named "release" with required reviewers.
+#
+# Required for distribution_mode=notarized:
+#   ALTAB_DEVELOPER_ID_CERTIFICATE_P12_BASE64
+#       Base64 of the Developer ID Application .p12 export
+#       (base64 -i DeveloperID.p12 | pbcopy). Never commit the p12.
+#   ALTAB_DEVELOPER_ID_CERTIFICATE_PASSWORD
+#       Password used when exporting that .p12.
+#   ALTAB_DEVELOPER_ID_IDENTITY
+#       Exact codesign identity string, e.g.
+#       Developer ID Application: Example Distributor (ABCD123456)
+#   ALTAB_TEAM_ID
+#       10-character Apple Team ID matching the certificate.
+#   ALTAB_BUNDLE_ID
+#       Stable reverse-DNS bundle ID owned by the distributor.
+#
+# Notarization — App Store Connect API key (recommended for CI):
+#   ALTAB_NOTARY_API_KEY_P8_BASE64
+#       Base64 of the AuthKey_XXX.p8 file.
+#   ALTAB_NOTARY_API_KEY_ID
+#       Key ID from App Store Connect.
+#   ALTAB_NOTARY_API_ISSUER_ID
+#       Issuer UUID from App Store Connect.
+#
+# Optional:
+#   ALTAB_RELEASE_GITHUB_TOKEN
+#       Only if the default GITHUB_TOKEN permissions are insufficient for
+#       draft release creation on a fork; otherwise omit.
+#
+# distribution_mode=unsigned needs no secrets and runs scripts/package_release.sh.
+# ---------------------------------------------------------------------------
+
+name: Release packaging
+
+on:
+  workflow_dispatch:
+    inputs:
+      revision:
+        description: Exact Git tag (e.g. altab-v1.0.0) or full 40-character commit SHA
+        required: true
+        type: string
+      distribution_mode:
+        description: Explicit packaging mode (no silent fallback between modes)
+        required: true
+        type: choice
+        options:
+          - unsigned
+          - notarized
+        default: unsigned
+      create_github_release:
+        description: Create a GitHub Release and attach artifacts (draft by default)
+        required: true
+        type: boolean
+        default: false
+      release_draft:
+        description: When creating a GitHub Release, leave it as a draft for human review
+        required: true
+        type: boolean
+        default: true
+      environment_name:
+        description: GitHub Environment that holds release secrets (empty = repository secrets)
+        required: false
+        type: string
+        default: release
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-packaging-${{ github.workflow }}-${{ inputs.revision }}-${{ inputs.distribution_mode }}
+  cancel-in-progress: false
+
+jobs:
+  package:
+    name: Package ${{ inputs.distribution_mode }} artifacts
+    runs-on: macos-15
+    timeout-minutes: 120
+    environment: ${{ inputs.distribution_mode == 'notarized' && (inputs.environment_name != '' && inputs.environment_name || 'release') || fromJSON('null') }}
+    permissions:
+      contents: write
+    env:
+      DEVELOPER_DIR: /Applications/Xcode_26.0.1.app/Contents/Developer
+      REVISION: ${{ inputs.revision }}
+      DISTRIBUTION_MODE: ${{ inputs.distribution_mode }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Validate revision syntax
+        run: |
+          set -euo pipefail
+          if [[ "$REVISION" =~ ^[0-9a-fA-F]{40}$ ]]; then
+            revisionRef="$REVISION"
+          elif git show-ref --verify --quiet "refs/tags/$REVISION"; then
+            revisionRef="refs/tags/$REVISION"
+          else
+            echo "revision must be an exact tag present in this checkout or a full 40-character commit SHA" >&2
+            exit 1
+          fi
+          commitSha="$(git rev-parse --verify "${revisionRef}^{commit}")"
+          echo "COMMIT_SHA=$commitSha" >>"$GITHUB_ENV"
+
+      - name: Package unsigned redistribution artifacts
+        if: ${{ inputs.distribution_mode == 'unsigned' }}
+        run: |
+          set -euo pipefail
+          scripts/package_release.sh "$REVISION" "$RUNNER_TEMP/altab-dist"
+
+      - name: Import Developer ID certificate into a temporary keychain
+        if: ${{ inputs.distribution_mode == 'notarized' }}
+        env:
+          ALTAB_DEVELOPER_ID_CERTIFICATE_P12_BASE64: ${{ secrets.ALTAB_DEVELOPER_ID_CERTIFICATE_P12_BASE64 }}
+          ALTAB_DEVELOPER_ID_CERTIFICATE_PASSWORD: ${{ secrets.ALTAB_DEVELOPER_ID_CERTIFICATE_PASSWORD }}
+        run: |
+          set -euo pipefail
+          : "${ALTAB_DEVELOPER_ID_CERTIFICATE_P12_BASE64:?missing secret ALTAB_DEVELOPER_ID_CERTIFICATE_P12_BASE64}"
+          : "${ALTAB_DEVELOPER_ID_CERTIFICATE_PASSWORD:?missing secret ALTAB_DEVELOPER_ID_CERTIFICATE_PASSWORD}"
+          certificatePath="$RUNNER_TEMP/developer-id.p12"
+          keychainPath="$RUNNER_TEMP/altab-release.keychain-db"
+          keychainPassword="$(openssl rand -base64 32)"
+          echo "$ALTAB_DEVELOPER_ID_CERTIFICATE_P12_BASE64" | base64 --decode >"$certificatePath"
+          security create-keychain -p "$keychainPassword" "$keychainPath"
+          security set-keychain-settings -lut 21600 "$keychainPath"
+          security unlock-keychain -p "$keychainPassword" "$keychainPath"
+          security import "$certificatePath" -P "$ALTAB_DEVELOPER_ID_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$keychainPath"
+          currentKeychains=()
+          while IFS= read -r currentKeychain; do
+            currentKeychains+=("${currentKeychain//\"/}")
+          done < <(security list-keychains -d user)
+          security list-keychains -d user -s "$keychainPath" "${currentKeychains[@]}"
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$keychainPassword" "$keychainPath" >/dev/null
+          echo "ALTAB_RELEASE_KEYCHAIN_PATH=$keychainPath" >>"$GITHUB_ENV"
+          rm -f "$certificatePath"
+
+      - name: Materialize App Store Connect API key
+        if: ${{ inputs.distribution_mode == 'notarized' }}
+        env:
+          ALTAB_NOTARY_API_KEY_P8_BASE64: ${{ secrets.ALTAB_NOTARY_API_KEY_P8_BASE64 }}
+          ALTAB_NOTARY_API_KEY_ID: ${{ secrets.ALTAB_NOTARY_API_KEY_ID }}
+        run: |
+          set -euo pipefail
+          : "${ALTAB_NOTARY_API_KEY_P8_BASE64:?missing secret ALTAB_NOTARY_API_KEY_P8_BASE64}"
+          : "${ALTAB_NOTARY_API_KEY_ID:?missing secret ALTAB_NOTARY_API_KEY_ID}"
+          keyPath="$RUNNER_TEMP/AuthKey_${ALTAB_NOTARY_API_KEY_ID}.p8"
+          echo "$ALTAB_NOTARY_API_KEY_P8_BASE64" | base64 --decode >"$keyPath"
+          chmod 600 "$keyPath"
+          echo "ALTAB_NOTARY_API_KEY_PATH=$keyPath" >>"$GITHUB_ENV"
+
+      - name: Package notarized redistribution artifacts
+        if: ${{ inputs.distribution_mode == 'notarized' }}
+        env:
+          ALTAB_DEVELOPER_ID_IDENTITY: ${{ secrets.ALTAB_DEVELOPER_ID_IDENTITY }}
+          ALTAB_TEAM_ID: ${{ secrets.ALTAB_TEAM_ID }}
+          ALTAB_BUNDLE_ID: ${{ secrets.ALTAB_BUNDLE_ID }}
+          ALTAB_NOTARY_API_KEY_ID: ${{ secrets.ALTAB_NOTARY_API_KEY_ID }}
+          ALTAB_NOTARY_API_ISSUER_ID: ${{ secrets.ALTAB_NOTARY_API_ISSUER_ID }}
+        run: |
+          set -euo pipefail
+          : "${ALTAB_DEVELOPER_ID_IDENTITY:?missing secret ALTAB_DEVELOPER_ID_IDENTITY}"
+          : "${ALTAB_TEAM_ID:?missing secret ALTAB_TEAM_ID}"
+          : "${ALTAB_BUNDLE_ID:?missing secret ALTAB_BUNDLE_ID}"
+          : "${ALTAB_NOTARY_API_KEY_PATH:?missing materialized notary key path}"
+          : "${ALTAB_NOTARY_API_KEY_ID:?missing secret ALTAB_NOTARY_API_KEY_ID}"
+          : "${ALTAB_NOTARY_API_ISSUER_ID:?missing secret ALTAB_NOTARY_API_ISSUER_ID}"
+          scripts/package_notarized_release.sh "$REVISION" \
+            --identity "$ALTAB_DEVELOPER_ID_IDENTITY" \
+            --team-id "$ALTAB_TEAM_ID" \
+            --bundle-id "$ALTAB_BUNDLE_ID" \
+            --notary-key "$ALTAB_NOTARY_API_KEY_PATH" \
+            --notary-key-id "$ALTAB_NOTARY_API_KEY_ID" \
+            --notary-issuer "$ALTAB_NOTARY_API_ISSUER_ID" \
+            --output-directory "$RUNNER_TEMP/altab-dist"
+
+      - name: Upload packaging artifacts
+        if: success()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: altab-${{ inputs.distribution_mode }}-${{ inputs.revision }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/altab-dist/**
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Create or update GitHub Release (optional)
+        if: ${{ success() && inputs.create_github_release }}
+        env:
+          GH_TOKEN: ${{ secrets.ALTAB_RELEASE_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
+          CREATE_DRAFT: ${{ inputs.release_draft }}
+          MODE: ${{ inputs.distribution_mode }}
+        run: |
+          set -euo pipefail
+          scripts/publish_release_artifacts.sh "$REVISION" "$COMMIT_SHA" "$MODE" "$RUNNER_TEMP/altab-dist" "$CREATE_DRAFT"
+
+      - name: Remove temporary keychain and notary key
+        if: ${{ always() && inputs.distribution_mode == 'notarized' }}
+        run: |
+          set +e
+          if [[ -n "${ALTAB_RELEASE_KEYCHAIN_PATH:-}" ]]; then
+            security delete-keychain "$ALTAB_RELEASE_KEYCHAIN_PATH" 2>/dev/null
+          fi
+          rm -f "${ALTAB_NOTARY_API_KEY_PATH:-}"
+          rm -rf "$RUNNER_TEMP/altab-dist" 2>/dev/null
+          true
