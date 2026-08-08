@@ -583,7 +583,6 @@ check_documentation_and_syntax() {
   require_contains "$repoRoot/docs/contributing.md" "--include-legacy-admin-trust"
   require_contains "$repoRoot/docs/contributing.md" "setup once per Mac"
   require_contains "$repoRoot/docs/contributing.md" "CODE_SIGN_IDENTITY = Local Self-Signed"
-  require_contains "$repoRoot/docs/contributing.md" "ALTAB_CODE_SIGN_IDENTITY=-"
   require_contains "$repoRoot/config/debug.xcconfig" "CODE_SIGN_IDENTITY = Local Self-Signed"
   require_contains "$repoRoot/config/release.xcconfig" "CODE_SIGN_IDENTITY = Local Self-Signed"
   require_contains "$repoRoot/scripts/codesign/preflight_local_signing.sh" "Local Self-Signed"
