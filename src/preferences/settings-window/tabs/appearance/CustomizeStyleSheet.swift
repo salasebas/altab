@@ -1,5 +1,10 @@
 import Cocoa
 
+private let tileSpacingResetTitle = NSLocalizedString("Default", comment: "Restore tile spacing to its default value")
+private let tileSpacingAccessibilityHelp = NSLocalizedString("Horizontal and vertical space between tiles, from 0 to 16 points.", comment: "Tile spacing slider accessibility help")
+private let tileSpacingResetHelp = NSLocalizedString("Restore tile spacing to 1 point.", comment: "Tile spacing reset button help")
+private let tileSpacingValueFormat = NSLocalizedString("%d pt", comment: "Tile spacing value in points")
+
 private final class TileSpacingPreviewView: NSView {
     private let tiles = (0..<6).map { _ in NSView() }
     private var spacing: CGFloat
@@ -8,11 +13,12 @@ private final class TileSpacingPreviewView: NSView {
         self.spacing = spacing
         super.init(frame: .zero)
         translatesAutoresizingMaskIntoConstraints = false
-        widthAnchor.constraint(equalToConstant: 220).isActive = true
-        heightAnchor.constraint(equalToConstant: 72).isActive = true
+        widthAnchor.constraint(equalToConstant: 460).isActive = true
+        heightAnchor.constraint(equalToConstant: 58).isActive = true
         wantsLayer = true
         layer?.cornerRadius = TableGroupView.cornerRadius
         layer?.backgroundColor = NSColor.quaternaryLabelColor.cgColor
+        setAccessibilityElement(false)
         for tile in tiles {
             tile.wantsLayer = true
             tile.layer?.cornerRadius = 4
@@ -32,7 +38,7 @@ private final class TileSpacingPreviewView: NSView {
 
     override func layout() {
         super.layout()
-        let tileSize = CGSize(width: 54, height: 24)
+        let tileSize = CGSize(width: 92, height: 20)
         let gridSize = CGSize(width: tileSize.width * 3 + spacing * 2, height: tileSize.height * 2 + spacing)
         let origin = CGPoint(x: ((bounds.width - gridSize.width) / 2).rounded(), y: ((bounds.height - gridSize.height) / 2).rounded())
         for (index, tile) in tiles.enumerated() {
@@ -40,6 +46,59 @@ private final class TileSpacingPreviewView: NSView {
             let row = CGFloat(index / 3)
             tile.frame = CGRect(x: origin.x + column * (tileSize.width + spacing), y: origin.y + row * (tileSize.height + spacing), width: tileSize.width, height: tileSize.height)
         }
+    }
+}
+
+private final class TileSpacingControl {
+    let controls: NSStackView
+    let preview: TileSpacingPreviewView
+    private let slider = NSSlider()
+    private let valueLabel = NSTextField(labelWithString: "")
+    private let resetButton = NSButton(title: tileSpacingResetTitle, target: nil, action: nil)
+
+    init(_ accessibilityLabel: String) {
+        let value = Preferences.tileSpacingPoints
+        preview = TileSpacingPreviewView(CGFloat(value))
+        slider.minValue = Double(TileSpacingPreference.validRange.lowerBound)
+        slider.maxValue = Double(TileSpacingPreference.validRange.upperBound)
+        slider.integerValue = value
+        slider.numberOfTickMarks = TileSpacingPreference.validRange.count
+        slider.allowsTickMarkValuesOnly = true
+        slider.isContinuous = true
+        slider.translatesAutoresizingMaskIntoConstraints = false
+        slider.widthAnchor.constraint(equalToConstant: 220).isActive = true
+        slider.setAccessibilityLabel(accessibilityLabel)
+        slider.setAccessibilityHelp(tileSpacingAccessibilityHelp)
+        valueLabel.font = NSFont.monospacedDigitSystemFont(ofSize: NSFont.systemFontSize, weight: .medium)
+        valueLabel.alignment = .right
+        valueLabel.translatesAutoresizingMaskIntoConstraints = false
+        valueLabel.widthAnchor.constraint(equalToConstant: 44).isActive = true
+        resetButton.bezelStyle = .rounded
+        resetButton.controlSize = .small
+        resetButton.toolTip = tileSpacingResetHelp
+        resetButton.setAccessibilityHelp(tileSpacingResetHelp)
+        controls = NSStackView(views: [slider, valueLabel, resetButton])
+        controls.orientation = .horizontal
+        controls.alignment = .centerY
+        controls.spacing = 8
+        _ = LabelAndControl.setupControl(slider, "tileSpacingPoints", extraAction: { [weak self] control in
+            self?.update(control.integerValue)
+        })
+        resetButton.onAction = { [weak self] _ in
+            guard let self else { return }
+            self.slider.integerValue = TileSpacingPreference.defaultValue
+            self.slider.onAction?(self.slider)
+        }
+        update(value)
+    }
+
+    private func update(_ value: Int) {
+        let value = TileSpacingPreference.clamped(value)
+        let description = String(format: tileSpacingValueFormat, value)
+        valueLabel.stringValue = description
+        slider.setAccessibilityValueDescription(description)
+        resetButton.isEnabled = value != TileSpacingPreference.defaultValue
+        preview.update(CGFloat(value))
     }
 }
 
@@ -58,6 +117,9 @@ class CustomizeStyleSheet: SheetWindow {
         labelTitleTruncation,
         labelLayout,
         labelTileSpacing,
+        tileSpacingResetTitle,
+        tileSpacingAccessibilityHelp,
+        tileSpacingResetHelp,
         ShowHideIllustratedView.hideStatusIconsLabel,
         ShowHideIllustratedView.hideStatusIconsSubtitle,
         ShowHideIllustratedView.hideSpaceNumberLabelsLabel,
@@ -65,13 +127,13 @@ class CustomizeStyleSheet: SheetWindow {
         IllustratedImageThemeView.placeholderLabelText,
     ] + ShowTitlesPreference.allCases.map { $0.localizedString }
       + TitleTruncationPreference.allCases.map { $0.localizedString }
-      + TileSpacingPreference.allCases.map { $0.localizedString }
 
     static let illustratedImageWidth = width
 
     let style = Preferences.appearanceStyle
     var illustratedImageView: IllustratedImageThemeView!
     var showHideIllustratedView: ShowHideIllustratedView!
+    private var tileSpacingControl: TileSpacingControl!
 
     override func makeContentView() -> NSView {
         // The per-shortcut Customize sheet was trimmed to just style-tied global toggles. The
@@ -107,11 +169,8 @@ class CustomizeStyleSheet: SheetWindow {
 
     private func makeLayoutView() -> NSView {
         let table = TableGroupView(title: Self.labelLayout, width: CustomizeStyleSheet.width)
-        let preview = TileSpacingPreviewView(Preferences.tileSpacing.points)
-        let control = LabelAndControl.makeSegmentedControl("tileSpacing", TileSpacingPreference.allCases, extraAction: { _ in
-            preview.update(Preferences.tileSpacing.points)
-        })
-        table.addRow(leftViews: [TableGroupView.makeText(Self.labelTileSpacing)], rightViews: [control], secondaryViews: [preview], secondaryViewsAlignment: .centerX, secondaryViewsTopGap: 8)
+        tileSpacingControl = TileSpacingControl(Self.labelTileSpacing)
+        table.addRow(leftViews: [TableGroupView.makeText(Self.labelTileSpacing)], rightViews: [tileSpacingControl.controls], secondaryViews: [tileSpacingControl.preview], secondaryViewsAlignment: .right, secondaryViewsTopGap: 8)
         return table
     }
 

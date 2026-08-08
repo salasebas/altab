@@ -1,3 +1,6 @@
+/* Tile spacing value in points */
+"%d pt" = "%d pt";
+
 /* No comment provided by engineer. */
 "3-finger Horizontal Swipe" = "3-finger Horizontal Swipe";
 
@@ -130,9 +133,6 @@
 /* No comment provided by engineer. */
 "Close window" = "Close window";
 
-/* Tile spacing option */
-"Compact" = "Compact";
-
 /* No comment provided by engineer. */
 "Conflicting shortcut" = "Conflicting shortcut";
 
@@ -154,7 +154,7 @@
 /* Menubar option */
 "Debug tools" = "Debug tools";
 
-/* Tile spacing option */
+/* Restore tile spacing to its default value */
 "Default" = "Default";
 
 /* No comment provided by engineer. */
@@ -240,6 +240,9 @@
 
 /* No comment provided by engineer. */
 "Hold" = "Hold";
+
+/* Tile spacing slider accessibility help */
+"Horizontal and vertical space between tiles, from 0 to 16 points." = "Horizontal and vertical space between tiles, from 0 to 16 points.";
 
 /* LetsMove replacement alert */
 "I can move myself to the Applications folder if you'd like." = "I can move myself to the Applications folder if you'd like.";
@@ -352,9 +355,6 @@
 /* No comment provided by engineer. */
 "Recently Focused First" = "Recently Focused First";
 
-/* Tile spacing option */
-"Relaxed" = "Relaxed";
-
 /* No comment provided by engineer. */
 "Reset settings and restart" = "Reset settings and restart";
 
@@ -363,6 +363,9 @@
 
 /* No comment provided by engineer. */
 "Restart Now" = "Restart Now";
+
+/* Tile spacing reset button help */
+"Restore tile spacing to 1 point." = "Restore tile spacing to 1 point.";
 
 /* No comment provided by engineer. */
 "Screen including menu bar" = "Screen including menu bar";
@@ -474,9 +477,6 @@
 
 /* No comment provided by engineer. */
 "Space Order" = "Space Order";
-
-/* Tile spacing option */
-"Spacious" = "Spacious";
 
 /* No comment provided by engineer. */
 "Start" = "Start";

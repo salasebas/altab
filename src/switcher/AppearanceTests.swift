@@ -2,14 +2,16 @@ import XCTest
 
 final class AppearanceTests: XCTestCase {
     func testTileSpacingValuesAreBoundedAndKeepOnePointDefault() {
-        XCTAssertEqual(TileSpacingPreference.allCases.map { $0.points }, [0, 1, 4, 8])
-        XCTAssertEqual(Preferences.defaultValues["tileSpacing"] as? String, TileSpacingPreference.standard.indexAsString)
-        XCTAssertEqual(TileSpacingPreference.standard.points, 1)
-        XCTAssertTrue(TileSpacingPreference.allCases.allSatisfy { $0.points >= 0 && $0.points <= 8 })
+        XCTAssertEqual(TileSpacingPreference.validRange, 0...16)
+        XCTAssertEqual(Preferences.defaultValues["tileSpacingPoints"] as? String, "1")
+        XCTAssertEqual(TileSpacingPreference.defaultValue, 1)
+        XCTAssertEqual(TileSpacingPreference.clamped(-1), 0)
+        XCTAssertEqual(TileSpacingPreference.clamped(17), 16)
     }
 
     func testTileSpacingAppliesOnlyToGridStyles() {
-        for spacing in TileSpacingPreference.allCases.map({ $0.points }) {
+        for value in TileSpacingPreference.validRange {
+            let spacing = CGFloat(value)
             XCTAssertEqual(AppearanceTestable.interCellPadding(.thumbnails, spacing), spacing)
             XCTAssertEqual(AppearanceTestable.interCellPadding(.appIcons, spacing), spacing)
             XCTAssertEqual(AppearanceTestable.interCellPadding(.titles, spacing), 1)
@@ -32,7 +34,8 @@ final class AppearanceTests: XCTestCase {
     }
 
     func testEveryTileSpacingProducesExactGapsWithoutOverlap() {
-        for spacing in TileSpacingPreference.allCases.map({ $0.points }) {
+        for value in TileSpacingPreference.validRange {
+            let spacing = CGFloat(value)
             let width = CGFloat(40)
             let height = CGFloat(30)
             let widthMax = width * 2 + spacing * 3
@@ -50,7 +53,8 @@ final class AppearanceTests: XCTestCase {
     }
 
     func testTileGridLayoutMirrorsLTRAndRTLWithinDocumentWidth() {
-        for spacing in TileSpacingPreference.allCases.map({ $0.points }) {
+        for value in TileSpacingPreference.validRange {
+            let spacing = CGFloat(value)
             let widthMax = CGFloat(250)
             let widths: [CGFloat] = [40, 55, 35]
             var ltr = TileGridLayout(widthMax: widthMax, tileHeight: 30, spacing: spacing, isLeftToRight: true)
@@ -68,7 +72,8 @@ final class AppearanceTests: XCTestCase {
 
     func testTargetFramesCoverConfiguredGapSymmetrically() {
         let frame = CGRect(x: 20, y: 30, width: 40, height: 50)
-        for spacing in TileSpacingPreference.allCases.map({ $0.points }) {
+        for value in TileSpacingPreference.validRange {
+            let spacing = CGFloat(value)
             let ltr = TileGridGeometry.targetFrame(frame, spacing, true)
             let rtl = TileGridGeometry.targetFrame(frame, spacing, false)
             XCTAssertEqual(ltr, CGRect(x: 20, y: 30, width: 40 + spacing, height: 50 + spacing))
