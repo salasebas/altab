@@ -144,6 +144,7 @@
 "Show on" = "顯示於";
 "Show separate window for each tab" = "為每個分頁顯示獨立視窗";
 "Show single window for all tabs" = "為所有分頁顯示單一視窗";
+"Show symbols in hover controls" = "在懸停控制項中顯示符號";
 "Show titles" = "顯示標題";
 "Show windows from applications" = "顯示來自應用程式的視窗";
 "Show windows from screens" = "顯示來自螢幕的視窗";

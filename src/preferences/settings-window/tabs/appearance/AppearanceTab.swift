@@ -2,8 +2,8 @@ import Cocoa
 
 struct ShowHideRowInfo {
     var rowId: String!
-    var uncheckedImage: String!
-    var checkedImage: String!
+    var uncheckedImage: String?
+    var checkedImage: String?
     var supportedStyles: [AppearanceStylePreference]!
     var subTitle: String?
     var leftViews = [NSView]()
@@ -151,9 +151,11 @@ class ShowHideIllustratedView {
     static let hideStatusIconsSubtitle = NSLocalizedString("AlTab will show if the window is currently minimized or fullscreen with a status icon.", comment: "")
     static let hideSpaceNumberLabelsLabel = NSLocalizedString("Hide Space number labels", comment: "")
     static let hideColoredCirclesLabel = NSLocalizedString("Hide colored circles on mouse hover", comment: "")
+    static let showSymbolsInHoverControlsLabel = NSLocalizedString("Show symbols in hover controls", comment: "")
 
     private let style: AppearanceStylePreference
     private var showHideRows = [ShowHideRowInfo]()
+    private var showSymbolsInHoverControlsSwitch: Switch!
     var illustratedImageView: IllustratedImageThemeView!
     var table: TableGroupView!
 
@@ -215,8 +217,21 @@ class ShowHideIllustratedView {
         hideColoredCircles.leftViews = [TableGroupView.makeText(ShowHideIllustratedView.hideColoredCirclesLabel)]
         hideColoredCircles.rightViews.append(LabelAndControl.makeSwitch(hideColoredCircles.rowId, extraAction: { sender in
             self.onCheckboxClicked(sender: sender, rowId: hideColoredCircles.rowId)
+            self.updateShowSymbolsInHoverControlsAvailability()
         }))
         showHideRows.append(hideColoredCircles)
+        var showSymbolsInHoverControls = ShowHideRowInfo()
+        showSymbolsInHoverControls.rowId = "showSymbolsInHoverControls"
+        showSymbolsInHoverControls.uncheckedImage = "hide_hover_control_symbols"
+        showSymbolsInHoverControls.checkedImage = "show_colored_circles"
+        showSymbolsInHoverControls.supportedStyles = [.thumbnails]
+        showSymbolsInHoverControls.leftViews = [TableGroupView.makeText(ShowHideIllustratedView.showSymbolsInHoverControlsLabel)]
+        showSymbolsInHoverControlsSwitch = LabelAndControl.makeSwitch(showSymbolsInHoverControls.rowId, extraAction: { sender in
+            self.onCheckboxClicked(sender: sender, rowId: showSymbolsInHoverControls.rowId)
+        })
+        showSymbolsInHoverControls.rightViews.append(showSymbolsInHoverControlsSwitch)
+        showHideRows.append(showSymbolsInHoverControls)
+        updateShowSymbolsInHoverControlsAvailability()
     }
 
     /// Handles the event when a checkbox is clicked.
@@ -238,8 +253,8 @@ class ShowHideIllustratedView {
             illustratedImageView.showPlaceholder()
             return
         }
-        let imageName = isChecked ? row.checkedImage : row.uncheckedImage
-        illustratedImageView.highlight(true, imageName!)
+        guard let imageName = isChecked ? row.checkedImage : row.uncheckedImage else { illustratedImageView.highlight(false); return }
+        illustratedImageView.highlight(true, imageName)
     }
 
     private func updateImageView(rowId: String) {
@@ -251,8 +266,8 @@ class ShowHideIllustratedView {
         row.rightViews.forEach { view in
             if let checkbox = view as? NSButton {
                 let isChecked = checkbox.state == .on
-                let imageName = isChecked ? row.checkedImage : row.uncheckedImage
-                illustratedImageView.highlight(true, imageName!)
+                guard let imageName = isChecked ? row.checkedImage : row.uncheckedImage else { illustratedImageView.highlight(false); return }
+                illustratedImageView.highlight(true, imageName)
             }
         }
     }
@@ -263,10 +278,14 @@ class ShowHideIllustratedView {
         }
         row?.rightViews.forEach { view in
             if let checkbox = view as? NSButton {
-                // Toggle the checkbox state
+                guard checkbox.isEnabled else { return }
                 checkbox.state = (checkbox.state == .on) ? .off : .on
             }
         }
+    }
+
+    private func updateShowSymbolsInHoverControlsAvailability() {
+        showSymbolsInHoverControlsSwitch.isEnabled = TrafficLightButton.symbolPreferenceIsEnabled(style, Preferences.hideColoredCircles)
     }
 }
 

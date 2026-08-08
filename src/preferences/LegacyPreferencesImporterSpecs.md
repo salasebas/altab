@@ -17,7 +17,7 @@ Every imported key belongs to `Preferences.ownedKeys` and has a category-specifi
 | Static shortcuts | Focus, previous, cancel, close, minimize/deminimize, fullscreen, quit, hide/show app, search | Exact bounded storage dictionary, successful secure app decode, then canonical re-archive |
 | Keyboard triggers | `holdShortcut` and `nextWindowShortcut`, keyboard indices `0...8` | Exact bounded storage dictionary, successful secure app decode, then canonical re-archive |
 | Input behavior | Arrow keys, Vim keys, mouse hover, cursor-follow-focus, trackpad haptics | Exact Bool or current enum index |
-| Appearance | Colored-circle, thumbnail, space-label and status-icon visibility; appearance style/size/theme; legacy theme; titles and truncation; active screen; display delay; fade animations; preview/capture behavior | Exact Bool, current enum index, or display delay `0...900` ms |
+| Appearance | Colored-circle, hover-control-symbol, thumbnail, space-label and status-icon visibility; appearance style/size/theme; legacy theme; titles and truncation; active screen; display delay; fade animations; preview/capture behavior | Exact Bool, current enum index, or display delay `0...900` ms |
 | Menu/language | Menu icon style/visibility and language | Exact Bool or current enum index |
 | Exceptions | `exceptions` | JSON decodes as current `[ExceptionEntry]`, including valid enum values and non-empty bundle identifiers |
 | Per-configuration | All 16 keys in `IncludedFeatures.perShortcutPreferenceBaseNames` across keyboard `0...8` and gesture `9` | Current enum range or exact Bool by key |

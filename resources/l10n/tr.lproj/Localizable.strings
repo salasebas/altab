@@ -144,6 +144,7 @@
 "Show on" = "Şurada göster";
 "Show separate window for each tab" = "Her sekme için ayrı pencere göster";
 "Show single window for all tabs" = "Tüm sekmeler için tek pencere göster";
+"Show symbols in hover controls" = "Fareyle üzerine gelinen denetimlerde sembolleri göster";
 "Show titles" = "Başlıkları göster";
 "Show windows from applications" = "Şu uygulamalardan pencereleri göster";
 "Show windows from screens" = "Şu ekranlardan pencereleri göster";

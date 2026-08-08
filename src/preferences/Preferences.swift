@@ -50,6 +50,7 @@ class Preferences {
         schema.add("mouseHoverEnabled", "false")
         schema.add("cursorFollowFocus", CursorFollowFocus.never.indexAsString)
         schema.add("hideColoredCircles", "false")
+        schema.add("showSymbolsInHoverControls", "true")
         schema.add("windowDisplayDelay", "100")
         schema.add("appearanceStyle", AppearanceStylePreference.thumbnails.indexAsString)
         schema.add("appearanceSize", AppearanceSizePreference.auto.indexAsString)
@@ -137,6 +138,7 @@ class Preferences {
     static var cursorFollowFocus: CursorFollowFocus { CachedUserDefaults.macroPref("cursorFollowFocus", CursorFollowFocus.allCases) }
     static var trackpadHapticFeedbackEnabled: Bool { CachedUserDefaults.bool("trackpadHapticFeedbackEnabled") }
     static var hideColoredCircles: Bool { CachedUserDefaults.bool("hideColoredCircles") }
+    static var showSymbolsInHoverControls: Bool { CachedUserDefaults.bool("showSymbolsInHoverControls") }
     static var windowDisplayDelay: DispatchTimeInterval { DispatchTimeInterval.milliseconds(CachedUserDefaults.int("windowDisplayDelay")) }
     static var fadeOutAnimation: Bool { CachedUserDefaults.bool("fadeOutAnimation") }
     static var previewFadeInAnimation: Bool { CachedUserDefaults.bool("previewFadeInAnimation") }

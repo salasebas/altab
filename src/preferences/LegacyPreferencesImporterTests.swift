@@ -316,7 +316,7 @@ final class LegacyPreferencesImporterTests: XCTestCase {
     }
 
     func testAllowlistClassifiesEveryOwnedKeyAndRejectsBannedCategories() {
-        XCTAssertEqual(LegacyPreferencesImporter.allowedKeys.count, 214)
+        XCTAssertEqual(LegacyPreferencesImporter.allowedKeys.count, 215)
         XCTAssertEqual(Preferences.ownedKeys.subtracting(LegacyPreferencesImporter.allowedKeys), LegacyPreferencesImporter.excludedOwnedKeys)
         XCTAssertTrue(LegacyPreferencesImporter.allowedKeys.isDisjoint(with: LegacyPreferencesImporter.bannedExactKeys))
         XCTAssertEqual(Set(LegacyPreferencesImporter.rememberedSelectionKeys), [

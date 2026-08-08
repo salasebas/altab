@@ -17,6 +17,7 @@
 		190000000000000000000012 /* SymbolCatalog.swift in Sources */ = {isa = PBXBuildFile; fileRef = 190000000000000000000001 /* SymbolCatalog.swift */; };
 		190000000000000000000014 /* symbols in Resources */ = {isa = PBXBuildFile; fileRef = 190000000000000000000004 /* symbols */; };
 		190000000000000000000015 /* symbols in Resources */ = {isa = PBXBuildFile; fileRef = 190000000000000000000004 /* symbols */; };
+		240000000000000000000006 /* thumbnails_hide_hover_control_symbols_light@2x.heic in Resources */ = {isa = PBXBuildFile; fileRef = 240000000000000000000005 /* thumbnails_hide_hover_control_symbols_light@2x.heic */; };
 		1C96101BC5817A7F85FA1F8D /* titles_show_running_applications_light@2x.heic in Resources */ = {isa = PBXBuildFile; fileRef = 1C961F57248D4E2377A9038E /* titles_show_running_applications_light@2x.heic */; };
 		1C96108A0CB2565233FE100B /* TableGroupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C961FB3DCF4906FEEF4A23D /* TableGroupView.swift */; };
 		1C9610F8AF7AD8CA53B62913 /* titles_hide_status_icons_light@2x.heic in Resources */ = {isa = PBXBuildFile; fileRef = 1C961E64CF8FB6E3FDAA3DAA /* titles_hide_status_icons_light@2x.heic */; };
@@ -197,6 +198,8 @@
 		BF0C8C0EDECEA32BBCE5B27D /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = BF0C8849751E65B51A470278 /* Localizable.strings */; };
 		BF0C8C5FA4B401A8C0F75B7A /* KeyboardEventsTestable.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8643F524515224BF1618 /* KeyboardEventsTestable.swift */; };
 		BF0C8C7E96DB48120462DA00 /* TrafficLightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8DF400A1AF64EB0CD0B3 /* TrafficLightButton.swift */; };
+		240000000000000000000001 /* TrafficLightButtonTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 240000000000000000000002 /* TrafficLightButtonTests.swift */; };
+		240000000000000000000004 /* TrafficLightButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8DF400A1AF64EB0CD0B3 /* TrafficLightButton.swift */; };
 		BF0C8CC5057406014FD612CC /* ATShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8BA452332236D972C60E /* ATShortcut.swift */; };
 		BF0C8CEBBC2E851D16FF4757 /* CustomRecorderControlTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8308B436837FA3EDED86 /* CustomRecorderControlTests.swift */; };
 		BF0C8DD7EBC3BA1E86BF4BDB /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BF0C841E403C1C6E8C65727E /* InfoPlist.strings */; };
@@ -337,6 +340,7 @@
 		190000000000000000000003 /* SymbolCatalogSpecs.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = SymbolCatalogSpecs.md; sourceTree = "<group>"; };
 		190000000000000000000001 /* SymbolCatalog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SymbolCatalog.swift; sourceTree = "<group>"; };
 		190000000000000000000004 /* symbols */ = {isa = PBXFileReference; lastKnownFileType = folder; path = symbols; sourceTree = "<group>"; };
+		240000000000000000000005 /* thumbnails_hide_hover_control_symbols_light@2x.heic */ = {isa = PBXFileReference; lastKnownFileType = image.heic; path = "thumbnails_hide_hover_control_symbols_light@2x.heic"; sourceTree = "<group>"; };
 		1C961003A0D16B9AE3932B3F /* thumbnails_show_colored_circles_light@2x.heic */ = {isa = PBXFileReference; lastKnownFileType = image.heic; path = "thumbnails_show_colored_circles_light@2x.heic"; sourceTree = "<group>"; };
 		1C9610B2E76F1E429C8D3660 /* titles_show_running_windows_light@2x.heic */ = {isa = PBXFileReference; lastKnownFileType = image.heic; path = "titles_show_running_windows_light@2x.heic"; sourceTree = "<group>"; };
 		1C9611039BDBE0C84F349BA1 /* titles_show_status_icons_light@2x.heic */ = {isa = PBXFileReference; lastKnownFileType = image.heic; path = "titles_show_status_icons_light@2x.heic"; sourceTree = "<group>"; };
@@ -520,6 +524,8 @@
 		BF0C8DCAC388B07C369E9771 /* test-base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "test-base.xcconfig"; sourceTree = "<group>"; };
 		BF0C8FACE000000000000001 /* WindowServerEvents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowServerEvents.swift; sourceTree = "<group>"; };
 		BF0C8DF400A1AF64EB0CD0B3 /* TrafficLightButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrafficLightButton.swift; sourceTree = "<group>"; };
+		240000000000000000000002 /* TrafficLightButtonTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrafficLightButtonTests.swift; sourceTree = "<group>"; };
+		240000000000000000000003 /* TrafficLightButtonSpecs.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = TrafficLightButtonSpecs.md; sourceTree = "<group>"; };
 		BF0C8E63BE7394A6591E74E0 /* LightImageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LightImageView.swift; sourceTree = "<group>"; };
 		BF0C8E64BE7394A6591E74E1 /* LightImageLayer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LightImageLayer.swift; sourceTree = "<group>"; };
 		BF0C8EAF02309B9C489E65F4 /* README.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
@@ -699,6 +705,7 @@
 				1C961334F059C39979BEDF19 /* app_icons_show_running_applications_windows_light@2x.heic */,
 				1C96127120349FE18C5C39DA /* app_icons_show_running_windows_light@2x.heic */,
 				1C9618C8080211CBF882E4E0 /* thumbnails_hide_colored_circles_light@2x.heic */,
+				240000000000000000000005 /* thumbnails_hide_hover_control_symbols_light@2x.heic */,
 				1C9611334B667767A4514B57 /* thumbnails_hide_space_number_labels_light@2x.heic */,
 				1C9616C88A2EED5DFF4E83D8 /* thumbnails_hide_status_icons_light@2x.heic */,
 				1C9612E7D08B9831F2A07ECE /* thumbnails_light@2x.heic */,
@@ -1175,6 +1182,8 @@
 				D04BAE333F7170E87C5AC0EF /* CustomRecorderControl.swift */,
 				D04BA8AC77465E1B2BC947CF /* StackView.swift */,
 				BF0C8DF400A1AF64EB0CD0B3 /* TrafficLightButton.swift */,
+				240000000000000000000002 /* TrafficLightButtonTests.swift */,
+				240000000000000000000003 /* TrafficLightButtonSpecs.md */,
 				D04BA00000000000C0DE0040 /* Tooltips.swift */,
 				BF0C8B2C057099EDABE46779 /* Button.swift */,
 				BF0C8343C1F6FCA82552DCB7 /* TableView.swift */,
@@ -1681,6 +1690,7 @@
 				1C96132D9BFCC988B0013509 /* app_icons_show_running_applications_windows_light@2x.heic in Resources */,
 				1C9614C924F2EEB592314C67 /* app_icons_show_running_windows_light@2x.heic in Resources */,
 				1C9616BD426675F5E7FC1C97 /* thumbnails_hide_colored_circles_light@2x.heic in Resources */,
+				240000000000000000000006 /* thumbnails_hide_hover_control_symbols_light@2x.heic in Resources */,
 				1C961C7FC66CEEE4223C57A2 /* thumbnails_hide_space_number_labels_light@2x.heic in Resources */,
 				1C961DE40FF784E02A044D35 /* thumbnails_hide_status_icons_light@2x.heic in Resources */,
 				1C9614DC56AA02BA27707989 /* thumbnails_light@2x.heic in Resources */,
@@ -1791,6 +1801,8 @@
 				BF0C875A28B98904F8F4A66A /* ATShortcut.swift in Sources */,
 				D04BA00000000000C0DE0022 /* SwitcherSession.swift in Sources */,
 				BF0C84E5AC1D423625ABF3E6 /* Mocks.swift in Sources */,
+				240000000000000000000004 /* TrafficLightButton.swift in Sources */,
+				240000000000000000000001 /* TrafficLightButtonTests.swift in Sources */,
 				BF0C8F9B8014AD21E68B1349 /* HelperExtensionsTestable.swift in Sources */,
 				BF0C8CEBBC2E851D16FF4757 /* CustomRecorderControlTests.swift in Sources */,
 				BF0C87B5EDCFC573CE220137 /* Helpers.swift in Sources */,

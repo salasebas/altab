@@ -41,6 +41,7 @@ class LegacyPreferencesImporter {
             "mouseHoverEnabled": .boolean,
             "cursorFollowFocus": .enumeration(CursorFollowFocus.allCases.count),
             "hideColoredCircles": .boolean,
+            "showSymbolsInHoverControls": .boolean,
             "windowDisplayDelay": .integer(0...900),
             "appearanceStyle": .enumeration(AppearanceStylePreference.allCases.count),
             "appearanceSize": .enumeration(AppearanceSizePreference.allCases.count),

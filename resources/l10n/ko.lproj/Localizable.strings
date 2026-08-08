@@ -144,6 +144,7 @@
 "Show on" = "표시 위치";
 "Show separate window for each tab" = "각 탭을 별도의 윈도우로 표시";
 "Show single window for all tabs" = "모든 탭을 하나의 윈도우로 표시";
+"Show symbols in hover controls" = "마우스 오버 컨트롤에 기호 표시";
 "Show titles" = "제목 보이기";
 "Show windows from applications" = "다음 응용 프로그램의 윈도우 보이기";
 "Show windows from screens" = "다음 화면의 윈도우 보이기";
