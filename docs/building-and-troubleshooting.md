@@ -167,7 +167,7 @@ Use `scripts/run_debug.sh` while developing and testing. Use `scripts/build_loca
 
 ### Can I share a compiled build?
 
-Yes, but do not redistribute the `Local Self-Signed` app produced for your own Mac. Use the optional [redistribution packager](releasing.md#optional-redistribution-packaging), which creates a universal app ZIP, matching dSYM, exact source archive, build manifest, release notes, and checksums from an explicit tag or full commit. The current package is intentionally **unsigned and not notarized**, so label it that way and expect macOS Gatekeeper to warn or block it.
+Yes, but do not redistribute the `Local Self-Signed` app produced for your own Mac. For an unsigned build, use the optional [unsigned redistribution packager](releasing.md#optional-unsigned-redistribution-packaging), which creates a universal app ZIP, matching dSYM, exact source archive, build manifest, release notes, and checksums from an explicit tag or full commit. Its output is intentionally **unsigned and not notarized**, so label it that way and expect macOS Gatekeeper to warn or block it.
 
 A trusted Gatekeeper-friendly binary requires **your** Developer ID Application identity and Apple notarization. Use `scripts/package_notarized_release.sh` or the manual `.github/workflows/release.yml` workflow (`notarized` mode) documented in [releasing.md](releasing.md). Official milestones may remain source-only; the tooling never silently falls back to unsigned output and never reuses upstream credentials, Team IDs, update feeds, signing identities, or release infrastructure.
 

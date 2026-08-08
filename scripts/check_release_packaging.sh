@@ -26,6 +26,7 @@ for path in "${releaseRequiredSourcePaths[@]}" docs/releasing.md; do require_fil
 for path in \
   scripts/package_release.sh \
   scripts/package_notarized_release.sh \
+  scripts/publish_release_artifacts.sh \
   scripts/verify_release_artifacts.sh \
   scripts/check_release_packaging.sh \
   scripts/check_notarized_release.sh \
@@ -62,6 +63,10 @@ require_text scripts/package_release.sh 'scripts/check_unrestricted_features.sh'
 require_text scripts/package_notarized_release.sh 'scripts/verify_release_artifacts.sh'
 require_text scripts/package_notarized_release.sh 'notarytool'
 require_text scripts/package_notarized_release.sh 'stapler'
+require_text scripts/package_release.sh 'release_package_name'
+require_text scripts/package_notarized_release.sh 'release_package_name'
+require_text scripts/verify_release_artifacts.sh 'release_package_name'
+require_text scripts/verify_release_artifacts.sh 'release_detect_package_mode'
 require_text scripts/verify_release_artifacts.sh 'notarized'
 require_text scripts/verify_release_artifacts.sh 'release_validate_notarized_app'
 echo "release-packaging check passed"

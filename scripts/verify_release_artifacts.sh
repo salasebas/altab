@@ -7,6 +7,10 @@ fail() {
   exit 1
 }
 
+scriptRoot="$(cd "$(dirname "$0")" && pwd)"
+source "$scriptRoot/release_artifact_contracts.sh"
+[[ "${releaseArtifactContractsVersion:-}" == "1" ]] || fail "unsupported release artifact contracts version"
+
 require_text() {
   local path="$1"
   local text="$2"
@@ -49,27 +53,29 @@ manifestFilename="AlTab-$label-BUILD-MANIFEST.md"
 notesFilename="AlTab-$label-RELEASE-NOTES.md"
 binaryFilename=""
 packageMode=""
+unsignedPackageName="$(release_package_name "$label" unsigned)"
+notarizedPackageName="$(release_package_name "$label" notarized)"
+unsignedBinaryFilename="$unsignedPackageName.zip"
+notarizedBinaryFilename="$notarizedPackageName.zip"
 if [[ -n "$forcedMode" ]]; then
   packageMode="$forcedMode"
-  if [[ "$packageMode" == "unsigned" ]]; then
-    binaryFilename="AlTab-$label-macOS-unsigned.zip"
-  else
-    binaryFilename="AlTab-$label-macOS.zip"
-  fi
+  packageName="$(release_package_name "$label" "$packageMode")"
+  binaryFilename="$packageName.zip"
 else
-  if [[ -f "$artifactRoot/AlTab-$label-macOS-unsigned.zip" ]]; then
-    packageMode="unsigned"
-    binaryFilename="AlTab-$label-macOS-unsigned.zip"
-  elif [[ -f "$artifactRoot/AlTab-$label-macOS.zip" ]]; then
-    packageMode="notarized"
-    binaryFilename="AlTab-$label-macOS.zip"
+  if [[ -f "$artifactRoot/$unsignedBinaryFilename" && -f "$artifactRoot/$notarizedBinaryFilename" ]]; then
+    fail "artifact directory contains both unsigned and notarized binary packages"
+  elif [[ -f "$artifactRoot/$unsignedBinaryFilename" ]]; then
+    binaryFilename="$unsignedBinaryFilename"
+  elif [[ -f "$artifactRoot/$notarizedBinaryFilename" ]]; then
+    binaryFilename="$notarizedBinaryFilename"
   else
     fail "missing binary artifact for label $label"
   fi
+  packageMode="$(release_detect_package_mode "$binaryFilename")"
+  packageName="${binaryFilename%.zip}"
 fi
-packageName="${binaryFilename%.zip}"
 publishedArtifacts=("$binaryFilename" "$sourceFilename" "$manifestFilename" "$notesFilename")
-for dependency in codesign cmp git gzip lipo otool plutil rg shasum spctl strings tar unzip xcrun; do
+for dependency in codesign cmp git gzip lipo otool plutil python3 rg shasum spctl strings tar unzip xcrun; do
   command -v "$dependency" >/dev/null || fail "missing required dependency: $dependency"
 done
 for artifact in "${publishedArtifacts[@]}" SHA256SUMS; do
@@ -151,7 +157,7 @@ else
   identityFromManifest="$(sed -n 's/^- Developer ID identity: `\([^`]*\)`/\1/p' "$manifest" | sed -n '1p')"
   [[ -n "$teamIdFromManifest" ]] || fail "notarized manifest is missing Team ID"
   [[ -n "$identityFromManifest" ]] || fail "notarized manifest is missing Developer ID identity"
-  release_validate_notarized_app "$appPath" "$signatureDetails" "$identityFromManifest" "$teamIdFromManifest"
+  release_validate_notarized_app "$appPath" "$signatureDetails" "$identityFromManifest" "$teamIdFromManifest" "$sourceRoot/alt_tab_macos.entitlements"
   for field in "${releaseNotarizedManifestFields[@]}"; do require_text "$manifest" "$field"; done
   require_text "$notes" 'Signing status: **Developer ID Application**'
   require_text "$notes" 'Notarization status: **notarized and stapled**'

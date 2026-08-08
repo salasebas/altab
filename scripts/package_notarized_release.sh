@@ -19,7 +19,8 @@ into arguments when a Keychain profile or API key file is available):
   --identity VALUE              ALTAB_DEVELOPER_ID_IDENTITY
                                 Full "Developer ID Application: …" identity
   --team-id VALUE               ALTAB_TEAM_ID
-  --bundle-id VALUE             ALTAB_BUNDLE_ID (defaults to tracked Release ID)
+  --bundle-id VALUE             ALTAB_BUNDLE_ID
+                                Stable distributor-owned bundle identifier
 
 Notarization credentials (exactly one method):
 
@@ -50,12 +51,7 @@ redact_and_fail() {
   local detailsFile="${2:-}"
   echo "notarized release packaging failed: $message" >&2
   if [[ -n "$detailsFile" && -f "$detailsFile" ]]; then
-    # Never echo raw credential material if a tool leaked it into a log file.
-    if rg -n -- "$releaseCredentialPattern|password|passwd|api[_-]?key|issuer|BEGIN [A-Z ]*PRIVATE KEY" "$detailsFile" >/dev/null 2>&1; then
-      echo "(notarization diagnostics suppressed because they may contain secrets; retrieve the notary log with notarytool log <submission-id> using your own credentials)" >&2
-    else
-      sed -n '1,200p' "$detailsFile" >&2
-    fi
+    release_print_safe_diagnostics "$detailsFile"
   fi
   exit 1
 }
@@ -127,17 +123,14 @@ done
 
 [[ -n "$revision" ]] || { usage >&2; exit 2; }
 
-for dependency in codesign ditto file git gzip lipo plutil rg security shasum spctl tar xcodebuild xcrun zip; do
+for dependency in codesign ditto file git gzip lipo plutil python3 rg security shasum spctl tar xcodebuild xcrun zip; do
   command -v "$dependency" >/dev/null || fail "missing required dependency: $dependency"
 done
 
 source "$repoRoot/scripts/release_artifact_contracts.sh"
 [[ "${releaseArtifactContractsVersion:-}" == "1" ]] || fail "unsupported release artifact contracts version"
 
-if [[ -z "$bundleId" ]]; then
-  bundleId="$(sed -n 's/^PRODUCT_BUNDLE_IDENTIFIER = //p' config/base.xcconfig | sed -n '1p')"
-fi
-[[ -n "$bundleId" ]] || fail "could not resolve default bundle identifier"
+[[ -n "$bundleId" ]] || fail "bundle ID is required (--bundle-id or ALTAB_BUNDLE_ID)"
 release_validate_developer_id_inputs "$identity" "$teamId" "$bundleId"
 
 usingProfile=false
@@ -202,7 +195,7 @@ publishRoot="$workRoot/publish"
 sourceExtractRoot="$workRoot/source"
 sourcePrefix="AlTab-$label-source"
 sourceFilename="$sourcePrefix.tar.gz"
-packageName="AlTab-$label-macOS"
+packageName="$(release_package_name "$label" notarized)"
 binaryFilename="$packageName.zip"
 manifestFilename="AlTab-$label-BUILD-MANIFEST.md"
 notesFilename="AlTab-$label-RELEASE-NOTES.md"
@@ -253,6 +246,7 @@ unsignedRebuildCommand=(
   CODE_SIGNING_REQUIRED=NO
   CODE_SIGN_IDENTITY=
   DEVELOPMENT_TEAM=
+  "PRODUCT_BUNDLE_IDENTIFIER=$bundleId"
   "CURRENT_PROJECT_VERSION=$releaseBundleVersion"
   clean build
 )
@@ -303,31 +297,10 @@ notaryZip="$workRoot/AlTab-notary-submit.zip"
 rm -f "$notaryZip"
 ditto -c -k --keepParent "$appPath" "$notaryZip" || fail "could not create notarization zip"
 notaryLog="$workRoot/notarytool.log"
-notarySubmit=(xcrun notarytool submit "$notaryZip" --wait --output-format json)
-if [[ "$usingProfile" == true ]]; then
-  notarySubmit+=(--keychain-profile "$notaryProfile")
-else
-  notarySubmit+=(--key "$notaryKeyPath" --key-id "$notaryKeyId" --issuer "$notaryIssuer")
-fi
-set +e
-"${notarySubmit[@]}" >"$notaryLog" 2>&1
-notaryStatus=$?
-set -e
-if [[ $notaryStatus -ne 0 ]]; then
-  redact_and_fail "notarytool submit failed" "$notaryLog"
-fi
-if ! rg -q '"status"[[:space:]]*:[[:space:]]*"Accepted"' "$notaryLog"; then
-  if rg -q '"status"[[:space:]]*:[[:space:]]*"Invalid"|"status"[[:space:]]*:[[:space:]]*"Rejected"' "$notaryLog"; then
-    redact_and_fail "Apple rejected notarization" "$notaryLog"
-  fi
-  # Some notarytool versions print Accepted outside strict JSON keys on success with --wait.
-  if ! rg -qi 'status: Accepted|submission is now in progress|Successfully received submission info|Accepted' "$notaryLog"; then
-    redact_and_fail "notarization did not report Accepted" "$notaryLog"
-  fi
-fi
+release_require_accepted_notarization "$notaryZip" "$notaryLog" "$notaryProfile" "$notaryKeyPath" "$notaryKeyId" "$notaryIssuer"
 
 xcrun stapler staple "$appPath" >"$workRoot/stapler-staple.log" 2>&1 || redact_and_fail "stapler staple failed" "$workRoot/stapler-staple.log"
-release_validate_notarized_app "$appPath" "$signatureDetails" "$identity" "$teamId"
+release_validate_notarized_app "$appPath" "$signatureDetails" "$identity" "$teamId" "$entitlementsPath"
 
 xcodeVersion="$(xcodebuild -version | paste -sd ';' -)"
 swiftVersion="$(xcrun swift --version 2>&1 | tr '\n' ' ' | sed 's/[[:space:]]*$//')"

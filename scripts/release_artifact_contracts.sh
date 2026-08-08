@@ -7,6 +7,7 @@ releaseRequiredSourcePaths=(
   ai/build.sh
   scripts/package_release.sh
   scripts/package_notarized_release.sh
+  scripts/publish_release_artifacts.sh
   scripts/verify_release_artifacts.sh
   scripts/check_release_packaging.sh
   scripts/check_notarized_release.sh
@@ -187,40 +188,75 @@ release_resolve_codesigning_identity() {
   local identity="$1"
   local teamId="$2"
   local identitiesOutput
+  local identityLine
+  local commonName
   local matchingLines
   local matchCount
+  local recordCount=0
+  local reportedCount=""
+  local identityRecordPattern='^[[:space:]]*[0-9]+\)[[:space:]]+[0-9A-Fa-f]{40}[[:space:]]+"(.*)"([[:space:]]+\([^)]*\))?[[:space:]]*$'
+  local identityCountPattern='^[[:space:]]*([0-9]+)[[:space:]]+valid identities found[[:space:]]*$'
   identitiesOutput="$(security find-identity -v -p codesigning)" || fail "could not list codesigning identities"
-  matchingLines="$(printf '%s\n' "$identitiesOutput" | rg -F -- "$identity" || true)"
+  matchingLines=""
+  while IFS= read -r identityLine; do
+    if [[ "$identityLine" =~ $identityRecordPattern ]]; then
+      commonName="${BASH_REMATCH[1]}"
+      recordCount=$((recordCount + 1))
+      if [[ "$commonName" == "$identity" ]]; then
+        matchingLines+="$identityLine"$'\n'
+      fi
+    elif [[ "$identityLine" =~ $identityCountPattern ]]; then
+      [[ -z "$reportedCount" ]] || fail "codesigning identity output contains multiple summary lines"
+      reportedCount="${BASH_REMATCH[1]}"
+    elif [[ -n "$identityLine" ]]; then
+      fail "could not safely parse codesigning identity output"
+    fi
+  done <<< "$identitiesOutput"
+  [[ -n "$reportedCount" ]] || fail "codesigning identity output is missing its summary"
+  [[ "$recordCount" == "$reportedCount" ]] || fail "codesigning identity output count does not match its records"
   [[ -n "$matchingLines" ]] || fail "no codesigning identity matches the requested Developer ID identity"
   matchCount="$(printf '%s\n' "$matchingLines" | rg -c '.' || true)"
   [[ "$matchCount" == "1" ]] || fail "requested Developer ID identity is ambiguous ($matchCount matches)"
   if printf '%s\n' "$matchingLines" | rg -q 'CSSMERR_TP_CERT_REVOKED|CSSMERR_TP_NOT_TRUSTED|CSSMERR'; then
     fail "matched Developer ID identity is not trusted or is revoked"
   fi
-  if ! printf '%s\n' "$matchingLines" | rg -q '\([A-Z0-9]{10}\)'; then
-    : # identity string may already include Team ID in parentheses or omit it
-  fi
-  if printf '%s' "$identity" | rg -q "\\($teamId\\)"; then
-    return 0
-  fi
-  if printf '%s\n' "$matchingLines" | rg -q "\\($teamId\\)"; then
-    return 0
-  fi
-  # Accept when the identity string is exact and the caller-supplied Team ID will be
-  # verified against the signed app's TeamIdentifier after codesign.
-  return 0
+  [[ "$identity" =~ \(([A-Z0-9]{10})\)$ ]] || fail "Developer ID identity must end with its 10-character Team ID"
+  [[ "${BASH_REMATCH[1]}" == "$teamId" ]] || fail "Developer ID identity does not match requested Team ID $teamId"
 }
 
-release_validate_notarized_app() {
+release_plists_match() {
+  python3 -I - "$1" "$2" <<'PY'
+import plistlib
+import sys
+
+def strictly_equal(left, right):
+    if type(left) is not type(right):
+        return False
+    if isinstance(left, dict):
+        return left.keys() == right.keys() and all(strictly_equal(left[key], right[key]) for key in left)
+    if isinstance(left, (list, tuple)):
+        return len(left) == len(right) and all(strictly_equal(a, b) for a, b in zip(left, right))
+    return left == right
+
+try:
+    with open(sys.argv[1], "rb") as left_file, open(sys.argv[2], "rb") as right_file:
+        left = plistlib.load(left_file)
+        right = plistlib.load(right_file)
+except Exception as error:
+    print(f"could not compare property lists: {error}", file=sys.stderr)
+    sys.exit(2)
+sys.exit(0 if strictly_equal(left, right) else 1)
+PY
+}
+
+release_validate_notarized_slice() {
   local appPath="$1"
   local signatureDetails="$2"
   local expectedIdentity="$3"
   local expectedTeamId="$4"
-  local verifyDetails="$signatureDetails.verify"
-  local assessDetails="$signatureDetails.spctl"
-  local stapleDetails="$signatureDetails.stapler"
-  codesign --verify --deep --strict --verbose=2 "$appPath" 2>"$verifyDetails" || fail "Developer ID signature verification failed"
-  codesign --display --verbose=4 "$appPath" >/dev/null 2>"$signatureDetails" || fail "could not inspect Developer ID signature"
+  local expectedEntitlementsPath="$5"
+  local architecture="$6"
+  codesign --display --verbose=4 --architecture "$architecture" "$appPath" >/dev/null 2>"$signatureDetails" || fail "could not inspect Developer ID signature for $architecture"
   if rg -q '^Signature=adhoc$' "$signatureDetails"; then
     fail "notarized app has an ad-hoc signature"
   fi
@@ -231,26 +267,132 @@ release_validate_notarized_app() {
   if printf '%s' "$authority" | rg -q -- "$releaseForbiddenIdentityPattern"; then
     fail "notarized app uses a forbidden signing authority"
   fi
-  if [[ -n "$expectedIdentity" && "$expectedIdentity" != "$authority" && "$expectedIdentity" != *"$authority"* && "$authority" != *"${expectedIdentity#Developer ID Application: }"* ]]; then
-    # Require the selected identity text to match the leaf authority when both are full strings.
-    if [[ "$expectedIdentity" == "Developer ID Application:"* && "$authority" != "$expectedIdentity" ]]; then
-      fail "signed authority '$authority' does not match requested identity"
-    fi
-  fi
+  [[ "$authority" == "$expectedIdentity" ]] || fail "signed authority '$authority' does not match requested identity"
   local teamIdentifier
   teamIdentifier="$(sed -n 's/^TeamIdentifier=//p' "$signatureDetails" | sed -n '1p')"
   [[ -n "$teamIdentifier" && "$teamIdentifier" != "not set" ]] || fail "notarized app is missing TeamIdentifier"
   [[ "$teamIdentifier" == "$expectedTeamId" ]] || fail "signed TeamIdentifier $teamIdentifier does not match requested Team ID $expectedTeamId"
   [[ "$teamIdentifier" != "$releaseUpstreamTeamId" ]] || fail "notarized app uses the forbidden upstream Team ID"
+  local codeDirectory
+  local codeDirectoryPattern='(^|[[:space:]])flags=0x[0-9A-Fa-f]+\(([A-Za-z0-9_-]+(,[A-Za-z0-9_-]+)*)\)([[:space:]]|$)'
   local runtimeFlags
-  runtimeFlags="$(sed -n 's/^CodeDirectory.*flags=//p' "$signatureDetails" | sed -n '1p')"
-  if [[ -n "$runtimeFlags" ]]; then
-    printf '%s' "$runtimeFlags" | rg -q 'runtime' || fail "notarized app is missing Hardened Runtime"
+  codeDirectory="$(sed -n '/^CodeDirectory /p' "$signatureDetails" | sed -n '1p')"
+  [[ -n "$codeDirectory" ]] || fail "notarized app signature is missing CodeDirectory flags"
+  [[ "$codeDirectory" =~ $codeDirectoryPattern ]] || fail "notarized app has unparseable CodeDirectory flags"
+  runtimeFlags="${BASH_REMATCH[2]//[[:space:]]/}"
+  [[ ",$runtimeFlags," == *,runtime,* ]] || fail "notarized app is missing Hardened Runtime"
+  local actualEntitlementsPath="$signatureDetails.entitlements.plist"
+  local entitlementsDetails="$signatureDetails.entitlements.log"
+  local comparisonStatus
+  codesign --display --xml --entitlements - --architecture "$architecture" "$appPath" >"$actualEntitlementsPath" 2>"$entitlementsDetails" || fail "could not inspect signed entitlements for $architecture"
+  [[ -s "$actualEntitlementsPath" ]] || fail "signed app has no entitlements"
+  plutil -lint "$actualEntitlementsPath" >/dev/null || fail "signed app entitlements are invalid"
+  if release_plists_match "$expectedEntitlementsPath" "$actualEntitlementsPath"; then
+    comparisonStatus=0
+  else
+    comparisonStatus=$?
+    [[ $comparisonStatus -eq 1 ]] || fail "could not compare signed entitlements"
+    fail "signed entitlements do not match expected entitlements"
   fi
+}
+
+release_validate_notarized_app() {
+  local appPath="$1"
+  local signatureDetails="$2"
+  local expectedIdentity="$3"
+  local expectedTeamId="$4"
+  local expectedEntitlementsPath="$5"
+  local verifyDetails="$signatureDetails.verify"
+  local assessDetails="$signatureDetails.spctl"
+  local stapleDetails="$signatureDetails.stapler"
+  local architecture
+  codesign --verify --deep --strict --verbose=2 "$appPath" 2>"$verifyDetails" || fail "Developer ID signature verification failed"
+  [[ -f "$expectedEntitlementsPath" && ! -L "$expectedEntitlementsPath" ]] || fail "expected entitlements are missing or not a regular file"
+  plutil -lint "$expectedEntitlementsPath" >/dev/null || fail "expected entitlements are invalid"
+  for architecture in "${releaseRequiredArchitectures[@]}"; do
+    release_validate_notarized_slice "$appPath" "$signatureDetails.$architecture" "$expectedIdentity" "$expectedTeamId" "$expectedEntitlementsPath" "$architecture"
+  done
   spctl --assess --type execute -vv "$appPath" >"$assessDetails" 2>&1 || fail "Gatekeeper assessment failed for notarized app"
   rg -q 'accepted|source=Notarized Developer ID|Notarized Developer ID' "$assessDetails" || fail "Gatekeeper did not accept the app as notarized Developer ID"
   xcrun stapler validate "$appPath" >"$stapleDetails" 2>&1 || fail "notarization ticket validation failed"
   rg -q 'The validate action worked|worked!' "$stapleDetails" || fail "stapler did not confirm a valid notarization ticket"
+}
+
+release_print_safe_diagnostics() {
+  local detailsFile="$1"
+  if rg -n -i -- "$releaseCredentialPattern|password|passwd|api[_-]?key|issuer|authorization|bearer|BEGIN [A-Z ]*PRIVATE KEY" "$detailsFile" >/dev/null 2>&1; then
+    echo "(notarization diagnostics suppressed because they may contain secrets; retrieve the notary log with notarytool log <submission-id> using your own credentials)" >&2
+  else
+    local inspectionStatus=$?
+    if [[ $inspectionStatus -ne 1 ]]; then
+      echo "(notarization diagnostics suppressed because the log could not be inspected safely)" >&2
+      return
+    fi
+    sed -n '1,200p' "$detailsFile" >&2
+  fi
+}
+
+releaseNotarizationFailureReason=""
+
+release_submit_notarization() {
+  local archivePath="$1"
+  local logPath="$2"
+  local notaryProfile="$3"
+  local notaryKeyPath="$4"
+  local notaryKeyId="$5"
+  local notaryIssuer="$6"
+  local notarySubmit=(xcrun notarytool submit "$archivePath" --wait --output-format json)
+  local commandStatus
+  local reportedStatus
+  releaseNotarizationFailureReason=""
+  if [[ -n "$notaryProfile" ]]; then
+    notarySubmit+=(--keychain-profile "$notaryProfile")
+  else
+    notarySubmit+=(--key "$notaryKeyPath" --key-id "$notaryKeyId" --issuer "$notaryIssuer")
+  fi
+  if "${notarySubmit[@]}" >"$logPath" 2>&1; then
+    commandStatus=0
+  else
+    commandStatus=$?
+  fi
+  if reportedStatus="$(plutil -extract status raw -o - "$logPath" 2>/dev/null)"; then
+    :
+  else
+    reportedStatus=""
+  fi
+  case "$reportedStatus" in
+    Accepted)
+      if [[ $commandStatus -eq 0 ]]; then
+        return 0
+      fi
+      releaseNotarizationFailureReason="notarytool submit failed"
+      ;;
+    Invalid|Rejected)
+      releaseNotarizationFailureReason="Apple rejected notarization"
+      ;;
+    *)
+      if [[ $commandStatus -ne 0 ]]; then
+        releaseNotarizationFailureReason="notarytool submit failed"
+      else
+        releaseNotarizationFailureReason="notarization did not report Accepted"
+      fi
+      ;;
+  esac
+  return 1
+}
+
+release_require_accepted_notarization() {
+  local archivePath="$1"
+  local logPath="$2"
+  local notaryProfile="$3"
+  local notaryKeyPath="$4"
+  local notaryKeyId="$5"
+  local notaryIssuer="$6"
+  if release_submit_notarization "$archivePath" "$logPath" "$notaryProfile" "$notaryKeyPath" "$notaryKeyId" "$notaryIssuer"; then
+    return 0
+  fi
+  release_print_safe_diagnostics "$logPath"
+  fail "$releaseNotarizationFailureReason"
 }
 
 release_validate_forbidden_bundle_content() {

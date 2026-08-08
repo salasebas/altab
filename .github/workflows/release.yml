@@ -32,9 +32,7 @@
 #   ALTAB_TEAM_ID
 #       10-character Apple Team ID matching the certificate.
 #   ALTAB_BUNDLE_ID
-#       Stable reverse-DNS bundle ID owned by the distributor
-#       (defaults to the tracked Release ID only if you intentionally omit
-#       the secret and set the input; for public forks keep this stable).
+#       Stable reverse-DNS bundle ID owned by the distributor.
 #
 # Notarization — App Store Connect API key (recommended for CI):
 #   ALTAB_NOTARY_API_KEY_P8_BASE64
@@ -99,7 +97,7 @@ jobs:
     timeout-minutes: 120
     environment: ${{ inputs.distribution_mode == 'notarized' && (inputs.environment_name != '' && inputs.environment_name || 'release') || fromJSON('null') }}
     permissions:
-      contents: ${{ inputs.create_github_release && 'write' || 'read' }}
+      contents: write
     env:
       DEVELOPER_DIR: /Applications/Xcode_26.0.1.app/Contents/Developer
       REVISION: ${{ inputs.revision }}
@@ -115,13 +113,15 @@ jobs:
         run: |
           set -euo pipefail
           if [[ "$REVISION" =~ ^[0-9a-fA-F]{40}$ ]]; then
-            git rev-parse --verify "${REVISION}^{commit}" >/dev/null
+            revisionRef="$REVISION"
           elif git show-ref --verify --quiet "refs/tags/$REVISION"; then
-            git rev-parse --verify "refs/tags/$REVISION^{commit}" >/dev/null
+            revisionRef="refs/tags/$REVISION"
           else
             echo "revision must be an exact tag present in this checkout or a full 40-character commit SHA" >&2
             exit 1
           fi
+          commitSha="$(git rev-parse --verify "${revisionRef}^{commit}")"
+          echo "COMMIT_SHA=$commitSha" >>"$GITHUB_ENV"
 
       - name: Package unsigned redistribution artifacts
         if: ${{ inputs.distribution_mode == 'unsigned' }}
@@ -146,10 +146,13 @@ jobs:
           security set-keychain-settings -lut 21600 "$keychainPath"
           security unlock-keychain -p "$keychainPassword" "$keychainPath"
           security import "$certificatePath" -P "$ALTAB_DEVELOPER_ID_CERTIFICATE_PASSWORD" -A -t cert -f pkcs12 -k "$keychainPath"
-          security list-keychains -d user -s "$keychainPath" $(security list-keychains -d user | sed -e s/\"//g)
+          currentKeychains=()
+          while IFS= read -r currentKeychain; do
+            currentKeychains+=("${currentKeychain//\"/}")
+          done < <(security list-keychains -d user)
+          security list-keychains -d user -s "$keychainPath" "${currentKeychains[@]}"
           security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$keychainPassword" "$keychainPath" >/dev/null
           echo "ALTAB_RELEASE_KEYCHAIN_PATH=$keychainPath" >>"$GITHUB_ENV"
-          echo "ALTAB_RELEASE_KEYCHAIN_PASSWORD=$keychainPassword" >>"$GITHUB_ENV"
           rm -f "$certificatePath"
 
       - name: Materialize App Store Connect API key
@@ -178,14 +181,14 @@ jobs:
           set -euo pipefail
           : "${ALTAB_DEVELOPER_ID_IDENTITY:?missing secret ALTAB_DEVELOPER_ID_IDENTITY}"
           : "${ALTAB_TEAM_ID:?missing secret ALTAB_TEAM_ID}"
+          : "${ALTAB_BUNDLE_ID:?missing secret ALTAB_BUNDLE_ID}"
           : "${ALTAB_NOTARY_API_KEY_PATH:?missing materialized notary key path}"
           : "${ALTAB_NOTARY_API_KEY_ID:?missing secret ALTAB_NOTARY_API_KEY_ID}"
           : "${ALTAB_NOTARY_API_ISSUER_ID:?missing secret ALTAB_NOTARY_API_ISSUER_ID}"
-          # Empty ALTAB_BUNDLE_ID is allowed: the packager falls back to the tracked Release ID.
           scripts/package_notarized_release.sh "$REVISION" \
             --identity "$ALTAB_DEVELOPER_ID_IDENTITY" \
             --team-id "$ALTAB_TEAM_ID" \
-            ${ALTAB_BUNDLE_ID:+--bundle-id "$ALTAB_BUNDLE_ID"} \
+            --bundle-id "$ALTAB_BUNDLE_ID" \
             --notary-key "$ALTAB_NOTARY_API_KEY_PATH" \
             --notary-key-id "$ALTAB_NOTARY_API_KEY_ID" \
             --notary-issuer "$ALTAB_NOTARY_API_ISSUER_ID" \
@@ -200,7 +203,7 @@ jobs:
           if-no-files-found: error
           retention-days: 14
 
-      - name: Create GitHub Release (optional)
+      - name: Create or update GitHub Release (optional)
         if: ${{ success() && inputs.create_github_release }}
         env:
           GH_TOKEN: ${{ secrets.ALTAB_RELEASE_GITHUB_TOKEN || secrets.GITHUB_TOKEN }}
@@ -208,25 +211,7 @@ jobs:
           MODE: ${{ inputs.distribution_mode }}
         run: |
           set -euo pipefail
-          artifactDir="$(find "$RUNNER_TEMP/altab-dist" -mindepth 1 -maxdepth 1 -type d | head -n 1)"
-          [[ -n "$artifactDir" ]] || { echo "no artifact directory produced" >&2; exit 1; }
-          notesFile="$(find "$artifactDir" -maxdepth 1 -name 'AlTab-*-RELEASE-NOTES.md' | head -n 1)"
-          [[ -n "$notesFile" ]] || { echo "release notes missing" >&2; exit 1; }
-          tagName="$REVISION"
-          if [[ "$REVISION" =~ ^[0-9a-fA-F]{40}$ ]]; then
-            tagName="preview-${REVISION:0:12}-${MODE}"
-            git tag "$tagName" "$REVISION" || true
-          fi
-          draftArgs=()
-          if [[ "$CREATE_DRAFT" == "true" ]]; then
-            draftArgs+=(--draft)
-          fi
-          # Only attach files after packaging fully succeeded. Failures never reach this step.
-          gh release create "$tagName" \
-            "${draftArgs[@]}" \
-            --title "AlTab $tagName ($MODE)" \
-            --notes-file "$notesFile" \
-            "$artifactDir"/*
+          scripts/publish_release_artifacts.sh "$REVISION" "$COMMIT_SHA" "$MODE" "$RUNNER_TEMP/altab-dist" "$CREATE_DRAFT"
 
       - name: Remove temporary keychain and notary key
         if: ${{ always() && inputs.distribution_mode == 'notarized' }}

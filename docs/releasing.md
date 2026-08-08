@@ -186,6 +186,8 @@ scripts/package_notarized_release.sh altab-vMAJOR.MINOR.PATCH \
 
 Equivalent environment variables: `ALTAB_DEVELOPER_ID_IDENTITY`, `ALTAB_TEAM_ID`, `ALTAB_BUNDLE_ID`, `ALTAB_NOTARY_KEYCHAIN_PROFILE`, or the API-key trio `ALTAB_NOTARY_API_KEY_PATH` / `ALTAB_NOTARY_API_KEY_ID` / `ALTAB_NOTARY_API_ISSUER_ID`.
 
+The notarized path requires `--bundle-id` or `ALTAB_BUNDLE_ID` explicitly. It never reads a default from the invoking checkout, so a local configuration change cannot alter an exact-revision package.
+
 Optional `--output-directory` selects the output root (default `dist/`). Output lands in `dist/AlTab-<release>-notarized/` with:
 
 - `AlTab-<release>-macOS.zip` (signed, notarized, stapled app + dSYM + notices)
@@ -205,7 +207,7 @@ Optional `--output-directory` selects the output root (default `dist/`). Output 
 | Staple / `spctl` failure | Packager exits; no final ZIP | Confirm notarization Accepted, retry staple, do not ship the unstapled app as “notarized” |
 | Any mid-flight failure | Work directory under `/tmp` is removed; destination is not created | Re-run after fixing the cause; never hand-edit a partial package and relabel it |
 
-The packager never marks an incomplete build as notarized. Contract tests in `scripts/check_notarized_release.sh` cover success, missing/ambiguous identity, wrong Team ID, rejected Gatekeeper assessment, missing ticket, and secret-redaction behavior with mocked tools (no Apple credentials required).
+The packager never marks an incomplete build as notarized. Contract tests in `scripts/check_notarized_release.sh` cover success, missing/ambiguous/partial identity, wrong Team ID, rejected notarization, entitlement and Hardened Runtime mismatches, rejected Gatekeeper assessment, missing ticket, release-target conflicts, and secret-redaction behavior with mocked tools (no Apple credentials required).
 
 ### Bundle ID and signing stability
 
@@ -251,7 +253,7 @@ Configure under **Settings → Secrets and variables → Actions**, preferably i
 | `ALTAB_DEVELOPER_ID_CERTIFICATE_PASSWORD` | notarized | Password of that `.p12` |
 | `ALTAB_DEVELOPER_ID_IDENTITY` | notarized | Exact `Developer ID Application: …` string |
 | `ALTAB_TEAM_ID` | notarized | 10-character Team ID |
-| `ALTAB_BUNDLE_ID` | notarized (optional) | Stable distributor bundle ID; omit only if the tracked Release ID is intentional |
+| `ALTAB_BUNDLE_ID` | notarized | Stable distributor-owned bundle ID; required explicitly for every notarized package |
 | `ALTAB_NOTARY_API_KEY_P8_BASE64` | notarized | `base64` of `AuthKey_<KEYID>.p8` |
 | `ALTAB_NOTARY_API_KEY_ID` | notarized | App Store Connect key ID |
 | `ALTAB_NOTARY_API_ISSUER_ID` | notarized | App Store Connect issuer UUID |
