@@ -99,9 +99,9 @@ class TileOverView: FlippedView {
 
     func findTarget(_ location: NSPoint) -> TileView? {
         guard let documentView = superview else { return nil }
+        let isLeftToRight = App.shared.userInterfaceLayoutDirection == .leftToRight
         for case let view as TileView in documentView.subviews {
-            let frame = view.frame
-            let expandedFrame = CGRect(x: frame.minX - (App.shared.userInterfaceLayoutDirection == .leftToRight ? 0 : 1), y: frame.minY, width: frame.width + 1, height: frame.height + 1)
+            let expandedFrame = TileGridGeometry.targetFrame(view.frame, Appearance.interCellPadding, isLeftToRight)
             if expandedFrame.contains(location) {
                 return view
             }

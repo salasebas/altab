@@ -116,7 +116,7 @@ final class DragAndDropResolverTests: XCTestCase {
     }
 
     func testUseCaseBetweenTilesStillTargets() {
-        // the 1px inter-tile gap resolves to a tile upstream (findTarget expands each tile by 1px), so the
+        // the configured inter-tile gap resolves to a tile upstream (findTarget expands by that gap), so the
         // kernel sees hasTarget == true and keeps tracking — never .noTarget while over the grid
         XCTAssertEqual(DragAndDropResolver.dragOver(hasTarget: true, pastDeadzone: true, targetChanged: false, movedBeyondResetRadius: false), .track(restartTimer: false))
     }

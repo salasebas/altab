@@ -24,7 +24,7 @@ the global mouse tap must yield the drop's mouse-up (`passesThroughMouseUp`), an
   window on the first stray pixel. `dragOver` reports `.inDeadzone` (still a valid `.link` drop, but no
   selection and no timer) until the pointer clears the same movement deadzone mouse hover uses.
 - **The inter-tile gap targets like hover.** Targeting reuses hover's `findTarget`, which expands each tile
-  by 1px so the 1px gap between tiles still resolves to a tile. The kernel only sees `hasTarget`; it never
+  by the configured spacing so the full gap between tiles still resolves to a tile. The kernel only sees `hasTarget`; it never
   returns `.noTarget` while the cursor is over the grid.
 - **The auto-select timer always runs for a drag.** Hover gates the 2s auto-select timer on a preference;
   dragging is a stronger intent, so it always arms the timer when past the deadzone. The timer (re)arms on a
@@ -67,5 +67,5 @@ Mirrors `DragAndDropResolverTests.swift` 1:1.
 - **testUseCaseDragPresentWhenSwitcherAppears** — drag present on show → `.inDeadzone`; after clearing the deadzone → `.track`.
 - **testUseCaseDropOnTileConcludes** — the regression: the tap yields the up (down unseen), and a valid target drops.
 - **testUseCaseReleaseOnPaddingEndsDragWithoutOpening** — release on the padding / outside the panel: the up is yielded so the drag ends, but no target means nothing opens.
-- **testUseCaseBetweenTilesStillTargets** — the 1px gap resolves to a tile upstream, so the kernel keeps tracking (never `.noTarget` over the grid).
+- **testUseCaseBetweenTilesStillTargets** — the configured gap resolves to a tile upstream, so the kernel keeps tracking (never `.noTarget` over the grid).
 - **testUseCaseAutoSelectTimerSurvivesJitterButRearmsOnMove** — jitter keeps the timer; a real move re-arms it.

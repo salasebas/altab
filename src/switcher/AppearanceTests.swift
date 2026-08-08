@@ -1,6 +1,91 @@
 import XCTest
 
 final class AppearanceTests: XCTestCase {
+    func testTileSpacingValuesAreBoundedAndKeepEightPointDefault() {
+        XCTAssertEqual(TileSpacingPreference.validRange, 0...16)
+        XCTAssertEqual(Preferences.defaultValues["tileSpacingPoints"] as? String, "8")
+        XCTAssertEqual(TileSpacingPreference.defaultValue, 8)
+        XCTAssertEqual(TileSpacingPreference.clamped(-1), 0)
+        XCTAssertEqual(TileSpacingPreference.clamped(17), 16)
+    }
+
+    func testTileSpacingAppliesOnlyToGridStyles() {
+        for value in TileSpacingPreference.validRange {
+            let spacing = CGFloat(value)
+            XCTAssertEqual(AppearanceTestable.interCellPadding(.thumbnails, spacing), spacing)
+            XCTAssertEqual(AppearanceTestable.interCellPadding(.appIcons, spacing), spacing)
+            XCTAssertEqual(AppearanceTestable.interCellPadding(.titles, spacing), 1)
+        }
+    }
+
+    func testOnePointGridLayoutPreservesLegacyFramesAndWrap() {
+        var ltr = TileGridLayout(widthMax: 203, tileHeight: 50, spacing: 1, isLeftToRight: true)
+        let ltrPlacements = [100, 100, 100].map { ltr.place(CGFloat($0)) }
+        XCTAssertEqual(ltrPlacements.map { $0.origin }, [CGPoint(x: 1, y: 1), CGPoint(x: 102, y: 1), CGPoint(x: 1, y: 52)])
+        XCTAssertEqual(ltrPlacements.map { $0.startsNewRow }, [false, false, true])
+        XCTAssertEqual(ltr.maxX, 203)
+        XCTAssertEqual(ltr.maxY, 103)
+        var rtl = TileGridLayout(widthMax: 203, tileHeight: 50, spacing: 1, isLeftToRight: false)
+        let rtlPlacements = [100, 100, 100].map { rtl.place(CGFloat($0)) }
+        XCTAssertEqual(rtlPlacements.map { $0.origin }, [CGPoint(x: 102, y: 1), CGPoint(x: 1, y: 1), CGPoint(x: 102, y: 52)])
+        XCTAssertEqual(rtlPlacements.map { $0.startsNewRow }, ltrPlacements.map { $0.startsNewRow })
+        XCTAssertEqual(rtl.maxX, ltr.maxX)
+        XCTAssertEqual(rtl.maxY, ltr.maxY)
+    }
+
+    func testEveryTileSpacingProducesExactGapsWithoutOverlap() {
+        for value in TileSpacingPreference.validRange {
+            let spacing = CGFloat(value)
+            let width = CGFloat(40)
+            let height = CGFloat(30)
+            let widthMax = width * 2 + spacing * 3
+            var layout = TileGridLayout(widthMax: widthMax, tileHeight: height, spacing: spacing, isLeftToRight: true)
+            let frames = (0..<3).map { _ -> CGRect in
+                let placement = layout.place(width)
+                return CGRect(origin: placement.origin, size: CGSize(width: width, height: height))
+            }
+            XCTAssertEqual(frames[1].minX - frames[0].maxX, spacing)
+            XCTAssertEqual(frames[2].minY - frames[0].maxY, spacing)
+            XCTAssertFalse(frames[0].intersects(frames[1]))
+            XCTAssertFalse(frames[0].intersects(frames[2]))
+            XCTAssertEqual(layout.maxY, spacing * 3 + height * 2)
+        }
+    }
+
+    func testTileGridLayoutMirrorsLTRAndRTLWithinDocumentWidth() {
+        for value in TileSpacingPreference.validRange {
+            let spacing = CGFloat(value)
+            let widthMax = CGFloat(250)
+            let widths: [CGFloat] = [40, 55, 35]
+            var ltr = TileGridLayout(widthMax: widthMax, tileHeight: 30, spacing: spacing, isLeftToRight: true)
+            var rtl = TileGridLayout(widthMax: widthMax, tileHeight: 30, spacing: spacing, isLeftToRight: false)
+            let ltrFrames = widths.map { CGRect(origin: ltr.place($0).origin, size: CGSize(width: $0, height: 30)) }
+            let rtlFrames = widths.map { CGRect(origin: rtl.place($0).origin, size: CGSize(width: $0, height: 30)) }
+            XCTAssertEqual(ltr.maxX, rtl.maxX)
+            let rtlOffset = TileGridGeometry.documentOffsetX(widthMax, rtl.maxX, false)
+            for index in widths.indices {
+                XCTAssertEqual(rtlFrames[index].minX - rtlOffset, ltr.maxX - ltrFrames[index].maxX)
+                XCTAssertEqual(rtlFrames[index].minY, ltrFrames[index].minY)
+            }
+        }
+    }
+
+    func testTargetFramesCoverConfiguredGapSymmetrically() {
+        let frame = CGRect(x: 20, y: 30, width: 40, height: 50)
+        for value in TileSpacingPreference.validRange {
+            let spacing = CGFloat(value)
+            let ltr = TileGridGeometry.targetFrame(frame, spacing, true)
+            let rtl = TileGridGeometry.targetFrame(frame, spacing, false)
+            XCTAssertEqual(ltr, CGRect(x: 20, y: 30, width: 40 + spacing, height: 50 + spacing))
+            XCTAssertEqual(rtl, CGRect(x: 20 - spacing, y: 30, width: 40 + spacing, height: 50 + spacing))
+            if spacing > 0 {
+                XCTAssertTrue(ltr.contains(CGPoint(x: frame.maxX + spacing / 2, y: frame.midY)))
+                XCTAssertTrue(rtl.contains(CGPoint(x: frame.minX - spacing / 2, y: frame.midY)))
+                XCTAssertTrue(ltr.contains(CGPoint(x: frame.midX, y: frame.maxY + spacing / 2)))
+            }
+        }
+    }
+
     // TODO add 6, 7, 8 rowsCount and reuse vertical screens data from bellow
     func testGoodValuesForThumbnailsWidthMinMax() throws {
         var actual: (CGFloat, CGFloat)

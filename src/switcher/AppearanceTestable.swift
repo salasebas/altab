@@ -1,6 +1,81 @@
 import Foundation
 
+struct TileGridPlacement {
+    let origin: CGPoint
+    let startsNewRow: Bool
+}
+
+struct TileGridLayout {
+    let widthMax: CGFloat
+    let tileHeight: CGFloat
+    let spacing: CGFloat
+    let isLeftToRight: Bool
+    private(set) var currentX: CGFloat
+    private(set) var currentY: CGFloat
+    private(set) var maxX = CGFloat(0)
+    private(set) var maxY: CGFloat
+
+    init(widthMax: CGFloat, tileHeight: CGFloat, spacing: CGFloat, isLeftToRight: Bool) {
+        self.widthMax = widthMax
+        self.tileHeight = tileHeight
+        self.spacing = spacing
+        self.isLeftToRight = isLeftToRight
+        currentX = TileGridGeometry.startingX(widthMax, spacing, isLeftToRight)
+        currentY = spacing
+        maxY = spacing + tileHeight + spacing
+    }
+
+    mutating func place(_ width: CGFloat) -> TileGridPlacement {
+        var projectedX = TileGridGeometry.projectedX(currentX, width, spacing, isLeftToRight).rounded(.down)
+        let startsNewRow = TileGridGeometry.needsNewRow(projectedX, widthMax, isLeftToRight)
+        if startsNewRow {
+            currentX = TileGridGeometry.startingX(widthMax, spacing, isLeftToRight)
+            currentY = (currentY + tileHeight + spacing).rounded(.down)
+            projectedX = TileGridGeometry.projectedX(currentX, width, spacing, isLeftToRight).rounded(.down)
+            maxY = max(currentY + tileHeight + spacing, maxY)
+        }
+        let origin = CGPoint(x: TileGridGeometry.originX(currentX, width, isLeftToRight), y: currentY)
+        currentX = projectedX
+        maxX = max(isLeftToRight ? currentX : widthMax - currentX, maxX)
+        return TileGridPlacement(origin: origin, startsNewRow: startsNewRow)
+    }
+}
+
+enum TileGridGeometry {
+    static func startingX(_ widthMax: CGFloat, _ spacing: CGFloat, _ isLeftToRight: Bool) -> CGFloat {
+        isLeftToRight ? spacing : widthMax - spacing
+    }
+
+    static func projectedX(_ currentX: CGFloat, _ width: CGFloat, _ spacing: CGFloat, _ isLeftToRight: Bool) -> CGFloat {
+        isLeftToRight ? currentX + width + spacing : currentX - width - spacing
+    }
+
+    static func needsNewRow(_ projectedX: CGFloat, _ widthMax: CGFloat, _ isLeftToRight: Bool) -> Bool {
+        isLeftToRight ? projectedX > widthMax : projectedX < 0
+    }
+
+    static func originX(_ currentX: CGFloat, _ width: CGFloat, _ isLeftToRight: Bool) -> CGFloat {
+        isLeftToRight ? currentX : currentX - width
+    }
+
+    static func rowWidth(_ widths: [CGFloat], _ spacing: CGFloat) -> CGFloat {
+        spacing + widths.reduce(CGFloat(0)) { $0 + $1 + spacing }
+    }
+
+    static func targetFrame(_ frame: CGRect, _ spacing: CGFloat, _ isLeftToRight: Bool) -> CGRect {
+        CGRect(x: frame.minX - (isLeftToRight ? 0 : spacing), y: frame.minY, width: frame.width + spacing, height: frame.height + spacing)
+    }
+
+    static func documentOffsetX(_ widthMax: CGFloat, _ documentWidth: CGFloat, _ isLeftToRight: Bool) -> CGFloat {
+        isLeftToRight ? 0 : max(0, widthMax - documentWidth)
+    }
+}
+
 class AppearanceTestable {
+    static func interCellPadding(_ style: AppearanceStylePreference, _ selectedSpacing: CGFloat) -> CGFloat {
+        style == .titles ? 1 : selectedSpacing
+    }
+
     /// How wide should the TilesPanel be, for comfortable viewing?
     /// * a comfortable field-of-view is 50-60 degrees
     /// * people sit at various distances from the screen. We can't know how far they sit

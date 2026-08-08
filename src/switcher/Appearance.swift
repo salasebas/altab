@@ -15,10 +15,10 @@ class Appearance {
     static var font = NSFont.systemFont(ofSize: fontHeight)
     static var windowMinWidthInRow = CGFloat(1000)
     static var windowMaxWidthInRow = CGFloat(1000)
+    static var interCellPadding: CGFloat { AppearanceTestable.interCellPadding(currentStyle, CGFloat(Preferences.tileSpacingPoints)) }
 
     // size: constants
     static let maxHeightOnScreen = CGFloat(0.8)
-    static let interCellPadding = CGFloat(1)
     static let intraCellPadding = CGFloat(5)
     static let appIconLabelSpacing = CGFloat(2)
 

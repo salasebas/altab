@@ -332,6 +332,15 @@ enum AppearanceSizePreference: CaseIterable, SfSymbolMacroPreference {
     }
 }
 
+enum TileSpacingPreference {
+    static let validRange = 0...16
+    static let defaultValue = 8
+
+    static func clamped(_ value: Int) -> Int {
+        min(max(value, validRange.lowerBound), validRange.upperBound)
+    }
+}
+
 enum ThemePreference: CaseIterable, ImageMacroPreference {
     case macOs
     case windows10

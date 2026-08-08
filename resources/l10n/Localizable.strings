@@ -1,3 +1,6 @@
+/* Tile spacing value in points */
+"%d pt" = "%d pt";
+
 /* No comment provided by engineer. */
 "3-finger Horizontal Swipe" = "3-finger Horizontal Swipe";
 
@@ -151,6 +154,9 @@
 /* Menubar option */
 "Debug tools" = "Debug tools";
 
+/* Restore tile spacing to its default value */
+"Default" = "Default";
+
 /* No comment provided by engineer. */
 "Disabled" = "Disabled";
 
@@ -235,6 +241,9 @@
 /* No comment provided by engineer. */
 "Hold" = "Hold";
 
+/* Tile spacing slider accessibility help */
+"Horizontal and vertical space between tiles, from 0 to 16 points." = "Horizontal and vertical space between tiles, from 0 to 16 points.";
+
 /* LetsMove replacement alert */
 "I can move myself to the Applications folder if you'd like." = "I can move myself to the Applications folder if you'd like.";
 
@@ -255,6 +264,9 @@
 
 /* No comment provided by engineer. */
 "Later" = "Later";
+
+/* No comment provided by engineer. */
+"Layout" = "Layout";
 
 /* No comment provided by engineer. */
 "Light" = "Light";
@@ -351,6 +363,9 @@
 
 /* No comment provided by engineer. */
 "Restart Now" = "Restart Now";
+
+/* Tile spacing reset button help */
+"Restore tile spacing to 8 points." = "Restore tile spacing to 8 points.";
 
 /* No comment provided by engineer. */
 "Screen including menu bar" = "Screen including menu bar";
@@ -507,6 +522,9 @@
 
 /* Menubar callout subject */
 "Thumbnails and window previews" = "Thumbnails and window previews";
+
+/* No comment provided by engineer. */
+"Tile spacing" = "Tile spacing";
 
 /* No comment provided by engineer. */
 "Title truncation" = "Title truncation";
