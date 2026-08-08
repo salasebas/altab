@@ -40,6 +40,7 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "Annulla";
 "Capture windows in the background" = "Cattura finestre in background";
+"Center" = "Centro";
 "Check permissions…" = "Controlla i permessi…";
 "Close window" = "Chiudi finestra";
 "Conflicting shortcut" = "Scorciatoia in conflitto";
@@ -84,6 +85,8 @@
 "Language Change" = "Cambio lingua";
 "Large" = "Grande";
 "Later" = "Più tardi";
+"Layout" = "Layout";
+"Leading" = "Inizio";
 "Light" = "Chiaro";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS riserva ⌘⌥⎋, ⌘⌥⇧⎋ e ⌘⌥⇧⌃⎋ per Uscita forzata e non possono essere disassegnati. AlTab non può usarli.\n\nLa tua modifica assegnerebbe uno di essi a: %@.";
 "Medium" = "Medio";
@@ -116,6 +119,7 @@
 "Reset settings and restart" = "Ripristina impostazioni e riavvia";
 "Reset settings and restart…" = "Ripristina impostazioni e riavvia…";
 "Restart Now" = "Riavvia ora";
+"Row alignment" = "Allineamento righe";
 "Screen including menu bar" = "Schermo con la barra dei menu";
 "Screen including mouse" = "Schermo con il mouse";
 "Screen Recording" = "Registrazione schermo";
@@ -172,6 +176,7 @@
 "Title truncation" = "Troncamento del titolo";
 "Titles" = "Titoli";
 "Trackpad haptic feedback" = "Feedback aptico del Trackpad";
+"Trailing" = "Fine";
 "Trigger" = "Attivatore";
 "Unassign existing shortcut and continue" = "Rimuovi la scorciatoia esistente e continua";
 "Usage" = "Utilizzo";

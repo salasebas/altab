@@ -1,4 +1,4 @@
-# Appearance (window sizing) — Specs
+# Appearance (window sizing and row alignment) — Specs
 
 > **Line coverage:** `AppearanceTestable.swift` 79% · _refreshed 2026-05-27 by `/coverage-explore`_
 
@@ -16,6 +16,8 @@ dimensions, so a tweak to the formula can't silently regress any class of screen
 - `TileGridLayout` → the shared LTR/RTL placement, wrapping, content width, and content height used by
   both auto-size dry runs and the materialized switcher layout.
 - `TileGridGeometry.targetFrame` → hover and drag hit areas that consume the configured inter-tile gap.
+- `alignedRowOrigins(frames, containerWidth, padding, alignment, direction)` → the horizontal origins
+  for a packed row using semantic Leading, Center, or Trailing alignment.
 
 ## Behavior & edge cases
 
@@ -30,6 +32,14 @@ dimensions, so a tweak to the formula can't silently regress any class of screen
   horizontal and vertical gaps without overlap, and RTL frames mirror LTR within the document width.
 - Hover and drag use the same effective spacing as layout, assigning the full gap to the preceding tile
   in logical layout order, as the legacy 1-point hit area did.
+- Row alignment is semantic: Leading and Trailing mirror in right-to-left interfaces, while Center is
+  unchanged. The kernel measures the row's actual frame bounds, so variable-width thumbnails and
+  equal-width app icons share one path.
+- The preference applies to Thumbnails and App Icons. The single-column Titles style keeps its
+  existing centered layout while still using the same coordinate normalization.
+- RTL rows may be initially anchored to a packing width larger than the final visible container. The
+  aligned origins normalize that difference, keeping tiles, highlights, controls, and hit-testing in
+  the document's coordinate space.
 
 ## Test scenarios
 
@@ -45,3 +55,9 @@ Mirrors `AppearanceTests.swift` 1:1.
 - **testEveryTileSpacingProducesExactGapsWithoutOverlap** — equal row/column gaps and bounded content growth at every supported value.
 - **testTileGridLayoutMirrorsLTRAndRTLWithinDocumentWidth** — logical tiles mirror across the final document width.
 - **testTargetFramesCoverConfiguredGapSymmetrically** — hover/drag hit areas follow spacing in both directions.
+- **testVariableWidthRowAlignmentInLeftToRightLayout** — Leading, Center, and Trailing place a short thumbnail row at the expected physical edges.
+- **testVariableWidthRowAlignmentMirrorsInRightToLeftLayout** — semantic alignment mirrors while preserving logical tile order.
+- **testEqualWidthAppIconRowUsesTheSameAlignmentGeometry** — app-icon rows use the same alignment kernel.
+- **testFullWidthRowDoesNotMoveForAnyAlignment** — full rows remain visually unchanged for every value and direction.
+- **testRightToLeftRowNormalizesFromWiderPackingArea** — RTL rows packed against a wider maximum are brought into the final document bounds.
+- **testAlignedRowOriginsAreIdempotentAndHandleEmptyRows** — repeated alignment is stable and empty rows are a no-op.

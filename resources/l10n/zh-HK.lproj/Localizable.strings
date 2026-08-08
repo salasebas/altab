@@ -40,6 +40,7 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "取消";
 "Capture windows in the background" = "在背景擷取視窗";
+"Center" = "置中";
 "Check permissions…" = "檢查權限…";
 "Close window" = "關閉視窗";
 "Conflicting shortcut" = "快捷鍵衝突";
@@ -84,6 +85,8 @@
 "Language Change" = "語言變更";
 "Large" = "大";
 "Later" = "稍後";
+"Layout" = "佈局";
+"Leading" = "開頭";
 "Light" = "淺色";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS 保留 ⌘⌥⎋、⌘⌥⇧⎋ 及 ⌘⌥⇧⌃⎋ 用於強制結束,無法解除綁定。AlTab 無法使用這些組合鍵。\n\n您的變更會將其中之一指派給:%@。";
 "Medium" = "中";
@@ -116,6 +119,7 @@
 "Reset settings and restart" = "重設設定並重新啟動";
 "Reset settings and restart…" = "重設設定並重新啟動…";
 "Restart Now" = "立即重新啟動";
+"Row alignment" = "列對齊";
 "Screen including menu bar" = "包含選單列的螢幕";
 "Screen including mouse" = "包含滑鼠的螢幕";
 "Screen Recording" = "螢幕錄製";
@@ -172,6 +176,7 @@
 "Title truncation" = "標題截斷";
 "Titles" = "標題";
 "Trackpad haptic feedback" = "觸控板觸覺回饋";
+"Trailing" = "結尾";
 "Trigger" = "觸發";
 "Unassign existing shortcut and continue" = "取消指派現有快捷鍵並繼續";
 "Usage" = "使用情況";

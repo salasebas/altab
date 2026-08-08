@@ -40,6 +40,7 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "Cancel";
 "Capture windows in the background" = "Capture windows in the background";
+"Center" = "Center";
 "Check permissions…" = "Check permissions…";
 "Close window" = "Close window";
 "Conflicting shortcut" = "Conflicting shortcut";
@@ -87,6 +88,7 @@
 "Large" = "Large";
 "Later" = "Later";
 "Layout" = "Layout";
+"Leading" = "Leading";
 "Light" = "Light";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@.";
 "Medium" = "Medium";
@@ -120,6 +122,7 @@
 "Reset settings and restart" = "Reset settings and restart";
 "Reset settings and restart…" = "Reset settings and restart…";
 "Restart Now" = "Restart Now";
+"Row alignment" = "Row alignment";
 "Screen including menu bar" = "Screen including menu bar";
 "Screen including mouse" = "Screen including mouse";
 "Screen Recording" = "Screen Recording";
@@ -178,6 +181,7 @@
 "Title truncation" = "Title truncation";
 "Titles" = "Titles";
 "Trackpad haptic feedback" = "Trackpad haptic feedback";
+"Trailing" = "Trailing";
 "Trigger" = "Trigger";
 "Unassign existing shortcut and continue" = "Unassign existing shortcut and continue";
 "Usage" = "Usage";

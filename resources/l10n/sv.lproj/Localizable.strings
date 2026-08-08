@@ -40,6 +40,7 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "Avbryt";
 "Capture windows in the background" = "Fånga fönster i bakgrunden";
+"Center" = "Mitten";
 "Check permissions…" = "Kontrollera behörigheter…";
 "Close window" = "Stäng fönster";
 "Conflicting shortcut" = "Kortkommando i konflikt";
@@ -84,6 +85,8 @@
 "Language Change" = "Språkändring";
 "Large" = "Stor";
 "Later" = "Senare";
+"Layout" = "Layout";
+"Leading" = "Början";
 "Light" = "Ljus";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS reserverar ⌘⌥⎋, ⌘⌥⇧⎋ och ⌘⌥⇧⌃⎋ för Tvinga att avsluta och de kan inte frigöras. AlTab kan inte använda dem.\n\nDin ändring skulle tilldela ett av dessa till: %@.";
 "Medium" = "Mellan";
@@ -116,6 +119,7 @@
 "Reset settings and restart" = "Återställ inställningar och starta om";
 "Reset settings and restart…" = "Återställ inställningar och starta om…";
 "Restart Now" = "Starta om nu";
+"Row alignment" = "Radjustering";
 "Screen including menu bar" = "Skärm som innehåller menyraden";
 "Screen including mouse" = "Skärm som innehåller musen";
 "Screen Recording" = "Skärminspelning";
@@ -172,6 +176,7 @@
 "Title truncation" = "Trunkering av titel";
 "Titles" = "Titlar";
 "Trackpad haptic feedback" = "Haptisk återkoppling på styrplatta";
+"Trailing" = "Slutet";
 "Trigger" = "Utlösare";
 "Unassign existing shortcut and continue" = "Ta bort befintligt kortkommando och fortsätt";
 "Usage" = "Användning";

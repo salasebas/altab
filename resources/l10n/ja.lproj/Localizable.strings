@@ -40,6 +40,7 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "キャンセル";
 "Capture windows in the background" = "バックグラウンドでウインドウをキャプチャ";
+"Center" = "中央";
 "Check permissions…" = "権限を確認…";
 "Close window" = "ウインドウを閉じる";
 "Conflicting shortcut" = "ショートカットの競合";
@@ -84,6 +85,8 @@
 "Language Change" = "言語の変更";
 "Large" = "大";
 "Later" = "後で";
+"Layout" = "レイアウト";
+"Leading" = "先頭";
 "Light" = "ライト";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS は ⌘⌥⎋、⌘⌥⇧⎋、⌘⌥⇧⌃⎋ を強制終了用に予約しており、解除できません。AlTab では使用できません。\n\n変更しようとしている割り当て: %@。";
 "Medium" = "中";
@@ -116,6 +119,7 @@
 "Reset settings and restart" = "設定をリセットして再起動";
 "Reset settings and restart…" = "設定をリセットして再起動…";
 "Restart Now" = "今すぐ再起動";
+"Row alignment" = "行の配置";
 "Screen including menu bar" = "メニューバーを含む画面";
 "Screen including mouse" = "マウスのある画面";
 "Screen Recording" = "画面収録";
@@ -172,6 +176,7 @@
 "Title truncation" = "タイトルの省略";
 "Titles" = "タイトル";
 "Trackpad haptic feedback" = "トラックパッドの触覚フィードバック";
+"Trailing" = "末尾";
 "Trigger" = "トリガー";
 "Unassign existing shortcut and continue" = "既存のショートカットを解除して続行";
 "Usage" = "使用状況";

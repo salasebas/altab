@@ -40,6 +40,7 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "İptal";
 "Capture windows in the background" = "Pencereleri arka planda yakala";
+"Center" = "Orta";
 "Check permissions…" = "İzinleri denetle…";
 "Close window" = "Pencereyi kapat";
 "Conflicting shortcut" = "Çakışan kısayol";
@@ -84,6 +85,8 @@
 "Language Change" = "Dil değişikliği";
 "Large" = "Büyük";
 "Later" = "Daha sonra";
+"Layout" = "Düzen";
+"Leading" = "Başlangıç";
 "Light" = "Açık";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS, ⌘⌥⎋, ⌘⌥⇧⎋ ve ⌘⌥⇧⌃⎋ tuşlarını Çıkmaya Zorla için ayırmıştır ve bunların bağlantısı kaldırılamaz. AlTab bunları kullanamaz.\n\nYaptığınız değişiklik bunlardan birini şuna atayacaktır: %@.";
 "Medium" = "Orta";
@@ -116,6 +119,7 @@
 "Reset settings and restart" = "Ayarları sıfırla ve yeniden başlat";
 "Reset settings and restart…" = "Ayarları sıfırla ve yeniden başlat…";
 "Restart Now" = "Şimdi Yeniden Başlat";
+"Row alignment" = "Satır hizalaması";
 "Screen including menu bar" = "Menü çubuğunu içeren ekran";
 "Screen including mouse" = "Fareyi içeren ekran";
 "Screen Recording" = "Ekran Kaydı";
@@ -172,6 +176,7 @@
 "Title truncation" = "Başlık kısaltma";
 "Titles" = "Başlıklar";
 "Trackpad haptic feedback" = "Trackpad dokunsal geri bildirimi";
+"Trailing" = "Bitiş";
 "Trigger" = "Tetikleyici";
 "Unassign existing shortcut and continue" = "Mevcut kısayolun atamasını kaldır ve devam et";
 "Usage" = "Kullanım";

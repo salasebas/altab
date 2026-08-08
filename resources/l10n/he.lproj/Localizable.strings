@@ -40,6 +40,7 @@
 "Bundle ID" = "Bundle ID";
 "Cancel" = "ביטול";
 "Capture windows in the background" = "לכוד חלונות ברקע";
+"Center" = "מרכז";
 "Check permissions…" = "בדוק הרשאות…";
 "Close window" = "סגור חלון";
 "Conflicting shortcut" = "קיצור דרך מתנגש";
@@ -84,6 +85,8 @@
 "Language Change" = "שינוי שפה";
 "Large" = "גדול";
 "Later" = "מאוחר יותר";
+"Layout" = "פריסה";
+"Leading" = "התחלה";
 "Light" = "בהיר";
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS שומר את ⌘⌥⎋, ⌘⌥⇧⎋ ו-⌘⌥⇧⌃⎋ עבור כפיית יציאה ולא ניתן לבטל את שיוכם. AlTab אינו יכול להשתמש בהם.\n\nהשינוי שלך ישייך אחד מהם ל: %@.";
 "Medium" = "בינוני";
@@ -116,6 +119,7 @@
 "Reset settings and restart" = "אפס הגדרות והפעל מחדש";
 "Reset settings and restart…" = "אפס הגדרות והפעל מחדש…";
 "Restart Now" = "הפעל מחדש כעת";
+"Row alignment" = "יישור שורה";
 "Screen including menu bar" = "מסך הכולל את שורת התפריטים";
 "Screen including mouse" = "מסך הכולל את העכבר";
 "Screen Recording" = "הקלטת מסך";
@@ -172,6 +176,7 @@
 "Title truncation" = "קיצור כותרת";
 "Titles" = "כותרות";
 "Trackpad haptic feedback" = "משוב הפטי של משטח מגע";
+"Trailing" = "סוף";
 "Trigger" = "טריגר";
 "Unassign existing shortcut and continue" = "בטל שיוך של קיצור דרך קיים והמשך";
 "Usage" = "שימוש";

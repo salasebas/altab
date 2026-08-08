@@ -380,7 +380,7 @@ class TilesView {
         let focusedViewFrame = TilesView.recycledViews[selectedIndex].frame
         let originCenter = NSMidX(focusedViewFrame)
         guard let targetRow = nextRow(direction, allowWrap: allowWrap), !targetRow.isEmpty else { return }
-        let leftSide = originCenter < NSMidX(contentView.frame)
+        let leftSide = originCenter < NSMidX(scrollView.documentView!.bounds)
         let leadingSide = App.shared.userInterfaceLayoutDirection == .leftToRight ? leftSide : !leftSide
         let iterable = leadingSide ? targetRow : targetRow.reversed()
         guard let targetView = iterable.first(where: {
@@ -402,7 +402,7 @@ class TilesView {
         }
         if let (maxX, maxY, labelHeight, rowSignature) = layoutTileViews(widthMax) {
             layoutParentViews(maxX, widthMax, maxY, labelHeight)
-            centerRows(TilesView.thumbnailsWidth)
+            alignRows(TilesView.thumbnailsWidth)
             if rowSignature != lastRowSignature {
                 for row in rows {
                     for (j, view) in row.enumerated() {
@@ -554,10 +554,6 @@ class TilesView {
         } else if searchField.superview != nil {
             searchField.removeFromSuperview()
         }
-        if App.shared.userInterfaceLayoutDirection == .rightToLeft {
-            let offset = TileGridGeometry.documentOffsetX(widthMax, TilesView.thumbnailsWidth, false)
-            scrollView.documentView!.subviews.forEach { $0.frame.origin.x -= offset }
-        }
         scrollView.documentView!.frame.size = NSSize(width: TilesView.thumbnailsWidth, height: maxY)
         let docSize = scrollView.documentView!.frame.size
         thumbnailOverView.frame = CGRect(origin: .zero, size: docSize)
@@ -587,15 +583,15 @@ class TilesView {
         return max(0, Appearance.windowPadding - labelHeight)
     }
 
-    static func centerRows(_ maxX: CGFloat) {
+    static func alignRows(_ containerWidth: CGFloat) {
+        let style = Preferences.effectiveAppearanceStyle(SwitcherSession.activeShortcutIndex)
+        let alignment = style == .titles ? RowAlignmentPreference.center : Preferences.rowAlignment
+        let isLeftToRight = App.shared.userInterfaceLayoutDirection == .leftToRight
         for row in rows where !row.isEmpty {
             guard SwitcherSession.isActive else { return }
-            let rowWidth = TileGridGeometry.rowWidth(row.map { $0.frame.size.width }, Appearance.interCellPadding)
-            let offset = ((maxX - rowWidth) / 2).rounded()
-            if offset > 0 {
-                for view in row {
-                    view.frame.origin.x += App.shared.userInterfaceLayoutDirection == .leftToRight ? offset : -offset
-                }
+            let origins = AppearanceTestable.alignedRowOrigins(row.map(\.frame), containerWidth, Appearance.interCellPadding, alignment, isLeftToRight)
+            for (view, origin) in zip(row, origins) {
+                view.frame.origin.x = origin
             }
         }
     }

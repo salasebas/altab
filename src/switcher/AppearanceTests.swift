@@ -133,6 +133,54 @@ final class AppearanceTests: XCTestCase {
         XCTAssertEqual(hi2, min(0.30, 2.1 / 16), accuracy: 0.001)
     }
 
+    func testVariableWidthRowAlignmentInLeftToRightLayout() {
+        let frames = [CGRect(x: 10, y: 10, width: 80, height: 50), CGRect(x: 100, y: 10, width: 120, height: 50)]
+        XCTAssertEqual(aligned(frames, .leading, true), [10, 100])
+        XCTAssertEqual(aligned(frames, .center, true), [45, 135])
+        XCTAssertEqual(aligned(frames, .trailing, true), [80, 170])
+    }
+
+    func testVariableWidthRowAlignmentMirrorsInRightToLeftLayout() {
+        let frames = [CGRect(x: 270, y: 10, width: 80, height: 50), CGRect(x: 140, y: 10, width: 120, height: 50)]
+        XCTAssertEqual(aligned(frames, .leading, false), [210, 80])
+        XCTAssertEqual(aligned(frames, .center, false), [175, 45])
+        XCTAssertEqual(aligned(frames, .trailing, false), [140, 10])
+    }
+
+    func testEqualWidthAppIconRowUsesTheSameAlignmentGeometry() {
+        let frames = [CGRect(x: 10, y: 10, width: 50, height: 50), CGRect(x: 70, y: 10, width: 50, height: 50)]
+        XCTAssertEqual(AppearanceTestable.alignedRowOrigins(frames, 250, 10, .leading, true), [10, 70])
+        XCTAssertEqual(AppearanceTestable.alignedRowOrigins(frames, 250, 10, .center, true), [70, 130])
+        XCTAssertEqual(AppearanceTestable.alignedRowOrigins(frames, 250, 10, .trailing, true), [130, 190])
+    }
+
+    func testFullWidthRowDoesNotMoveForAnyAlignment() {
+        let frames = [CGRect(x: 10, y: 10, width: 100, height: 50), CGRect(x: 120, y: 10, width: 90, height: 50)]
+        for alignment in RowAlignmentPreference.allCases {
+            XCTAssertEqual(AppearanceTestable.alignedRowOrigins(frames, 220, 10, alignment, true), [10, 120])
+            XCTAssertEqual(AppearanceTestable.alignedRowOrigins(Array(frames.reversed()), 220, 10, alignment, false), [120, 10])
+        }
+    }
+
+    func testRightToLeftRowNormalizesFromWiderPackingArea() {
+        let frames = [CGRect(x: 890, y: 10, width: 100, height: 50)]
+        XCTAssertEqual(AppearanceTestable.alignedRowOrigins(frames, 320, 10, .leading, false), [210])
+        XCTAssertEqual(AppearanceTestable.alignedRowOrigins(frames, 320, 10, .center, false), [110])
+        XCTAssertEqual(AppearanceTestable.alignedRowOrigins(frames, 320, 10, .trailing, false), [10])
+    }
+
+    func testAlignedRowOriginsAreIdempotentAndHandleEmptyRows() {
+        let frames = [CGRect(x: 270, y: 10, width: 80, height: 50), CGRect(x: 140, y: 10, width: 120, height: 50)]
+        let origins = aligned(frames, .center, false)
+        let alignedFrames = zip(frames, origins).map { CGRect(origin: CGPoint(x: $0.1, y: $0.0.minY), size: $0.0.size) }
+        XCTAssertEqual(aligned(alignedFrames, .center, false), origins)
+        XCTAssertEqual(AppearanceTestable.alignedRowOrigins([], 300, 10, .center, true), [])
+    }
+
+    private func aligned(_ frames: [CGRect], _ alignment: RowAlignmentPreference, _ isLeftToRight: Bool) -> [CGFloat] {
+        AppearanceTestable.alignedRowOrigins(frames, 300, 10, alignment, isLeftToRight)
+    }
+
     private let screens: [(String, (CGFloat, CGFloat), (CGFloat, CGFloat), (CGFloat, CGFloat), [(Int, CGFloat, CGFloat)])] = [
         // screen model, (widthInPixels, heightInPixels), (physicalWidthInMM, physicalHeightInMM), (expectedWidthForHorizontal, expectedWidthForVertical), (rowCount, expectedMinWidth, expectedMaxWidth)
         ("11\" Laptop: MacBook Air 11\": HD", (1366, 768), (255.7, 178.6), (0.90, 0.90), [(3, 0.12, 0.25), (4, 0.09, 0.19), (5, 0.09, 0.15)]),
