@@ -169,7 +169,7 @@ Use `scripts/run_debug.sh` while developing and testing. Use `scripts/build_loca
 
 Yes, but do not redistribute the `Local Self-Signed` app produced for your own Mac. Use the optional [redistribution packager](releasing.md#optional-redistribution-packaging), which creates a universal app ZIP, matching dSYM, exact source archive, build manifest, release notes, and checksums from an explicit tag or full commit. The current package is intentionally **unsigned and not notarized**, so label it that way and expect macOS Gatekeeper to warn or block it.
 
-What does not exist yet is a trusted public binary release: the fork's official milestones remain source-only. Distribution without those warnings requires a fork-owned stable Developer ID identity, Apple notarization, and a tested release workflow, tracked in [issue #40](https://github.com/salasebas/altab/issues/40). Never reuse upstream credentials, Team IDs, update feeds, signing identities, or release infrastructure.
+A trusted Gatekeeper-friendly binary requires **your** Developer ID Application identity and Apple notarization. Use `scripts/package_notarized_release.sh` or the manual `.github/workflows/release.yml` workflow (`notarized` mode) documented in [releasing.md](releasing.md). Official milestones may remain source-only; the tooling never silently falls back to unsigned output and never reuses upstream credentials, Team IDs, update feeds, signing identities, or release infrastructure.
 
 ### What is safe to commit?
 
