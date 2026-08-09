@@ -13,15 +13,17 @@ An independent, community-maintained fork of [AltTab for macOS](https://github.c
 
 ## Current public milestone: 1.0.0
 
-AlTab’s product version is **1.0.0** (independent of upstream AltTab’s `v11.x` line). Tag: **`altab-v1.0.0`**.
+AlTab’s product version is **1.0.0** (independent of upstream AltTab’s `v11.x` line). Tag: **`altab-v1.0.0`**. Unsigned binary packaging includes a light **`.dmg`** for casual downloads (see the latest Release if this tag’s assets predate that).
 
-- **Download (optional):** [GitHub Release altab-v1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0) — universal macOS ZIP, **unsigned and not notarized**, plus matching source tarball, manifest, notes, and `SHA256SUMS`.
-- **Supported path:** clone the tag and build locally with **Local Self-Signed** (stable permissions; not a distributable identity).
+- **Download (optional):** [GitHub Releases](https://github.com/salasebas/altab/releases) — prefer the latest `altab-v*` Release
+  - **Casual:** `AlTab-<tag>-macOS-unsigned.dmg` — light drag-to-Applications image (**unsigned and not notarized**)
+  - **Full package:** `AlTab-<tag>-macOS-unsigned.zip` (app + dSYM + notices), matching source tarball, manifest, notes, and `SHA256SUMS`
+- **Supported path:** clone a tag (or `main`) and build locally with **Local Self-Signed** (stable permissions; not a distributable identity).
 
 ```bash
 git clone https://github.com/salasebas/altab.git
 cd altab
-git checkout altab-v1.0.0
+git checkout altab-v1.0.0   # or a later altab-v* tag
 scripts/codesign/setup_local.sh   # once per Mac
 scripts/build_local.sh
 ```

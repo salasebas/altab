@@ -95,21 +95,120 @@ release_package_name() {
   esac
 }
 
+# Light casual-download DMG basename (unsigned only). Contains AlTab.app + Applications link.
+release_light_dmg_name() {
+  local label="$1"
+  printf 'AlTab-%s-macOS-unsigned.dmg' "$label"
+}
+
+# Stage AlTab.app with a standard drag-to-Applications layout and write a compressed UDZO DMG.
+release_create_light_unsigned_dmg() {
+  local appPath="$1"
+  local dmgPath="$2"
+  local volumeName="$3"
+  local stageRoot="$4"
+  local createLog="$5"
+  [[ -d "$appPath" && ! -L "$appPath" ]] || fail "light DMG source app is missing or is a symbolic link"
+  [[ -n "$dmgPath" ]] || fail "light DMG output path is required"
+  [[ -n "$volumeName" ]] || fail "light DMG volume name is required"
+  [[ -n "$stageRoot" ]] || fail "light DMG stage root is required"
+  [[ ! -e "$dmgPath" ]] || fail "light DMG output already exists: $dmgPath"
+  command -v hdiutil >/dev/null || fail "missing required dependency: hdiutil"
+  command -v ditto >/dev/null || fail "missing required dependency: ditto"
+  rm -rf "$stageRoot"
+  mkdir -p "$stageRoot" || fail "could not create light DMG stage root"
+  ditto "$appPath" "$stageRoot/AlTab.app"
+  ln -s /Applications "$stageRoot/Applications"
+  if ! hdiutil create \
+    -volname "$volumeName" \
+    -srcfolder "$stageRoot" \
+    -ov \
+    -format UDZO \
+    -imagekey zlib-level=9 \
+    "$dmgPath" >"$createLog" 2>&1; then
+    sed -n '1,80p' "$createLog" >&2
+    fail "could not create light unsigned DMG"
+  fi
+  [[ -f "$dmgPath" && ! -L "$dmgPath" ]] || fail "light unsigned DMG was not produced"
+}
+
+# Mount a light unsigned DMG, validate layout + unsigned app, optionally match a reference app binary.
+# Runs the mount lifecycle in a subshell so any fail() path still detaches the image.
+release_validate_light_unsigned_dmg() {
+  local dmgPath="$1"
+  local mountPoint="$2"
+  local signatureDetails="$3"
+  local referenceAppPath="${4:-}"
+  local attachLog="$signatureDetails.attach"
+  local detachLog="$signatureDetails.detach"
+  local status=0
+  [[ -f "$dmgPath" && ! -L "$dmgPath" ]] || fail "light unsigned DMG is missing or is a symbolic link"
+  [[ -n "$mountPoint" ]] || fail "light DMG mount point is required"
+  command -v hdiutil >/dev/null || fail "missing required dependency: hdiutil"
+  mkdir -p "$mountPoint"
+  (
+    set -euo pipefail
+    local listing appPath applicationsLink appBinary referenceBinary
+    trap 'hdiutil detach "$mountPoint" -force >"$detachLog" 2>&1 || true' EXIT
+    if ! hdiutil attach -nobrowse -readonly -mountpoint "$mountPoint" "$dmgPath" >"$attachLog" 2>&1; then
+      sed -n '1,80p' "$attachLog" >&2
+      fail "could not mount light unsigned DMG"
+    fi
+    appPath="$mountPoint/AlTab.app"
+    applicationsLink="$mountPoint/Applications"
+    [[ -d "$appPath" && ! -L "$appPath" ]] || fail "light unsigned DMG is missing AlTab.app"
+    [[ -L "$applicationsLink" ]] || fail "light unsigned DMG is missing Applications symlink"
+    [[ "$(readlink "$applicationsLink")" == "/Applications" ]] || fail "light unsigned DMG Applications link must point to /Applications"
+    listing="$(find "$mountPoint" -mindepth 1 -maxdepth 1 ! -name '.DS_Store' ! -name '.fseventsd' ! -name '.Trashes' ! -name '.Spotlight-V100' -print | LC_ALL=C sort)"
+    while IFS= read -r entry; do
+      [[ -z "$entry" ]] && continue
+      case "$entry" in
+        "$appPath"|"$applicationsLink") ;;
+        *) fail "light unsigned DMG contains unexpected top-level entry: $entry" ;;
+      esac
+    done <<< "$listing"
+    [[ ! -e "$mountPoint/AlTab.app.dSYM" ]] || fail "light unsigned DMG must not include the dSYM package"
+    release_validate_unsigned_app "$appPath" "$signatureDetails"
+    release_validate_forbidden_bundle_content "$appPath"
+    if [[ -n "$referenceAppPath" ]]; then
+      [[ -d "$referenceAppPath" && ! -L "$referenceAppPath" ]] || fail "reference app for light DMG comparison is missing"
+      appBinary="$appPath/Contents/MacOS/AlTab"
+      referenceBinary="$referenceAppPath/Contents/MacOS/AlTab"
+      [[ -f "$appBinary" && -f "$referenceBinary" ]] || fail "light DMG app binary comparison paths are missing"
+      cmp -s "$appBinary" "$referenceBinary" || fail "light unsigned DMG app binary differs from the full package app"
+    fi
+    if ! hdiutil detach "$mountPoint" -force >"$detachLog" 2>&1; then
+      sed -n '1,40p' "$detachLog" >&2
+      fail "could not unmount light unsigned DMG"
+    fi
+    trap - EXIT
+  ) || status=$?
+  [[ $status -eq 0 ]] || return "$status"
+}
+
 # Given basenames attached to a GitHub Release (or local artifact dir), fail unless every
 # binary ZIP has exactly one matching source archive, manifest, notes, and SHA256SUMS.
+# Unsigned ZIP packages also require the light casual-download DMG for the same label.
 release_audit_published_asset_names() {
   local assetNames=("$@")
   local name
   local binaryCount=0
   local labels=()
+  local unsignedLabels=()
   local label
   [[ ${#assetNames[@]} -gt 0 ]] || fail "release asset audit received an empty asset list"
   for name in "${assetNames[@]}"; do
     case "$name" in
-      AlTab-*-macOS-unsigned.zip|AlTab-*-macOS.zip)
+      AlTab-*-macOS-unsigned.zip)
         binaryCount=$((binaryCount + 1))
         label="${name#AlTab-}"
         label="${label%-macOS-unsigned.zip}"
+        labels+=("$label")
+        unsignedLabels+=("$label")
+        ;;
+      AlTab-*-macOS.zip)
+        binaryCount=$((binaryCount + 1))
+        label="${name#AlTab-}"
         label="${label%-macOS.zip}"
         labels+=("$label")
         ;;
@@ -122,6 +221,12 @@ release_audit_published_asset_names() {
     printf '%s\n' "${assetNames[@]}" | rg -qx "AlTab-${label}-BUILD-MANIFEST.md" || fail "published binary release is missing AlTab-${label}-BUILD-MANIFEST.md"
     printf '%s\n' "${assetNames[@]}" | rg -qx "AlTab-${label}-RELEASE-NOTES.md" || fail "published binary release is missing AlTab-${label}-RELEASE-NOTES.md"
   done
+  if [[ ${#unsignedLabels[@]} -gt 0 ]]; then
+    for label in "${unsignedLabels[@]}"; do
+      printf '%s\n' "${assetNames[@]}" | rg -qx "AlTab-${label}-macOS-unsigned.dmg" \
+        || fail "published unsigned binary release is missing AlTab-${label}-macOS-unsigned.dmg"
+    done
+  fi
   local binaryNames
   binaryNames="$(printf '%s\n' "${assetNames[@]}" | rg -x 'AlTab-.*-macOS(-unsigned)?\.zip' || true)"
   local sourceNames
