@@ -4,6 +4,7 @@
 
 PRODUCT_NAME = AlTab Dev
 PRODUCT_BUNDLE_IDENTIFIER = dev.salasebas.AlTabDev
+SPOTLIGHT_KEYWORDS = AlTab Dev, AltTab Dev, AlTab, AltTab
 // Canonical once-per-Mac identity (scripts/codesign/setup_local.sh). Shared by every worktree.
 // Ad-hoc is only for explicit overrides / CI: CODE_SIGN_IDENTITY=-
 CODE_SIGN_IDENTITY = Local Self-Signed

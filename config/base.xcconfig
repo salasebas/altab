@@ -2,6 +2,7 @@
 
 PRODUCT_NAME = AlTab
 PRODUCT_BUNDLE_IDENTIFIER = dev.salasebas.AlTab
+SPOTLIGHT_KEYWORDS = AlTab, AltTab
 // Public AlTab SemVer. Git tags use the altab-vMAJOR.MINOR.PATCH form so they never
 // collide with retained upstream v* tags; see docs/releasing.md.
 CURRENT_PROJECT_VERSION = 1.0.0

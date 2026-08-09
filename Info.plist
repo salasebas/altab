@@ -21,6 +21,8 @@
 	<string>Copyright © AltTab and AlTab contributors. GPL-3.0-only.</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.utilities</string>
+	<key>MDItemKeywords</key>
+	<string>$(SPOTLIGHT_KEYWORDS)</string>
 
 	<!-- ===== Versioning (substituted from xcconfig; CI overrides via config/local.xcconfig) ===== -->
 	<key>CFBundleShortVersionString</key>
