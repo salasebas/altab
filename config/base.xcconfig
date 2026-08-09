@@ -4,8 +4,8 @@ PRODUCT_NAME = AlTab
 PRODUCT_BUNDLE_IDENTIFIER = dev.salasebas.AlTab
 // Public AlTab SemVer. Git tags use the altab-vMAJOR.MINOR.PATCH form so they never
 // collide with retained upstream v* tags; see docs/releasing.md.
-CURRENT_PROJECT_VERSION = 1.0.0
-MARKETING_VERSION = 1.0.0
+CURRENT_PROJECT_VERSION = 1.0.1
+MARKETING_VERSION = 1.0.1
 MACOSX_DEPLOYMENT_TARGET = 10.13
 SWIFT_VERSION = 5.8 // xcode 14.2 translates this to 5.0; xcode 16.2 as 5.8
 SWIFT_TREAT_WARNINGS_AS_ERRORS = YES
