@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5E59C110000000000000C002 /* CliReplyResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E59C110000000000000C001 /* CliReplyResolver.swift */; };
+		5E59C110000000000000C003 /* CliReplyResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E59C110000000000000C001 /* CliReplyResolver.swift */; };
+		5E59C110000000000000C102 /* CliReplyResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E59C110000000000000C101 /* CliReplyResolverTests.swift */; };
 		A11B00000000000000000011 /* LegacyPreferencesImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11B00000000000000000001 /* LegacyPreferencesImporter.swift */; };
 		A11B00000000000000000012 /* LegacyPreferencesImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11B00000000000000000001 /* LegacyPreferencesImporter.swift */; };
 		A11B00000000000000000013 /* LegacyPreferencesImporterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11B00000000000000000002 /* LegacyPreferencesImporterTests.swift */; };
@@ -351,6 +354,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		5E59C110000000000000C001 /* CliReplyResolver.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CliReplyResolver.swift; sourceTree = "<group>"; };
+		5E59C110000000000000C101 /* CliReplyResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CliReplyResolverTests.swift; sourceTree = "<group>"; };
 		A11B00000000000000000001 /* LegacyPreferencesImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPreferencesImporter.swift; sourceTree = "<group>"; };
 		A11B00000000000000000002 /* LegacyPreferencesImporterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyPreferencesImporterTests.swift; sourceTree = "<group>"; };
 		A11B00000000000000000003 /* LegacyPreferencesImporterSpecs.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = LegacyPreferencesImporterSpecs.md; sourceTree = "<group>"; };
@@ -822,6 +827,8 @@
 				BF0C8FAF34022E23582797F3 /* ScrollwheelEvents.swift */,
 				BF0C81DD40D5AAD9B7C09028 /* CursorEvents.swift */,
 				BF0C8C69316EAAF6DC9AE391 /* CliEvents.swift */,
+				5E59C110000000000000C001 /* CliReplyResolver.swift */,
+				5E59C110000000000000C101 /* CliReplyResolverTests.swift */,
 				5EA8E110000000000000F001 /* AxQueryRouting.swift */,
 				5EA8E110000000000000F101 /* AxQueryRoutingTests.swift */,
 				D04BA76AEE37D6656EB80126 /* RunningApplicationsEvents.swift */,
@@ -1797,6 +1804,8 @@
 				5EA8E110000000000000F102 /* AxQueryRoutingTests.swift in Sources */,
 				5EA8E220000000000000F003 /* WindowCaptureApiRouting.swift in Sources */,
 				5EA8E220000000000000F102 /* WindowCaptureApiRoutingTests.swift in Sources */,
+				5E59C110000000000000C003 /* CliReplyResolver.swift in Sources */,
+				5E59C110000000000000C102 /* CliReplyResolverTests.swift in Sources */,
 				5C5A1100000000000000A003 /* WsEventRouting.swift in Sources */,
 				5C5A1100000000000000A102 /* WsEventRoutingTests.swift in Sources */,
 				5CAF00000000000000000003 /* ActivationFocusResolver.swift in Sources */,
@@ -2040,6 +2049,7 @@
 				AA0C8A1000000000000000B1 /* CGSCallScheduler.swift in Sources */,
 				AA0C8A1000000000000000B2 /* ProcessCallScheduler.swift in Sources */,
 				BF0C8973EC078169170F2634 /* CliEvents.swift in Sources */,
+				5E59C110000000000000C002 /* CliReplyResolver.swift in Sources */,
 				BF0C8521DA3078516615C414 /* HelperExtensionsTestable.swift in Sources */,
 				BF0C8991399A3277A9A02FFA /* LightImageView.swift in Sources */,
 				BF0C8992399A3277A9A02FFB /* LightImageLayer.swift in Sources */,
