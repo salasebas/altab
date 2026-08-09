@@ -275,6 +275,7 @@ class Windows {
             session.selectedTarget = list[newIndex].id
             TilesView.highlight(oldIndex)
             WindowThumbnails.previewSelectedIfNeeded()
+            WindowThumbnails.fetchPreviewFrames()
             index = session.selectedIndex
             lastWindowActivityType = .focus
         }
@@ -300,6 +301,20 @@ class Windows {
         guard !crossesBoundary || allowsBoundaryWrap else { return }
         guard allowWrap || list[nextIndex].rowIndex == list[session.selectedIndex].rowIndex else { return }
         updateSelectedAndHoveredWindowIndex(nextIndex)
+    }
+
+    /// The selected window plus up to `radius` displayed windows on each side in cycling order (wrapping
+    /// like Tab does). These are the windows the Preview panel may imminently show, so they are the only
+    /// ones worth capturing at full resolution (#5861 / issue #45); quick Tab presses land on a pre-captured neighbor.
+    static func selectedNeighborhoodIds(_ radius: Int = PreviewNeighborhood.defaultRadius) -> Set<CGWindowID> {
+        guard let session = SwitcherSession.current, session.selectedIndex < list.count else { return [] }
+        let windowIds: [UInt32?] = list.map { $0.cgWindowId.map { UInt32($0) } }
+        let displayed = list.map { shouldDisplay($0) }
+        return Set(PreviewNeighborhood.ids(
+            selectedIndex: session.selectedIndex,
+            windowIds: windowIds,
+            isDisplayed: displayed,
+            radius: radius).map { CGWindowID($0) })
     }
 
     static func selectedWindowIndexAfterCycling(_ step: Int) -> Int {

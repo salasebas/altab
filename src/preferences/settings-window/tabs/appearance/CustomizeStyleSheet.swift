@@ -139,12 +139,19 @@ class CustomizeStyleSheet: SheetWindow {
     var showHideIllustratedView: ShowHideIllustratedView!
     private var tileSpacingControl: TileSpacingControl!
 
-    override func makeContentView() -> NSView {
-        // The per-shortcut Customize sheet was trimmed to style-tied global options. Grouping
-        // settings moved to per-shortcut storage in `ControlsTab`; row alignment remains global.
-        // The old "Show & Hide" / "Advanced" tab control is gone because the remaining options
-        // fit comfortably in one flat list.
+    /// Keep the style illustration pinned above the scrolling options so hover previews stay visible
+    /// even when the list is long (Layout / Show & Hide / titles).
+    override func makeHeaderView() -> NSView? {
         illustratedImageView = IllustratedImageThemeView(style, CustomizeStyleSheet.illustratedImageWidth)
+        return illustratedImageView
+    }
+
+    override func makeContentView() -> NSView {
+        // Illustration lives in the sticky header (`makeHeaderView`); body is the option groups only.
+        // ShowHideIllustratedView still needs the image view for hover highlight callbacks.
+        if illustratedImageView == nil {
+            illustratedImageView = IllustratedImageThemeView(style, CustomizeStyleSheet.illustratedImageWidth)
+        }
         showHideIllustratedView = ShowHideIllustratedView(style, illustratedImageView)
         let showHideView = showHideIllustratedView.makeView()
         let advancedTable = TableGroupView(width: CustomizeStyleSheet.width)
@@ -164,7 +171,7 @@ class CustomizeStyleSheet: SheetWindow {
             IllustratedImageThemeView.resetImage(self.illustratedImageView, event, view)
         }
         let advancedView = TableGroupSetView(originalViews: [advancedTable], padding: 0)
-        var views: [NSView] = [illustratedImageView]
+        var views: [NSView] = []
         if style != .titles { views.append(makeLayoutView()) }
         views.append(contentsOf: [showHideView, advancedView])
         return TableGroupSetView(originalViews: views, padding: 0)

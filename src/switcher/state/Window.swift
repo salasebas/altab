@@ -163,7 +163,11 @@ class Window {
                     App.refreshOpenUiAfterExternalEvent([])
                 }
             }
-            PreviewPanel.updateIfShowing(cgWindowId, screenshot, position, size)
+            // a thumbnail-scale refresh must not downgrade the sharp full-res frame the Preview may be
+            // showing; the thumbnail only serves as the instant placeholder before the full-res fetch lands
+            if cgWindowId.flatMap({ SwitcherSession.current?.hasPreviewFrame($0) }) != true {
+                PreviewPanel.updateIfShowing(cgWindowId, screenshot, position, size)
+            }
         }
     }
 

@@ -887,8 +887,20 @@ class SettingsWindow: NSWindow {
     }
 
     func beginSheetWithSearchHighlight(_ sheet: SheetWindow) {
+        // Cap sheet height to the space under our title bar so AppKit does not shove this window
+        // toward the top of the screen when "Customize more…" (or other tall sheets) open.
+        let parentFrameBeforeSheet = frame
+        sheet.prepareForDisplay(relativeTo: self)
         beginSheet(sheet) { [weak self] _ in
             self?.clearSheetHighlights(sheet)
+            // If AppKit still nudged us during presentation, put Settings back where it was.
+            guard let self, self.frame != parentFrameBeforeSheet else { return }
+            self.setFrame(parentFrameBeforeSheet, display: true)
+        }
+        // AppKit may move the parent asynchronously while attaching a tall sheet; restore next turn.
+        DispatchQueue.main.async { [weak self] in
+            guard let self, self.frame != parentFrameBeforeSheet else { return }
+            self.setFrame(parentFrameBeforeSheet, display: true)
         }
         applySearchToSheet(sheet, searchField.stringValue)
     }
