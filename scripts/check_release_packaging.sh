@@ -98,10 +98,10 @@ require_text scripts/publish_release_artifacts.sh 'release_audit_published_asset
 require_text docs/releasing.md 'macOS-unsigned.dmg'
 require_text docs/releasing.md 'drag-to-Applications'
 require_text docs/releasing.md 'release_artifact_label'
-require_text docs/releasing.md 'AlTab-1.0.1-macOS-unsigned.dmg'
+require_text docs/releasing.md 'AlTab-1.0.0-macOS-unsigned.dmg'
 require_text docs/releasing.md 'automatic Source code'
 require_text README.md 'macOS-unsigned.dmg'
-require_text README.md 'AlTab-1.0.1-macOS-unsigned.dmg'
+require_text README.md 'AlTab-1.0.0-macOS-unsigned.dmg'
 require_text .github/RELEASE_NOTES_TEMPLATE.md 'automatic Source code'
 require_text .github/RELEASE_NOTES_TEMPLATE.md '{{DMG_ARTIFACT}}'
 [[ "$(release_artifact_label altab-v1.0.1)" == "1.0.1" ]] || fail "artifact label must strip altab-v prefix for milestone tags"
