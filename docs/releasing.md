@@ -37,21 +37,53 @@ Before tagging a milestone, set the product version in:
 
 `Info.plist` substitutes `$(CURRENT_PROJECT_VERSION)` into both `CFBundleShortVersionString` and `CFBundleVersion`. Preference-schema migrations use a separate constant (`PreferencesMigrations.currentSchemaVersion`) and are not the public app version.
 
+### Changelog and source milestones (semantic-release)
+
+AlTab uses the same **semantic-release** stack as upstream AltTab to write [changelog.md](../changelog.md) from [Conventional Commits](https://www.conventionalcommits.org/) (enforced by commitlint + husky). Configuration lives in [release.config.js](../release.config.js); CI entry is [`.github/workflows/release-notes.yml`](../.github/workflows/release-notes.yml).
+
+On every push to `main` (except commits marked `[skip ci]`), the bot:
+
+1. Analyzes commits since the last `altab-v*` tag
+2. Bumps the SemVer in `package.json` when a release is warranted
+3. Prepends a new section to `changelog.md`
+4. Commits `chore(release): X.Y.Z [skip ci]` (changelog + package.json only)
+5. Creates git tag `altab-vX.Y.Z` and a **source-only** GitHub Release (notes, no binaries)
+
+What this deliberately **does not** do (unlike upstream `ci_cd.yml`):
+
+- AppCenter / crash symbols
+- Sparkle / appcast
+- Notarization or binary packaging
+- README star/download stats or website redeploy
+
+Local dry-run (no publish):
+
+```bash
+pnpm install
+pnpm release:dry   # only meaningful on main with altab-v* tags fetched
+```
+
+The product / Xcode marketing version in `config/base.xcconfig` is still set deliberately when you want the running app’s About box to match a milestone; semantic-release does not rewrite `.xcconfig`.
+
 ### How to cut a source milestone
 
+Preferred path once the baseline tag `altab-v1.0.0` exists on the remote: merge conventional commits to `main` and let **Release notes** CI create the next `altab-v*` tag, changelog section, and GitHub Release.
+
+Manual path (when you need a human-gated milestone):
+
 1. Ensure dependency audits and source/build guards pass on the candidate commit (see [FORK.md](../FORK.md) and `scripts/validate_ci.sh`).
-2. Bump the version fields above so they match the intended SemVer.
-3. Update [changelog.md](../changelog.md), [README.md](../README.md), [FORK.md](../FORK.md), and [UPSTREAM.md](../UPSTREAM.md) so they agree.
-4. Merge to `main` and re-run CI / local guards on that revision.
-5. Create an annotated tag on the exact audited/merged commit:
+2. Bump `CURRENT_PROJECT_VERSION` / `MARKETING_VERSION` in `config/base.xcconfig` if the app bundle version should match the milestone.
+3. Align [README.md](../README.md), [FORK.md](../FORK.md), and [UPSTREAM.md](../UPSTREAM.md) provenance notes as needed (do **not** hand-edit versioned changelog sections the bot owns).
+4. Merge to `main`. The semantic-release workflow updates `changelog.md`, tags `altab-vMAJOR.MINOR.PATCH`, and opens the source-only GitHub Release.
+5. Optionally flesh out the GitHub Release body with wording from [`.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md`](../.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md). Attach **no** binaries unless you intentionally run the optional packaging path below and review the artifacts.
+6. Verify the public tag resolves to the intended commit and that a clean clone of the tag builds after `scripts/codesign/setup_local.sh` (once per Mac) and `scripts/build_local.sh`.
 
-   ```bash
-   git tag -a altab-vMAJOR.MINOR.PATCH -m "AlTab source milestone MAJOR.MINOR.PATCH"
-   git push origin altab-vMAJOR.MINOR.PATCH
-   ```
+Bootstrap (one-time): create and push the first tag so the bot has a floor and does not walk the entire upstream history:
 
-6. Publish a GitHub release from that tag with notes derived from [`.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md`](../.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md). Attach **no** binaries unless you intentionally run the optional packaging path below and review the artifacts.
-7. Verify the public tag resolves to the intended commit and that a clean clone of the tag builds after `scripts/codesign/setup_local.sh` (once per Mac) and `scripts/build_local.sh`.
+```bash
+git tag -a altab-v1.0.0 e0f169207890686cfa084bdbf58859b8ddc50475 -m "AlTab source milestone 1.0.0"
+git push origin altab-v1.0.0
+```
 
 ### How users update after a milestone
 

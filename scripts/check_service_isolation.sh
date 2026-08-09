@@ -69,7 +69,8 @@ check_source() {
     appcast.xml
     .github/workflows/ci_cd.yml
     package-lock.json
-    release.config.js
+    # release.config.js is allowed: fork-owned semantic-release for changelog /
+    # altab-v* source tags only (no appcast, AppCenter, Sparkle, or binary CI).
   )
   for path in "${removedPaths[@]}"; do
     [[ ! -e "$path" ]] || fail "$path still exists"

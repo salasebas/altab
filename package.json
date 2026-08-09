@@ -22,16 +22,25 @@
   },
   "scripts": {
     "format": "node scripts/swiftformat.js",
-    "format:check": "node scripts/swiftformat.js --lint"
+    "format:check": "node scripts/swiftformat.js --lint",
+    "release": "semantic-release",
+    "release:dry": "semantic-release --dry-run --no-ci"
   },
   "devDependencies": {
     "@commitlint/cli": "^8.1.0",
     "@commitlint/config-conventional": "^8.1.0",
+    "@semantic-release/changelog": "^7.0.0",
+    "@semantic-release/commit-analyzer": "^13.0.1",
+    "@semantic-release/git": "^11.0.1",
+    "@semantic-release/github": "^12.0.9",
+    "@semantic-release/npm": "^13.1.5",
+    "@semantic-release/release-notes-generator": "^14.1.1",
     "fontkit": "^1.8.0",
     "glob": "^10.0.0",
     "husky": "^3.0.4",
     "lint-staged": "^13.0.0",
-    "marked": "^0.8.0"
+    "marked": "^0.8.0",
+    "semantic-release": "^25.0.9"
   },
   "engines": {
     "node": ">=18.0.0"
