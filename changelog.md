@@ -16,6 +16,7 @@ Conventional commits merged to `main` accumulate under **Unreleased**. A maintai
 
 ### Features
 
+* Install local AlTab builds into Applications safely ([cd8149c](https://github.com/salasebas/altab/commit/cd8149cfd0dd2db1eb3ff053ef5d88088f8fb02a)) by @salasebas
 * Find AlTab by alternate names in Spotlight ([b4ba830](https://github.com/salasebas/altab/commit/b4ba83043470aa9590b1279226efb6a828b05504)) by @salasebas
 
 <!-- altab-changelog:unreleased-end -->
