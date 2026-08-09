@@ -166,9 +166,8 @@ class Applications {
     }
 
     /// Acquire-and-discriminate a newly-discovered window. WindowServer-owned facts (geometry, level,
-    /// fullscreen) come from the snapshot `raw`; AX is read for what WS can't give cleanly — subrole/role
-    /// (discrimination), title (AX title is preferred), the main flag, minimized (the WS ordered-out bit is
-    /// ambiguous — see below), and tab children.
+    /// fullscreen, minimized) come from the snapshot `raw`; AX is read for what WS can't give cleanly —
+    /// subrole/role (discrimination), title (AX title is preferred), the main flag, and tab children.
     /// Used for genuinely-new windows only (discovery + discoverWindow). Uses the "generic" bucket so a real
     /// focus event (in the "focus" bucket) is never clobbered.
     /// `adoptedAsInactiveTab`: this window was found by the inactive-tab brute-force (`discoverInactiveTabs`)
@@ -188,16 +187,12 @@ class Applications {
             // its own window, skip it; otherwise it can't be ours, so proceed.
             if let panel = TilesPanel.shared, wid == panel.windowNumber { return }
             let isSelf = app.pid == AXUIElement.currentProcessPid
-            // minimized comes from AX (kAXMinimized) — a reliable, unambiguous signal — NOT the WS ordered-out
-            // bit, which is also cleared for closing / app-hidden / other-Space windows. (yabai sources
-            // minimize from AX the same way: seed kAXMinimized, then track miniaturize/deminiaturize.)
+            // Minimized is a WindowServer tag (`WsWindowState.minimizedTag`), not AX kAXMinimized — same
+            // snapshot as geometry/fullscreen, so it cannot stall on a busy app.
             let keys = [kAXTitleAttribute, kAXSubroleAttribute, kAXRoleAttribute, kAXMainAttribute] + (isSelf ? [] : [kAXChildrenAttribute])
             let a = try element.attributes(keys, pid: app.pid)
             let tabSiblingTitles = isSelf ? nil : TabGroup.extractTabTitles(a.children)
             let isFullscreen = WsWindowState.isFullscreen(raw)
-            // Both from the SAME WindowServer snapshot this discovery already holds. Minimized used to be an
-            // AX `kAXMinimized` read in the batch above; it is a WindowServer tag now, so it cannot be
-            // delayed by the app being busy, and one fewer attribute crosses the AX boundary per window.
             let isMinimized = WsWindowState.isMinimized(raw)
             // Resolve the window's REAL Space(s) now, off-main. Window.init defaults spaceIds to the current
             // Space (it runs on main and must avoid this blocking CGS call, #5721); for an other-Space window

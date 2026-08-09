@@ -163,9 +163,9 @@ class Window {
     }
 
     /// Update the WindowServer-owned facts (geometry, fullscreen) from a WS snapshot — the live path for
-    /// move/resize events. Title/subrole/tabs/minimized stay on the AX read: WS can't give them cleanly, and
-    /// minimized in particular can't be inferred from the WS ordered-out bit (which also fires for closing /
-    /// other-Space / app-hidden windows). Returns whether a filter-relevant field changed.
+    /// move/resize events. Title/subrole/tabs stay on the AX read; minimized is applied by the reducer from
+    /// `WsWindowState.minimizedTag` (with the off-screen gate on Dock restore). Returns whether a
+    /// filter-relevant field changed.
     @discardableResult
     func updateFromWindowServer(position: CGPoint, size: CGSize, isFullscreen: Bool) -> Bool {
         let changed = self.position != position || self.size != size || self.isFullscreen != isFullscreen
