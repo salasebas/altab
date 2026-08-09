@@ -23,6 +23,8 @@
 "AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "AlTab 환경설정 파일을 사용자 계정에서 쓸 수 없습니다. 여기에서 파일의 소유자와 권한을 수정하십시오:";
 "AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab이 윈도우의 최소화 또는 전체 화면 상태를 상태 아이콘으로 표시합니다.";
 "Always" = "항상";
+"Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio." = "현재 표시된 창 중 가장 넓은 창을 기준으로 모든 썸네일 타일의 바깥 너비를 같게 만듭니다. 썸네일 이미지 크기와 비율은 그대로 유지됩니다.";
+"Uniform tile widths" = "타일 너비 균일화";
 "and press" = "그리고 누르기";
 "Animations" = "애니메이션";
 "Animations…" = "애니메이션…";

@@ -76,6 +76,24 @@ class AppearanceTestable {
         style == .titles ? 1 : selectedSpacing
     }
 
+    /// Outer tile width from thumbnail content width, edge insets, and the minimum tile width floor.
+    static func naturalOuterTileWidth(_ contentWidth: CGFloat, _ edgeInsets: CGFloat, _ minWidth: CGFloat) -> CGFloat {
+        max((contentWidth + edgeInsets * 2).rounded(), minWidth).rounded()
+    }
+
+    /// When uniform widths are enabled for Thumbnails, every displayed tile shares the widest natural width.
+    /// Off mode (or empty input) returns the natural widths unchanged. Existing min/max bounds are assumed
+    /// to already be reflected in each natural width.
+    static func resolvedTileWidths(_ naturalWidths: [CGFloat], _ uniformEnabled: Bool) -> [CGFloat] {
+        guard uniformEnabled, let shared = naturalWidths.max() else { return naturalWidths }
+        return Array(repeating: shared, count: naturalWidths.count)
+    }
+
+    /// True only for the Thumbnails appearance when the preference is on. App Icons and Titles ignore it.
+    static func usesUniformTileWidths(_ style: AppearanceStylePreference, _ preferenceEnabled: Bool) -> Bool {
+        preferenceEnabled && style == .thumbnails
+    }
+
     /// How wide should the TilesPanel be, for comfortable viewing?
     /// * a comfortable field-of-view is 50-60 degrees
     /// * people sit at various distances from the screen. We can't know how far they sit

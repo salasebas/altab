@@ -18,6 +18,10 @@ dimensions, so a tweak to the formula can't silently regress any class of screen
 - `TileGridGeometry.targetFrame` → hover and drag hit areas that consume the configured inter-tile gap.
 - `alignedRowOrigins(frames, containerWidth, padding, alignment, direction)` → the horizontal origins
   for a packed row using semantic Leading, Center, or Trailing alignment.
+- `resolvedTileWidths(naturalWidths, uniformEnabled)` → optional equal outer widths for Thumbnails,
+  driven by the widest natural tile in the current displayed set.
+- `usesUniformTileWidths(style, preferenceEnabled)` → the preference only affects Thumbnails.
+- `naturalOuterTileWidth(contentWidth, edgeInsets, minWidth)` → the existing outer tile width floor.
 
 ## Behavior & edge cases
 
@@ -40,6 +44,11 @@ dimensions, so a tweak to the formula can't silently regress any class of screen
 - RTL rows may be initially anchored to a packing width larger than the final visible container. The
   aligned origins normalize that difference, keeping tiles, highlights, controls, and hit-testing in
   the document's coordinate space.
+- Uniform tile widths is off by default. When off, natural variable widths and wrapping are unchanged.
+- When on for Thumbnails, every displayed tile's outer width becomes the widest natural width from that
+  set. Natural widths already include the min-width floor and thumbnail max sizing; the shared value
+  does not re-scale images. Narrower thumbnails stay centered inside the expanded tile. App Icons and
+  Titles ignore the preference. Wrapping and auto-size dry runs use the shared widths before packing.
 
 ## Test scenarios
 
@@ -50,6 +59,12 @@ Mirrors `AppearanceTests.swift` 1:1.
 - **testComfortableWidthFallsBackToDefaultWhenPhysicalWidthIsNil** — when the screen's physical dimensions aren't reported, fall back to the 0.9 default rather than the 0.45 floor.
 - **testGoodValuesForThumbnailsWidthMinMaxPortrait** — for aspectRatio < 1 (portrait usage), the (min, max) uses the portrait formula and stays within the [0.09, 0.30] clamps.
 - **testTileSpacingValuesAreBoundedAndKeepOnePointDefault** — the finite values and registered default remain safe and pixel-compatible.
+- **testUniformTileWidthsDefaultIsOffAndOnlyAppliesToThumbnails** — preference default is false; only Thumbnails may enable uniform widths.
+- **testUniformTileWidthsOffModePreservesNaturalWidths** — disabled mode returns natural widths and empty sets unchanged.
+- **testUniformTileWidthsUsesWidestNaturalWidthForAllTiles** — enabled mode expands every tile to the widest natural width.
+- **testNaturalOuterTileWidthAppliesMinFloorWithoutChangingAspectContent** — outer width uses content + insets and the min floor.
+- **testUniformTileWidthsLayoutWrapsUsingSharedWidth** — packing/wrapping uses the shared width, not the narrower natural widths.
+- **testUniformTileWidthsMirrorsInRightToLeftLayout** — uniform-width rows mirror LTR/RTL within the document width.
 - **testTileSpacingAppliesOnlyToGridStyles** — Thumbnails/App Icons use the choice while Titles remains at 1 point.
 - **testOnePointGridLayoutPreservesLegacyFramesAndWrap** — exact legacy LTR/RTL origins, wrapping, and content size.
 - **testEveryTileSpacingProducesExactGapsWithoutOverlap** — equal row/column gaps and bounded content growth at every supported value.

@@ -23,6 +23,8 @@
 "AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Le fichier de réglages d'AlTab n'est pas accessible en écriture par votre compte. Veuillez corriger le propriétaire et les autorisations du fichier ici :";
 "AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab indique avec une icône d'état si la fenêtre est réduite ou en plein écran.";
 "Always" = "Toujours";
+"Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio." = "Donne à chaque tuile de vignette la même largeur extérieure, d’après la fenêtre la plus large de l’ensemble actuel. Les images conservent leur taille et leurs proportions.";
+"Uniform tile widths" = "Largeurs de tuiles uniformes";
 "and press" = "et appuyer sur";
 "Animations" = "Animations";
 "Animations…" = "Animations…";

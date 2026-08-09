@@ -23,6 +23,8 @@
 "AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Файл настроек AlTab недоступен для записи под вашей учётной записью. Исправьте владельца и права доступа к файлу здесь:";
 "AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab покажет значком статуса, если окно сейчас свёрнуто или в полноэкранном режиме.";
 "Always" = "Всегда";
+"Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio." = "Делает внешнюю ширину каждой плитки с миниатюрой одинаковой — по самому широкому окну в текущем наборе. Размер и пропорции миниатюр не меняются.";
+"Uniform tile widths" = "Одинаковая ширина плиток";
 "and press" = "и нажмите";
 "Animations" = "Анимация";
 "Animations…" = "Анимация…";

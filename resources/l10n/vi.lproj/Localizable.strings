@@ -23,6 +23,8 @@
 "AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Tệp cài đặt của AlTab không thể ghi bằng tài khoản của bạn. Vui lòng sửa chủ sở hữu và quyền của tệp tại đây:";
 "AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab sẽ hiển thị biểu tượng trạng thái nếu cửa sổ đang được thu nhỏ hoặc ở chế độ toàn màn hình.";
 "Always" = "Luôn luôn";
+"Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio." = "Làm cho mọi ô hình thu nhỏ có cùng chiều rộng ngoài, dựa trên cửa sổ rộng nhất trong tập hiện tại. Hình thu nhỏ giữ nguyên kích thước và tỷ lệ.";
+"Uniform tile widths" = "Độ rộng ô đồng nhất";
 "and press" = "và nhấn";
 "Animations" = "Hoạt ảnh";
 "Animations…" = "Hoạt ảnh…";

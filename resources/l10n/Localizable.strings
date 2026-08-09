@@ -280,6 +280,9 @@
 /* No comment provided by engineer. */
 "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@." = "macOS reserves ⌘⌥⎋, ⌘⌥⇧⎋, and ⌘⌥⇧⌃⎋ for Force Quit and they cannot be unbound. AlTab cannot use them.\n\nYour change would assign one of these to: %@.";
 
+/* Uniform tile widths switch accessibility help */
+"Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio." = "Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio.";
+
 /* No comment provided by engineer. */
 "Medium" = "Medium";
 
@@ -555,6 +558,9 @@
 
 /* No comment provided by engineer. */
 "Unassign existing shortcut and continue" = "Unassign existing shortcut and continue";
+
+/* No comment provided by engineer. */
+"Uniform tile widths" = "Uniform tile widths";
 
 /* No comment provided by engineer. */
 "Usage" = "Usage";

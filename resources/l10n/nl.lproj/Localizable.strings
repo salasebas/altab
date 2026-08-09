@@ -23,6 +23,8 @@
 "AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Het voorkeurenbestand van AlTab is niet beschrijfbaar voor je account. Herstel hier de eigenaar en de rechten van het bestand:";
 "AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab toont met een statussymbool of het venster momenteel geminimaliseerd of in volledig scherm is.";
 "Always" = "Altijd";
+"Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio." = "Geeft elke miniatuurtegel dezelfde buitenbreedte, gebaseerd op het breedste venster in de huidige set. Miniatuurbeelden behouden hun grootte en beeldverhouding.";
+"Uniform tile widths" = "Uniforme tegelbreedtes";
 "and press" = "en druk op";
 "Animations" = "Animaties";
 "Animations…" = "Animaties…";

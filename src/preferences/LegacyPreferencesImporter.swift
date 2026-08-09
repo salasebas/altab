@@ -20,7 +20,7 @@ class LegacyPreferencesImporter {
     static let completionKey = "legacyPreferencesImportCompleted"
     static let excludedOwnedKeys: Set<String> = [
         "screenRecordingPermissionSkipped", "settingsWindowShownOnFirstLaunch", "startAtLogin",
-        "tileSpacingPoints",
+        "tileSpacingPoints", "uniformTileWidths",
     ]
     static let rememberedSelectionKeys = RememberedPreferenceRecovery.rules.map(\.rememberedKey)
     static let bannedExactKeys: Set<String> = excludedOwnedKeys.union([

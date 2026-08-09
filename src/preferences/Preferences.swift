@@ -57,6 +57,7 @@ class Preferences {
         schema.add("appearanceSize", AppearanceSizePreference.auto.indexAsString)
         schema.add("appearanceTheme", AppearanceThemePreference.system.indexAsString)
         schema.add("tileSpacingPoints", String(TileSpacingPreference.defaultValue))
+        schema.add("uniformTileWidths", "false")
         schema.add("theme", ThemePreference.macOs.indexAsString)
         schema.add("showOnScreen", ShowOnScreenPreference.active.indexAsString)
         schema.add("titleTruncation", TitleTruncationPreference.end.indexAsString)
@@ -160,6 +161,7 @@ class Preferences {
     static var appearanceSize: AppearanceSizePreference { CachedUserDefaults.macroPref("appearanceSize", AppearanceSizePreference.allCases) }
     static var appearanceTheme: AppearanceThemePreference { CachedUserDefaults.macroPref("appearanceTheme", AppearanceThemePreference.allCases) }
     static var tileSpacingPoints: Int { TileSpacingPreference.clamped(CachedUserDefaults.int("tileSpacingPoints")) }
+    static var uniformTileWidths: Bool { CachedUserDefaults.bool("uniformTileWidths") }
     // periphery:ignore
     static var theme: ThemePreference { ThemePreference.macOs/*CachedUserDefaults.macroPref("theme", ThemePreference.allCases)*/ }
     static var showOnScreen: ShowOnScreenPreference { CachedUserDefaults.macroPref("showOnScreen", ShowOnScreenPreference.allCases) }

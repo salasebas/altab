@@ -23,6 +23,8 @@
 "AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "AlTabs inställningsfil går inte att skriva till med ditt konto. Korrigera filens ägare och behörigheter här:";
 "AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab visar med en statusikon om fönstret är minimerat eller i helskärm.";
 "Always" = "Alltid";
+"Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio." = "Ger varje miniatyrbricka samma yttre bredd baserat på det bredaste fönstret i den aktuella uppsättningen. Miniatyrbilderna behåller storlek och bildförhållande.";
+"Uniform tile widths" = "Enhetliga brickbredder";
 "and press" = "och tryck";
 "Animations" = "Animationer";
 "Animations…" = "Animationer…";

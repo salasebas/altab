@@ -23,6 +23,8 @@
 "AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "Berkas preferensi AlTab tidak dapat ditulis oleh akun Anda. Harap perbaiki kepemilikan dan izin berkas di sini:";
 "AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab akan menampilkan ikon status jika jendela saat ini diminimalkan atau dalam layar penuh.";
 "Always" = "Selalu";
+"Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio." = "Membuat setiap ubin gambar mini memiliki lebar luar yang sama, berdasarkan jendela terlebar di set saat ini. Gambar mini tetap berukuran dan beraspek sama.";
+"Uniform tile widths" = "Lebar ubin seragam";
 "and press" = "lalu tekan";
 "Animations" = "Animasi";
 "Animations…" = "Animasi…";
