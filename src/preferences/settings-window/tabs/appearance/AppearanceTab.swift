@@ -597,7 +597,9 @@ class AppearanceTab: NSObject {
     }
 
     @objc static func showCustomizeStyleSheet() {
-        if customizeStyleSheet == nil { customizeStyleSheet = CustomizeStyleSheet() }
+        // Always rebuild so sheet layout (scroll clamp / footer) matches current style and window size.
+        // Cheap: the sheet is a preferences panel, not a hot path.
+        customizeStyleSheet = CustomizeStyleSheet()
         SettingsWindow.shared.beginSheetWithSearchHighlight(customizeStyleSheet)
     }
 
