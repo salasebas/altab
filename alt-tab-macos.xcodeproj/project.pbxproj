@@ -129,6 +129,7 @@
 		5EAA25B2000000000000A003 /* TestInteractionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25B2000000000000A001 /* TestInteractionModel.swift */; };
 		5EAA25B1000000000000A003 /* TestScenarioSimulatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25B1000000000000A001 /* TestScenarioSimulatorTests.swift */; };
 		5F5849B000000000000000B2 /* WindowEventReducerPhantomTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5849B000000000000000B1 /* WindowEventReducerPhantomTests.swift */; };
+5F5849B000000000000000C2 /* WindowEventReducerSpaceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5849B000000000000000C1 /* WindowEventReducerSpaceTests.swift */; };
 		5F5849B100000000000000B2 /* WindowEventReducerFocusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5849B100000000000000B1 /* WindowEventReducerFocusTests.swift */; };
 		5F5849B100000000000000C2 /* WindowEventReducerMinimizeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5849B100000000000000C1 /* WindowEventReducerMinimizeTests.swift */; };
 		5E0DE2A0000000000000D002 /* WindowOrderResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0DE2A0000000000000D001 /* WindowOrderResolver.swift */; };
@@ -484,6 +485,7 @@
 		5EAA25B2000000000000A001 /* TestInteractionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInteractionModel.swift; sourceTree = "<group>"; };
 		5EAA25B1000000000000A001 /* TestScenarioSimulatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenarioSimulatorTests.swift; sourceTree = "<group>"; };
 		5F5849B000000000000000B1 /* WindowEventReducerPhantomTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowEventReducerPhantomTests.swift; sourceTree = "<group>"; };
+5F5849B000000000000000C1 /* WindowEventReducerSpaceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowEventReducerSpaceTests.swift; sourceTree = "<group>"; };
 		5F5849B100000000000000B1 /* WindowEventReducerFocusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowEventReducerFocusTests.swift; sourceTree = "<group>"; };
 		5F5849B100000000000000C1 /* WindowEventReducerMinimizeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowEventReducerMinimizeTests.swift; sourceTree = "<group>"; };
 		5E0DE2A0000000000000D001 /* WindowOrderResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowOrderResolver.swift; sourceTree = "<group>"; };
@@ -981,6 +983,7 @@
 				5EAA25B2000000000000A001 /* TestInteractionModel.swift */,
 				5EAA25B1000000000000A001 /* TestScenarioSimulatorTests.swift */,
 				5F5849B000000000000000B1 /* WindowEventReducerPhantomTests.swift */,
+				5F5849B000000000000000C1 /* WindowEventReducerSpaceTests.swift */,
 				5F5849B100000000000000B1 /* WindowEventReducerFocusTests.swift */,
 				5F5849B100000000000000C1 /* WindowEventReducerMinimizeTests.swift */,
 				5E0DE2A0000000000000D001 /* WindowOrderResolver.swift */,
@@ -1935,6 +1938,7 @@
 				5EAA25B2000000000000A003 /* TestInteractionModel.swift in Sources */,
 				5EAA25B1000000000000A003 /* TestScenarioSimulatorTests.swift in Sources */,
 				5F5849B000000000000000B2 /* WindowEventReducerPhantomTests.swift in Sources */,
+				5F5849B000000000000000C2 /* WindowEventReducerSpaceTests.swift in Sources */,
 				5F5849B100000000000000B2 /* WindowEventReducerFocusTests.swift in Sources */,
 				5F5849B100000000000000C2 /* WindowEventReducerMinimizeTests.swift in Sources */,
 				5E0DE2A0000000000000D003 /* WindowOrderResolver.swift in Sources */,

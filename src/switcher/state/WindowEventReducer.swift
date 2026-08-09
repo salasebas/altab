@@ -110,6 +110,8 @@ enum WindowEventReducer {
         case .spaceMembershipChanged(let wid, let spaceId, let added, let now, let inSpaceTransition):
             return spaceMembershipChanged(&state, wid: wid, spaceId: spaceId, added: added, now: now,
                 inSpaceTransition: inSpaceTransition)
+        case .spaceTransitionStarted:
+            return spaceTransitionStarted(&state)
         case .spaceChangeSettled:
             return spaceChangeSettled(&state)
         case .appActivated(let pid, let now, let altTabTargetWid):
@@ -695,6 +697,26 @@ enum WindowEventReducer {
             w.pid == pid && !state.isTabbed(w) && !w.spaceIds.isEmpty && !w.isWindowlessApp
                 && !w.isFullscreen && w.wid != nil
         }.map { .readTitleAndTabs(wid: $0.wid!, readTabs: true) }
+    }
+
+    /// The Space-switch reaction's CHEAP half, on the leading edge of the 1329/1401 burst: re-read the Space
+    /// topology and re-render an open switcher. It exists because everything below waits for the burst to
+    /// settle, and a summon lands inside that wait routinely — a Space switch and the Cmd+Tab that follows it
+    /// are one gesture (#5864: 50ms apart in the reporter's capture, against a 250ms debounce), so the
+    /// switcher filtered and sorted against the Space the user had just LEFT and visibly re-ordered under
+    /// them a beat later. v11.3.1 had no such gap: it reacted on the leading edge of NSWorkspace's
+    /// `activeSpaceDidChange`. The split is what the debounce is FOR — the per-window Space membership and
+    /// the WS state re-query below are expensive and would be re-run by every event of the burst, while the
+    /// topology is one CGS round-trip (0.1ms p50, measured) and is the only part a summon needs.
+    private static func spaceTransitionStarted(_ state: inout TrackedWindowState) -> [ReducerEffect] {
+        // Deliberately NO `.refreshUi`. Repainting here looks free and is not: `refreshOpenUiAfterExternalEvent`
+        // is throttled at 200ms with a leading edge, so a repaint fired the instant the Space flips SPENDS that
+        // edge, and the update that actually matters — the arriving Space's focus 808, which lands 14-67ms
+        // later (measured) and re-orders the tiles — then waits out the tail. Live capture, switcher open
+        // across the transition: repainting here pushed the MRU correction from ~15ms to 220ms after the
+        // summon. The topology write below is what the leading edge is for; the repaint it feeds is the
+        // settled pass's job, 250ms later, exactly as before.
+        [.refreshSpacesTopology]
     }
 
     /// The Space-switch reaction, once the 1329/1401 burst settles (was `handleSpaceChanged`): refresh the
