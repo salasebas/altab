@@ -9,10 +9,11 @@ This guide covers the supported source-build workflow: prepare one Mac, build a 
 
 | Goal | Command | Result |
 |---|---|---|
+| Everyday optimized install | `scripts/install_local.sh` | Builds Release, safely replaces `/Applications/AlTab.app`, and opens it. |
+| Build only (no install) | `scripts/build_local.sh` | Produces `DerivedData/Local/Build/Products/Release/AlTab.app` and prints its exact path. |
 | Daily development and QA | `scripts/run_debug.sh` | Builds, verifies, installs, and opens `/Applications/AlTab Dev.app`. |
-| Optimized local use | `scripts/build_local.sh` | Produces `DerivedData/Local/Build/Products/Release/AlTab.app` and prints its exact path. |
 
-Use `scripts/run_debug.sh` when changing or testing the app. Its canonical `/Applications` path keeps the Debug bundle ID, filesystem path, and signing requirement stable across Git worktrees. Use `scripts/build_local.sh` when you want the optimized Release app.
+Use `scripts/install_local.sh` for normal local use: it quits a running AlTab, stages a verified copy, replaces any previous `/Applications/AlTab.app`, and rolls back if signature checks fail. Do not `ditto` a quarantined download directly over an existing app. Use `scripts/run_debug.sh` when changing or testing the app (separate Debug product). Use `scripts/build_local.sh` when you only need the Release product under `DerivedData`.
 
 ## Example 1: prepare a Mac and run the right app
 
@@ -64,14 +65,20 @@ The script safely replaces and opens the canonical copy shown below. Do not open
 
 ![Finder Applications showing the canonical AlTab Dev app next to the upstream AltTab app](images/building-and-troubleshooting/altab-dev-applications.png)
 
-For an optimized local Release build:
+For everyday optimized Release use (install into Applications):
+
+```bash
+scripts/install_local.sh
+```
+
+To build without installing:
 
 ```bash
 scripts/build_local.sh
 open "DerivedData/Local/Build/Products/Release/AlTab.app"
 ```
 
-Pass `--universal` only when one bundle must contain both `arm64` and `x86_64`. Native architecture is faster and is the normal local default.
+Pass `--universal` (to `install_local.sh` or `build_local.sh`) only when one bundle must contain both `arm64` and `x86_64`. Native architecture is faster and is the normal local default.
 
 ### 4. Verify the result
 
@@ -146,7 +153,7 @@ Screen Recording remains optional. In AlTab's permissions window, select **Use t
 | Signing identity not found, duplicated, invalid, or incomplete | `Local Self-Signed` was never installed or its Keychain items are inconsistent. | `scripts/codesign/preflight_local_signing.sh` | Follow [Example 2](#example-2-repair-local-self-signed). | The exact identity cannot be distinguished safely from personal certificates. |
 | `User interaction is not allowed` or `errSecInternalComponent` | The login Keychain is locked, the private key is inaccessible, or trust is inconsistent. | Inspect the expanded identity in Keychain Access. | Unlock the login Keychain, then use the repository removal/setup helpers. | A workaround asks for a password or private key in a command argument. |
 | Permission is enabled but AlTab reports denial | The grant belongs to an old bundle, identity, or app path, or the app was not fully relaunched. | Confirm the running Debug app is `/Applications/AlTab Dev.app`. | Follow [Example 3](#example-3-repair-accessibility-and-screen-recording). | You cannot identify which app copy owns the permission row. |
-| The wrong or an old app launches | A `DerivedData` product or old `/Applications` copy was opened directly. | Compare the running app path with the path printed by the build script. | Use `scripts/run_debug.sh`; for Release, use the exact printed path. | The app has an unexpected bundle ID or signing requirement. |
+| The wrong or an old app launches | A `DerivedData` product or old `/Applications` copy was opened directly. | Compare the running app path with the path printed by the build script. | Use `scripts/run_debug.sh` for Debug; for Release use `scripts/install_local.sh` or the exact path printed by `scripts/build_local.sh`. | The app has an unexpected bundle ID or signing requirement. |
 | Build output appears stale | A previous local build product is being reused. | Check the path and configuration printed by the script. | Remove only `DerivedData/Local` for Release or rebuild Debug normally. | Cleanup would target a directory broader than this repository's DerivedData. |
 | A bundle guard, nested-signature, entitlement, or fork-isolation check fails | The built bundle is incomplete or contains unexpected configuration. | Read the first failing check from `scripts/build_local.sh` or `scripts/validate_ci.sh`. | Fix that source/configuration failure and rebuild from a clean local output. | Publishing would reuse upstream signing, update, analytics, licensing, or release infrastructure. |
 | `pnpm`, `rg`, or SwiftFormat is missing | Full contributor validation was requested; these are not required merely to launch a local build. | `command -v pnpm rg swiftformat` | Install the pinned contributor dependencies described in [contributing.md](contributing.md#continuous-integration). | Tool versions differ from the versions pinned by CI. |
@@ -163,7 +170,7 @@ macOS privacy grants are associated with an app's code requirement, not just its
 
 ### Should I use Debug or Release?
 
-Use `scripts/run_debug.sh` while developing and testing. Use `scripts/build_local.sh` when you want the optimized local `AlTab.app`. They intentionally have different product names, bundle identifiers, and output locations.
+Use `scripts/run_debug.sh` while developing and testing. Use `scripts/install_local.sh` (or `scripts/build_local.sh`) when you want the optimized local `AlTab.app`. They intentionally have different product names, bundle identifiers, and output locations.
 
 ### Can I share a compiled build?
 

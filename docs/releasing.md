@@ -1,6 +1,6 @@
 # Source milestones and optional packaging
 
-AlTab is a **source-first**, **source-only** product at the official distribution layer. The supported way to run it is to follow the [building and troubleshooting guide](building-and-troubleshooting.md): clone this repository, install the once-per-Mac **Local Self-Signed** identity, and build locally with `scripts/build_local.sh`. Public milestones are Git tags plus GitHub release notes that point at source. The maintainer does **not** have to publish an official `.app`, installer, Sparkle feed, signing identity, notarization ticket, or update server. `Local Self-Signed` is never a distributable identity.
+AlTab is a **source-first**, **source-only** product at the official distribution layer. The supported way to run it is to follow the [building and troubleshooting guide](building-and-troubleshooting.md): clone this repository, install the once-per-Mac **Local Self-Signed** identity, then use `scripts/install_local.sh` (build + safe `/Applications/AlTab.app` replace) or `scripts/build_local.sh` (build only). Public milestones are Git tags plus GitHub release notes that point at source. The maintainer does **not** have to publish an official `.app`, installer, Sparkle feed, signing identity, notarization ticket, or update server. `Local Self-Signed` is never a distributable identity.
 
 The application license is **GPL-3.0-only**. When a binary is redistributed, GPLv3 §6 requires equivalent access to the complete Corresponding Source that matches that binary; attach the packager's matching source archive (not a mutable branch tip) to the same release as the binary.
 
@@ -179,11 +179,10 @@ There is no in-app updater. From an existing clone:
 ```bash
 git fetch origin --tags
 git checkout altab-vMAJOR.MINOR.PATCH   # or: git pull on main
-scripts/build_local.sh                 # setup_local.sh only if this Mac never installed Local Self-Signed
-open DerivedData/Local/Build/Products/Release/AlTab.app
+scripts/install_local.sh               # setup_local.sh only if this Mac never installed Local Self-Signed
 ```
 
-Or stay on `main` and rebuild after `git pull`. Preferences for the same bundle ID are preserved by macOS.
+Or stay on `main` and run `scripts/install_local.sh` after `git pull`. Preferences for the same bundle ID are preserved by macOS.
 
 ### Claims that source milestones must not make
 
@@ -197,7 +196,7 @@ Or stay on `main` and rebuild after `git pull`. Preferences for the same bundle 
 
 This section is an **optional** downstream tool for people who assemble their own unsigned redistribution artifacts. It is **not** AlTab's normal local build.
 
-Routine local use builds an optimized app with `scripts/build_local.sh` under the tracked **Local Self-Signed** identity (setup once per Mac). Development and QA use `scripts/run_debug.sh`. Neither path packages or publishes anything. Normal pull-request CI validates source, tests, and credential-free Debug/Release compilation; it never needs a user Keychain identity and does not invoke the packager.
+Routine local use installs an optimized app with `scripts/install_local.sh` (or builds only with `scripts/build_local.sh`) under the tracked **Local Self-Signed** identity (setup once per Mac). Development and QA use `scripts/run_debug.sh`. Neither path packages or publishes anything. Normal pull-request CI validates source, tests, and credential-free Debug/Release compilation; it never needs a user Keychain identity and does not invoke the packager.
 
 Redistribution artifacts are assembled from an explicit Git tag or full 40-character commit. The packager exports that revision with `git archive`, builds inside the exported tree at a stable commit-derived path, normalizes package ordering and timestamps, and places that exact source beside the binary. Ignored local configuration such as `config/local.xcconfig`, Keychain identities, and maintainer secrets cannot enter the build.
 

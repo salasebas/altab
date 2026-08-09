@@ -21,9 +21,17 @@ scripts/codesign/setup_local.sh   # once per Mac / user Keychain
 * The helper is idempotent: it reuses a valid existing identity, refuses incomplete or duplicate residue, and never writes certificate material into the repository.
 * The identity is user-level Keychain state. Installing it from any Git worktree makes it available to every other worktree and clone for that macOS user. No per-worktree `config/local.xcconfig` is required for the standard path.
 * `scripts/build_local.sh` and `ai/build.sh` preflight the identity and fail early with remediation when it is missing, invalid, incomplete, or duplicated.
-* Run `scripts/build_local.sh` for optimized `AlTab.app` at `DerivedData/Local/Build/Products/Release/AlTab.app` (native architecture; `--universal` for arm64+x86_64). The guide documents [Release verification](building-and-troubleshooting.md#4-verify-the-result).
-* Run `scripts/run_debug.sh` to build QA `AlTab Dev`, safely replace `/Applications/AlTab Dev.app`, and launch that canonical copy. Use `ai/build.sh` only when you need the generated bundle in `DerivedData` without installing or opening it. The guide shows [how to distinguish the canonical app](building-and-troubleshooting.md#3-build-and-launch). Debug is not the normal end-user path.
+* Run `scripts/install_local.sh` to build optimized Release, safely replace `/Applications/AlTab.app`, and open it (same staging/rollback model as Debug install). Use `scripts/build_local.sh` when you only need the product at `DerivedData/Local/Build/Products/Release/AlTab.app` (native architecture; `--universal` for arm64+x86_64). The guide documents [Release verification](building-and-troubleshooting.md#4-verify-the-result).
+* Run `scripts/run_debug.sh` to build QA `AlTab Dev`, safely replace `/Applications/AlTab Dev.app`, and launch that canonical copy. Use `ai/build.sh` only when you need the generated Debug bundle in `DerivedData` without installing or opening it. The guide shows [how to distinguish the canonical app](building-and-troubleshooting.md#3-build-and-launch). Debug is not the normal end-user path.
 * Remove the identity with `scripts/codesign/remove_local.sh`. If it was installed by the previous helper, use `scripts/codesign/remove_local.sh --include-legacy-admin-trust` to remove its administrative trust entry too. The legacy option requests administrator approval; neither command changes Gatekeeper.
+
+### Canonical local Release installation
+
+```bash
+scripts/install_local.sh
+```
+
+Builds with `scripts/build_local.sh`, verifies `dev.salasebas.AlTab`, quits a running AlTab, stages under `/Applications`, replaces `/Applications/AlTab.app` with rollback on signature failure, strips quarantine when present, and opens the installed app. Do not `ditto` a quarantined download over the destination in place. Flags: `--no-build`, `--no-open`, `--universal`.
 
 ### Canonical Debug QA installation
 
@@ -41,7 +49,7 @@ Use `scripts/run_debug.sh --no-build` to reinstall an existing Debug product or 
 
 Optional ignored `config/local.xcconfig` may set `CODE_SIGN_IDENTITY`, `DEVELOPMENT_TEAM`, and `PRODUCT_BUNDLE_IDENTIFIER` for a personal Apple Development / Developer ID identity. Equivalent one-off environment overrides: `ALTAB_CODE_SIGN_IDENTITY`, `ALTAB_TEAM_ID`, `ALTAB_BUNDLE_ID`. Never auto-select an arbitrary personal identity; never commit private keys, certificates, Team IDs, or generated local config.
 
-The local build never accepts passwords, `.p12` files, private keys, or notarization credentials. It does not import identities, notarize, publish, or upload the app. A custom bundle ID creates a distinct macOS preferences and permissions identity. Source updates are `git pull`, rebuild with `scripts/build_local.sh`, and relaunch or replace the app; there is no Sparkle feed.
+The local build never accepts passwords, `.p12` files, private keys, or notarization credentials. It does not import identities, notarize, publish, or upload the app. A custom bundle ID creates a distinct macOS preferences and permissions identity. Source updates are `git pull` then `scripts/install_local.sh` (or rebuild with `scripts/build_local.sh` and replace the app); there is no Sparkle feed.
 
 ## Continuous integration
 

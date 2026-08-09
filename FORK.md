@@ -11,15 +11,15 @@ This file distinguishes current facts from the intended AlTab product. Do not ma
 - Last reviewed upstream: `v11.4.4` / `081f3ee4014e03557c2ab39e9e168dac308fa49b` (selective product integration complete; see [UPSTREAM.md](UPSTREAM.md))
 - License: GPL-3.0-only
 - Relationship: independent fork; no affiliation or endorsement
-- Product version: `1.0.0` (AlTab SemVer; **not** upstream AltTab `v11.x`)
-- First public milestone: `altab-v1.0.0` — source tag plus optional **unsigned** GitHub Release binaries (not notarized); see [docs/releasing.md](docs/releasing.md)
+- Product version: `1.0.1` (AlTab SemVer; **not** upstream AltTab `v11.x`)
+- First public milestone: `altab-v1.0.0`; current: `altab-v1.0.1` — source tags plus optional **unsigned** GitHub Release binaries (not notarized); see [docs/releasing.md](docs/releasing.md)
 - App Sandbox: disabled (`com.apple.security.app-sandbox` = `false`), same retained policy as upstream; Mac App Store distribution is not supported
 
 ## Product model
 
 AlTab provides the locally implemented functionality in this codebase to every user. Feature behavior remains preference-driven, but availability never depends on a license, trial, account, purchase, elapsed time, network response, or environment variable. There is no activation flow, paid-access state, upgrade prompt, checkout integration, or upstream licensing dependency.
 
-The supported way to run AlTab is to clone the repository and build locally with `scripts/build_local.sh`. Official milestones are source-only Git tags (`altab-v*`) plus release notes—no compiled application is published. There is no Sparkle updater; updates are `git fetch`/`git pull` (or checkout a milestone tag), rebuild, and relaunch. The concise product overview lives in [README.md](README.md); requirements, permissions, local signing, and troubleshooting live in the illustrated [building guide](docs/building-and-troubleshooting.md); optional redistribution packaging lives in [docs/releasing.md](docs/releasing.md).
+The supported way to run AlTab is to clone the repository, run `scripts/codesign/setup_local.sh` once per Mac, then `scripts/install_local.sh` (or `scripts/build_local.sh` for build-only). Official milestones are source-only Git tags (`altab-v*`) plus release notes—no compiled application is published. There is no Sparkle updater; updates are `git fetch`/`git pull` (or checkout a milestone tag), then `scripts/install_local.sh`. The concise product overview lives in [README.md](README.md); requirements, permissions, local signing, and troubleshooting live in the illustrated [building guide](docs/building-and-troubleshooting.md); optional redistribution packaging lives in [docs/releasing.md](docs/releasing.md).
 
 ## Relationship with the earlier MIT AlTab codebase
 
