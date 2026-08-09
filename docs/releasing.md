@@ -230,7 +230,7 @@ Published basenames use a short **artifact label**, not the raw Git tag string:
 
 | Git tag / revision | Artifact label | Example basename |
 | --- | --- | --- |
-| `altab-v1.0.1` | `1.0.1` | `AlTab-1.0.1-macOS-unsigned.dmg` |
+| `altab-v1.0.0` | `1.0.0` | `AlTab-1.0.0-macOS-unsigned.dmg` |
 | Other tags | full tag string | `AlTab-<tag>-…` |
 | Untagged full commit | 12-char short SHA | `AlTab-<shortsha>-…` |
 
@@ -240,7 +240,7 @@ The helper is `release_artifact_label` in `scripts/release_artifact_contracts.sh
 
 The command creates `dist/AlTab-<release>/` containing (human-facing priority order):
 
-1. `AlTab-<release>-macOS-unsigned.dmg`: **light casual download** — only `AlTab.app` plus a drag-to-Applications symlink (no dSYM, no notices). Prefer this for end users who just want to run the app. Example: `AlTab-1.0.1-macOS-unsigned.dmg`.
+1. `AlTab-<release>-macOS-unsigned.dmg`: **light casual download** — only `AlTab.app` plus a drag-to-Applications symlink (no dSYM, no notices). Prefer this for end users who just want to run the app. Example: `AlTab-1.0.0-macOS-unsigned.dmg`.
 2. `AlTab-<release>-macOS-unsigned.zip`: full redistribution package — `AlTab.app`, matching `AlTab.app.dSYM`, GPL and third-party notices, source instructions, release notes, and the build manifest
 3. `AlTab-<release>-source.tar.gz`: the exact tracked source revision, including all build and packaging scripts (not GitHub’s automatic Source code archives)
 4. `SHA256SUMS`: SHA-256 checksums for every other published artifact
@@ -321,7 +321,7 @@ Equivalent environment variables: `ALTAB_DEVELOPER_ID_IDENTITY`, `ALTAB_TEAM_ID`
 
 The notarized path requires `--bundle-id` or `ALTAB_BUNDLE_ID` explicitly. It never reads a default from the invoking checkout, so a local configuration change cannot alter an exact-revision package.
 
-Optional `--output-directory` selects the output root (default `dist/`). Output lands in `dist/AlTab-<release>-notarized/` with the same artifact-label rules as the unsigned packager (`altab-v1.0.1` → basenames under `AlTab-1.0.1-…`):
+Optional `--output-directory` selects the output root (default `dist/`). Output lands in `dist/AlTab-<release>-notarized/` with the same artifact-label rules as the unsigned packager (`altab-v1.0.0` → basenames under `AlTab-1.0.0-…`):
 
 1. `AlTab-<release>-macOS.zip` (signed, notarized, stapled app + dSYM + notices)
 2. `AlTab-<release>-source.tar.gz` (packager corresponding source; not GitHub’s automatic Source code archives)
