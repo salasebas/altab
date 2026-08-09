@@ -29,10 +29,7 @@
 
 # Workflow
 
-- Copy commands from `ai/build.sh` and run them to confirm compilation works after a change. `ai/build.sh` is compile-only; it does **not** authorize opening the DerivedData product.
-- Interactive Debug and permission-sensitive QA: use **only** `scripts/run_debug.sh`, which installs and opens the canonical `/Applications/AlTab Dev.app`. Never `open` (or otherwise launch) `DerivedData/.../AlTab Dev.app` for interactive use — that path is often adhoc-signed and breaks TCC (Accessibility / Screen Recording) even when the Applications copy is allowed.
-- `ai/run.sh` and `ai/profile.sh` launch DerivedData on purpose for **benchmark / Instruments only**. Do not treat them as the QA launch path.
-- Canonical launch and troubleshooting: `docs/building-and-troubleshooting.md`.
+- Compile: `ai/build.sh`. Interactive Debug/QA: only `scripts/run_debug.sh` — never open DerivedData. Details: `docs/building-and-troubleshooting.md`.
 - Git commit messages must respect our pre-hook conventions, and must be clear and high-level, written for end-users (changelog)
 
 # Release identity and unrestricted features
