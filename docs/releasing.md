@@ -167,7 +167,7 @@ Redistribution artifacts are assembled from an explicit Git tag or full 40-chara
 ### Prerequisites
 
 - macOS with Xcode 26 and its command-line tools selected
-- Git, `zip`, `gzip`, `shasum`, and the standard macOS developer tools
+- Git, `zip`, `gzip`, `hdiutil`, `shasum`, and the standard macOS developer tools
 - A revision that already contains the packaging and validation scripts
 
 When maintaining the packaging tool, run its focused preflight explicitly:
@@ -191,15 +191,16 @@ Tags named `altab-vN.N.N` (preferred) or `vN` / `vN.N` / `vN.N.N` set the app bu
 
 The command creates `dist/AlTab-<release>/` containing:
 
-- `AlTab-<release>-macOS-unsigned.zip`: `AlTab.app`, its matching `AlTab.app.dSYM`, GPL and third-party notices, source instructions, release notes, and the build manifest
+- `AlTab-<release>-macOS-unsigned.dmg`: **light casual download** — only `AlTab.app` plus a drag-to-Applications symlink (no dSYM, no notices). Prefer this for end users who just want to run the app.
+- `AlTab-<release>-macOS-unsigned.zip`: full redistribution package — `AlTab.app`, matching `AlTab.app.dSYM`, GPL and third-party notices, source instructions, release notes, and the build manifest
 - `AlTab-<release>-source.tar.gz`: the exact tracked source revision, including all build and packaging scripts
-- `AlTab-<release>-BUILD-MANIFEST.md`: commit, tag, toolchain, SDK, architectures, exact build command, bundle metadata, and signing/notarization status
+- `AlTab-<release>-BUILD-MANIFEST.md`: commit, tag, toolchain, SDK, architectures, exact build command, bundle metadata, light DMG name, and signing/notarization status
 - `AlTab-<release>-RELEASE-NOTES.md`: rendered from the repository template
 - `SHA256SUMS`: SHA-256 checksums for every other published artifact
 
-Anyone who redistributes those artifacts must label them **unsigned and not notarized** and must not tell users to disable system-wide security protections.
+Anyone who redistributes those artifacts must label them **unsigned and not notarized** and must not tell users to disable system-wide security protections. The light `.dmg` never replaces the GPL corresponding-source set: when a binary is published, the full ZIP, source tarball, manifest, notes, and `SHA256SUMS` remain required on the same Release.
 
-The script verifies arm64 and x86_64 slices, matching app/dSYM UUIDs, absence of a Developer ID authority and Team ID, complete checksums and notices, source-archive identity, and both service-isolation and unrestricted-feature guards after extracting the final ZIP. Xcode may emit a non-identifying Mach-O signature even when code signing is disabled; the verifier accepts only that state or a fully unsigned bundle. It rejects known upstream signing identities, update or licensing endpoints, analytics credentials, and release-secret markers.
+The script verifies arm64 and x86_64 slices, matching app/dSYM UUIDs, absence of a Developer ID authority and Team ID, complete checksums and notices, source-archive identity, light-DMG layout (app + Applications link, no dSYM, same app binary as the ZIP), and both service-isolation and unrestricted-feature guards after extracting the final ZIP. Xcode may emit a non-identifying Mach-O signature even when code signing is disabled; the verifier accepts only that state or a fully unsigned bundle. It rejects known upstream signing identities, update or licensing endpoints, analytics credentials, and release-secret markers.
 
 ## Bring-your-own Developer ID (notarized) packaging
 

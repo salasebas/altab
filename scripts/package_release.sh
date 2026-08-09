@@ -20,7 +20,7 @@ fail() {
 
 revision="$1"
 outputRoot="${2:-$repoRoot/dist}"
-for dependency in codesign ditto file git gzip lipo plutil rg shasum tar xcodebuild xcrun zip; do
+for dependency in codesign ditto file git gzip hdiutil lipo plutil rg shasum tar xcodebuild xcrun zip; do
   command -v "$dependency" >/dev/null || fail "missing required dependency: $dependency"
 done
 source "$repoRoot/scripts/release_artifact_contracts.sh"
@@ -68,6 +68,7 @@ sourcePrefix="AlTab-$label-source"
 sourceFilename="$sourcePrefix.tar.gz"
 packageName="$(release_package_name "$label" unsigned)"
 binaryFilename="$packageName.zip"
+dmgFilename="$(release_light_dmg_name "$label")"
 manifestFilename="AlTab-$label-BUILD-MANIFEST.md"
 notesFilename="AlTab-$label-RELEASE-NOTES.md"
 mkdir -p "$publishRoot" "$sourceExtractRoot"
@@ -147,6 +148,7 @@ cat > "$publishRoot/$manifestFilename" <<EOF
 - Commit timestamp: \`$commitTimestamp\`
 - Repository and retained Git history: https://github.com/salasebas/altab
 - Binary artifact: \`$binaryFilename\`
+- Light download artifact: \`$dmgFilename\` (\`AlTab.app\` only, drag-to-Applications layout; **unsigned**)
 - Corresponding source artifact: \`$sourceFilename\`
 - Xcode: \`$xcodeVersion\`
 - Swift: \`$swiftVersion\`
@@ -170,6 +172,7 @@ notes="${notes//\{\{RELEASE\}\}/$label}"
 notes="${notes//\{\{TAG\}\}/$gitTag}"
 notes="${notes//\{\{COMMIT\}\}/$commit}"
 notes="${notes//\{\{BINARY_ARTIFACT\}\}/$binaryFilename}"
+notes="${notes//\{\{DMG_ARTIFACT\}\}/$dmgFilename}"
 notes="${notes//\{\{SOURCE_ARTIFACT\}\}/$sourceFilename}"
 notes="${notes//\{\{MANIFEST\}\}/$manifestFilename}"
 printf '%s\n' "$notes" > "$publishRoot/$notesFilename"
@@ -206,9 +209,12 @@ find "$workRoot/package" -exec touch -h -t "$archiveTimestamp" {} +
   cd "$workRoot/package"
   find "$packageName" -print | LC_ALL=C sort | zip -X -y -q "$publishRoot/$binaryFilename" -@
 )
+dmgStage="$workRoot/dmg-stage"
+dmgCreateLog="$workRoot/dmg-create.log"
+release_create_light_unsigned_dmg "$appPath" "$publishRoot/$dmgFilename" "AlTab" "$dmgStage" "$dmgCreateLog"
 (
   cd "$publishRoot"
-  for artifact in "$binaryFilename" "$sourceFilename" "$manifestFilename" "$notesFilename"; do
+  for artifact in "$binaryFilename" "$dmgFilename" "$sourceFilename" "$manifestFilename" "$notesFilename"; do
     shasum -a 256 "$artifact"
   done > SHA256SUMS
 )

@@ -74,8 +74,14 @@ else
   packageMode="$(release_detect_package_mode "$binaryFilename")"
   packageName="${binaryFilename%.zip}"
 fi
-publishedArtifacts=("$binaryFilename" "$sourceFilename" "$manifestFilename" "$notesFilename")
-for dependency in codesign cmp git gzip lipo otool plutil python3 rg shasum spctl strings tar unzip xcrun; do
+dmgFilename=""
+if [[ "$packageMode" == "unsigned" ]]; then
+  dmgFilename="$(release_light_dmg_name "$label")"
+  publishedArtifacts=("$binaryFilename" "$dmgFilename" "$sourceFilename" "$manifestFilename" "$notesFilename")
+else
+  publishedArtifacts=("$binaryFilename" "$sourceFilename" "$manifestFilename" "$notesFilename")
+fi
+for dependency in codesign cmp git gzip hdiutil lipo otool plutil python3 rg shasum spctl strings tar unzip xcrun; do
   command -v "$dependency" >/dev/null || fail "missing required dependency: $dependency"
 done
 for artifact in "${publishedArtifacts[@]}" SHA256SUMS; do
@@ -150,8 +156,15 @@ notes="$artifactRoot/$notesFilename"
 if [[ "$packageMode" == "unsigned" ]]; then
   release_validate_unsigned_app "$appPath" "$signatureDetails"
   for field in "${releaseManifestFields[@]}"; do require_text "$manifest" "$field"; done
+  require_text "$manifest" "Light download artifact: \`$dmgFilename\`"
   require_text "$notes" 'Signing status: **unsigned**'
   require_text "$notes" 'Notarization status: **not notarized**'
+  require_text "$notes" "$dmgFilename"
+  release_validate_light_unsigned_dmg \
+    "$artifactRoot/$dmgFilename" \
+    "$verifyRoot/dmg-mount" \
+    "$verifyRoot/dmg-codesign-details.txt" \
+    "$appPath"
 else
   teamIdFromManifest="$(sed -n 's/^- Team ID: `\([^`]*\)`/\1/p' "$manifest" | sed -n '1p')"
   identityFromManifest="$(sed -n 's/^- Developer ID identity: `\([^`]*\)`/\1/p' "$manifest" | sed -n '1p')"
