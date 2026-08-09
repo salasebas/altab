@@ -20,6 +20,11 @@ commitSha="$(printf '%s' "$commitSha" | tr '[:upper:]' '[:lower:]')"
 [[ -d "$artifactRoot" ]] || fail "artifact root does not exist: $artifactRoot"
 for dependency in gh git; do command -v "$dependency" >/dev/null || fail "missing required dependency: $dependency"; done
 
+scriptRoot="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=release_artifact_contracts.sh
+source "$scriptRoot/release_artifact_contracts.sh"
+[[ "${releaseArtifactContractsVersion:-}" == "1" ]] || fail "unsupported release artifact contracts version"
+
 artifactDirectories=()
 while IFS= read -r artifactDirectory; do
   artifactDirectories+=("$artifactDirectory")
@@ -32,11 +37,20 @@ while IFS= read -r notesFile; do
 done < <(find "$artifactDirectory" -mindepth 1 -maxdepth 1 -type f -name 'AlTab-*-RELEASE-NOTES.md' -print | LC_ALL=C sort)
 [[ ${#notesFiles[@]} -eq 1 ]] || fail "expected exactly one release-notes file, found ${#notesFiles[@]}"
 notesFile="${notesFiles[0]}"
-artifacts=("$artifactDirectory"/*)
-[[ ${#artifacts[@]} -gt 0 && -e "${artifacts[0]}" ]] || fail "artifact directory is empty"
+artifacts=()
+while IFS= read -r artifact; do
+  artifacts+=("$artifact")
+done < <(find "$artifactDirectory" -mindepth 1 -maxdepth 1 -type f ! -type l -print | LC_ALL=C sort)
+[[ ${#artifacts[@]} -gt 0 ]] || fail "artifact directory is empty"
+localAssetNames=()
 for artifact in "${artifacts[@]}"; do
   [[ -f "$artifact" && ! -L "$artifact" ]] || fail "release artifact is not a regular file: $artifact"
+  localAssetNames+=("$(basename "$artifact")")
 done
+release_audit_published_asset_names "${localAssetNames[@]}"
+if ! printf '%s\n' "${localAssetNames[@]}" | rg -q 'AlTab-.*-macOS(-unsigned)?\.zip'; then
+  fail "publish requires a packaged binary ZIP (unsigned or notarized) plus corresponding source set"
+fi
 
 tagName="$revision"
 if [[ "$revision" =~ ^[0-9a-fA-F]{40}$ ]]; then
@@ -56,6 +70,52 @@ resolve_remote_tag_commit() {
   fi
 }
 
+list_remote_release_asset_names() {
+  local releaseTag="$1"
+  local assetsJson
+  assetsJson="$(gh release view "$releaseTag" --json assets)" || fail "could not read assets for release $releaseTag"
+  python3 -c 'import json,sys; data=json.load(sys.stdin); print("\n".join(asset.get("name","") for asset in data.get("assets",[]) if asset.get("name")))' <<<"$assetsJson"
+}
+
+audit_remote_release() {
+  local releaseTag="$1"
+  local remoteNames=()
+  local remoteName
+  while IFS= read -r remoteName; do
+    [[ -n "$remoteName" ]] || continue
+    remoteNames+=("$remoteName")
+  done < <(list_remote_release_asset_names "$releaseTag")
+  [[ ${#remoteNames[@]} -gt 0 ]] || fail "remote release $releaseTag has no assets after publication"
+  local expectedName
+  for expectedName in "${localAssetNames[@]}"; do
+    printf '%s\n' "${remoteNames[@]}" | rg -qx "$expectedName" || fail "remote release $releaseTag is missing published asset $expectedName"
+  done
+  release_audit_published_asset_names "${remoteNames[@]}"
+}
+
+preflight_existing_assets() {
+  local releaseTag="$1"
+  local remoteNames=()
+  local remoteName
+  local overlap=()
+  while IFS= read -r remoteName; do
+    [[ -n "$remoteName" ]] || continue
+    remoteNames+=("$remoteName")
+  done < <(list_remote_release_asset_names "$releaseTag")
+  local localName
+  for localName in "${localAssetNames[@]}"; do
+    if printf '%s\n' "${remoteNames[@]}" | rg -qx "$localName"; then
+      overlap+=("$localName")
+    fi
+  done
+  [[ ${#overlap[@]} -eq 0 ]] && return 0
+  if [[ "${ALTAB_RELEASE_REPLACE_ASSETS:-}" == "1" ]]; then
+    echo "replacing existing release assets on $releaseTag (ALTAB_RELEASE_REPLACE_ASSETS=1): ${overlap[*]}" >&2
+    return 0
+  fi
+  fail "release $releaseTag already has assets with the same name (${overlap[*]}); refuse to upload duplicates. Set ALTAB_RELEASE_REPLACE_ASSETS=1 to replace explicitly"
+}
+
 remoteTagCommitSha="$(resolve_remote_tag_commit)"
 if [[ -n "$remoteTagCommitSha" ]]; then
   [[ "$remoteTagCommitSha" =~ ^[0-9a-f]{40}$ ]] || fail "remote tag $tagName has an invalid object ID"
@@ -73,7 +133,14 @@ if [[ $releaseViewStatus -eq 0 ]]; then
   remoteTagCommitSha="$(resolve_remote_tag_commit)"
   [[ -n "$remoteTagCommitSha" ]] || fail "release $tagName exists but its tag is missing from origin"
   [[ "$remoteTagCommitSha" == "$commitSha" ]] || fail "remote tag $tagName changed to $remoteTagCommitSha before upload"
-  gh release upload "$tagName" "${artifacts[@]}"
+  preflight_existing_assets "$tagName"
+  uploadArguments=("$tagName")
+  if [[ "${ALTAB_RELEASE_REPLACE_ASSETS:-}" == "1" ]]; then
+    uploadArguments+=(--clobber)
+  fi
+  uploadArguments+=("${artifacts[@]}")
+  gh release upload "${uploadArguments[@]}"
+  audit_remote_release "$tagName"
   exit 0
 fi
 case "$releaseViewOutput" in
@@ -103,3 +170,4 @@ gh release create "$tagName" \
   --title "AlTab $tagName ($mode)" \
   --notes-file "$notesFile" \
   "${artifacts[@]}"
+audit_remote_release "$tagName"

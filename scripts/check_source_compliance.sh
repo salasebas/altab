@@ -56,6 +56,41 @@ for path in "${requiredPaths[@]}"; do require_file "$path"; done
 require_text LICENCE.md 'GNU GENERAL PUBLIC LICENSE'
 require_text LICENCE.md 'Version 3, 29 June 2007'
 require_text vendor/scripts/update_shortcut_recorder.sh 'LICENSE.txt'
+# Canonical human-facing license wording must stay GPL-3.0-only (not ambiguous SPDX, not or-later, not MIT for AlTab).
+humanFacingLicensePaths=(
+  FORK.md
+  README.md
+  NOTICE.md
+  package.json
+  docs/releasing.md
+  .github/SOURCE_MILESTONE_NOTES_TEMPLATE.md
+)
+for path in "${humanFacingLicensePaths[@]}"; do
+  require_file "$path"
+  require_text "$path" 'GPL-3.0-only'
+done
+require_text FORK.md 'License: GPL-3.0-only'
+require_text .github/SOURCE_MILESTONE_NOTES_TEMPLATE.md 'Local Self-Signed'
+require_text docs/releasing.md 'App Sandbox'
+require_text docs/releasing.md 'Mac App Store'
+require_text docs/releasing.md 'AlTab-<release>-source.tar.gz'
+if rg -n 'GPL-3\.0-or-later' "${humanFacingLicensePaths[@]}"; then
+  fail "human-facing metadata must not declare GPL-3.0-or-later"
+fi
+if rg -n 'License: GPL-3\.0[[:space:]]*$' FORK.md; then
+  fail "FORK.md must declare License: GPL-3.0-only, not ambiguous GPL-3.0"
+fi
+if rg -n '"license"[[:space:]]*:[[:space:]]*"MIT"' package.json; then
+  fail "package.json must not declare MIT for AlTab"
+fi
+# Upstream package.json historically said MIT while LICENCE.md/Info.plist said GPLv3.
+# That is provenance only; AlTab must not treat it as an MIT grant for this app.
+require_text FORK.md 'not an MIT grant'
+require_text docs/releasing.md 'com.apple.security.app-sandbox'
+require_text docs/releasing.md 'does **not** support Mac App Store'
+if ! rg -U -q 'com\.apple\.security\.app-sandbox</key>\s*<false/>' alt_tab_macos.entitlements; then
+  fail "alt_tab_macos.entitlements must keep App Sandbox disabled (false)"
+fi
 
 source scripts/forbidden_service_contracts.sh
 operationalPaths=(package.json Info.plist config alt-tab-macos.xcodeproj/project.pbxproj .github/workflows ai scripts src resources/l10n)

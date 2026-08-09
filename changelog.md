@@ -81,19 +81,19 @@ Selective product ports from upstream AltTab **v11.4.4** (`081f3ee4`). Full comm
 
 ## [1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0) — source milestone (2026-08-07)
 
-First audited **source-only** AlTab milestone. Tag: `altab-v1.0.0`.
+First audited **source-only** AlTab baseline. Tag: `altab-v1.0.0` (Git tag; later milestones also publish source-only GitHub Release notes via semantic-release).
 
 ### Product
 
-* Independent GPL-3.0 fork of AltTab with AlTab branding, bundle IDs, and repository links
+* Independent GPL-3.0-only fork of AltTab with AlTab branding, bundle IDs, and repository links
 * Every included user-facing feature available without license, trial, account, or paid-access state
 * One-time local import of compatible AltTab preferences into missing AlTab keys
 * No Sparkle updater, AppCenter/crash reporting, analytics, or upstream licensing endpoints
 
 ### Build and distribution model
 
-* Supported path: clone and build with `scripts/build_local.sh` (Xcode 26)
-* Optional stable local self-signed identity for rebuild-stable permissions
+* Supported path: once-per-Mac `scripts/codesign/setup_local.sh` (**Local Self-Signed**), then `scripts/build_local.sh` (Xcode 26)
+* App Sandbox remains disabled; Mac App Store distribution is not supported
 * Source validation CI only; optional GPL redistribution packaging is isolated and never publishes automatically
 * Redistributable symbol assets (no restricted Apple font subset)
 

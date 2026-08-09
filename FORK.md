@@ -9,9 +9,10 @@ This file distinguishes current facts from the intended AlTab product. Do not ma
 - Fork point: `v11.4.3`
 - Fork commit: `10af70aaaaac0a2dbb7d0aaa61cda21b065c203f`
 - Last reviewed upstream: `v11.4.4` / `081f3ee4014e03557c2ab39e9e168dac308fa49b` (selective product integration complete; see [UPSTREAM.md](UPSTREAM.md))
-- License: GPL-3.0
+- License: GPL-3.0-only
 - Relationship: independent fork; no affiliation or endorsement
-- First source milestone: `altab-v1.0.0` (product version `1.0.0`; see [docs/releasing.md](docs/releasing.md))
+- First source milestone tag: `altab-v1.0.0` (product version `1.0.0`); latest published source-only GitHub Release follows `altab-v*` tags (see [docs/releasing.md](docs/releasing.md))
+- App Sandbox: disabled (`com.apple.security.app-sandbox` = `false`), same retained policy as upstream; Mac App Store distribution is not supported
 
 ## Product model
 
@@ -21,7 +22,9 @@ The supported way to run AlTab is to clone the repository and build locally with
 
 ## Relationship with the earlier MIT AlTab codebase
 
-MIT-licensed AlTab code and artwork may be incorporated into this GPL fork when its copyright and license notice are preserved. The combined application remains GPL-covered. Do not copy GPL-covered implementation from this fork back into the MIT project and present the result as MIT-only.
+MIT-licensed AlTab code and artwork may be incorporated into this GPL fork when its copyright and license notice are preserved. The combined application remains GPL-3.0-only. Do not copy GPL-covered implementation from this fork back into the MIT project and present the result as MIT-only.
+
+Upstream AltTab has a historical metadata discrepancy: its root `LICENCE.md` / `Info.plist` say GPLv3 while upstream `package.json` has said MIT. That upstream `package.json` line is **provenance only** and is **not an MIT grant** for this application. AlTab keeps its own canonical declaration at **GPL-3.0-only**.
 
 ## Upstream integration policy
 
@@ -66,15 +69,17 @@ Security-related upstream work receives priority, but there is no promise of imm
 
 ### Distribution and compliance
 
-- [x] Correct all root metadata so it consistently declares the GPL license.
+- [x] Correct all root metadata so it consistently declares **GPL-3.0-only** (not ambiguous bare GPL-3.0, not the SPDX “or later” form, not MIT for the app).
 - [x] Keep corresponding source, build scripts, copyright notices, Git history, and third-party licenses available with every binary distribution.
 - [x] Document the source-first clone, local Release build, permissions, signing choices, and `git pull` update path in the README and canonical building guide (no official binary distribution required for local use).
 - [x] Test a clean install, upgrade, uninstall, Accessibility permissions, Screen Recording permissions, login item behavior, and side-by-side behavior with official AltTab.
 - [x] Either sign and notarize releases with the fork maintainer's stable Developer ID or label every unsigned preview prominently in the README and release notes. **Source-only path remains valid for official milestones.** Local interactive builds use once-per-Mac **Local Self-Signed** (not a distributable identity); validation CI remains credential-free. Optional redistribution packaging supports explicit **unsigned** (`scripts/package_release.sh`) and bring-your-own **Developer ID + notarization** (`scripts/package_notarized_release.sh`, manual `.github/workflows/release.yml`) paths. The notarized path never silently falls back to unsigned. Any unsigned binary redistribution must be labeled **unsigned and not notarized**.
 - [x] Publish checksums and describe exactly how each release artifact was built. Both packagers emit `SHA256SUMS` when used; official milestones may still attach no binaries.
+- [x] Document App Sandbox as disabled (upstream-retained) and state that Mac App Store distribution is not supported; do not flip `com.apple.security.app-sandbox` to `true` without a separate feasibility project.
+- [x] Distinguish GitHub auto source snapshots, packager source tarballs, Actions artifacts, and GitHub Release assets; require a post-upload audit when binaries are published.
 
 ## Suggested public wording
 
 Use wording with this level of precision for source milestones:
 
-> AlTab is an independent GPL-3.0 fork of AltTab for macOS. It is not affiliated with or endorsed by the upstream project. Upstream reliability and security changes are reviewed and selectively ported, but updates are not automatic and this fork may lag behind upstream. Official milestones are source-only: clone the tagged revision and build locally. There is no official compiled binary, Sparkle feed, or automatic security update channel.
+> AlTab is an independent GPL-3.0-only fork of AltTab for macOS. It is not affiliated with or endorsed by the upstream project. Upstream reliability and security changes are reviewed and selectively ported, but updates are not automatic and this fork may lag behind upstream. Official milestones are source-only: clone the tagged revision and build locally with Local Self-Signed. There is no official compiled binary, Sparkle feed, automatic security update channel, or Mac App Store listing.

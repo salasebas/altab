@@ -343,27 +343,96 @@ EOF
 #!/usr/bin/env bash
 set -euo pipefail
 printf '%s\n' "$*" >>"${PUBLISH_TEST_STATE_ROOT:?}/gh-args.log"
+stateRoot="${PUBLISH_TEST_STATE_ROOT:?}"
+assetsFile="$stateRoot/release-assets"
+createdMarker="$stateRoot/release-created"
+record_assets_from_args() {
+  local argument base
+  for argument in "$@"; do
+    [[ -f "$argument" ]] || continue
+    base="$(basename "$argument")"
+    if [[ -f "$assetsFile" ]] && rg -qx "$base" "$assetsFile"; then
+      continue
+    fi
+    printf '%s\n' "$base" >>"$assetsFile"
+  done
+}
+emit_assets_json() {
+  python3 - "$assetsFile" <<'PY'
+import json, sys
+path = sys.argv[1]
+names = []
+try:
+    with open(path, encoding="utf-8") as handle:
+        names = [line.strip() for line in handle if line.strip()]
+except FileNotFoundError:
+    names = []
+print(json.dumps({"assets": [{"name": name} for name in names], "tagName": "preview"}))
+PY
+}
 if [[ "$1" == "api" ]]; then
   sha=""
   for argument in "$@"; do case "$argument" in sha=*) sha="${argument#sha=}" ;; esac; done
   [[ "$sha" =~ ^[0-9a-fA-F]{40}$ ]] || exit 99
-  printf '%s\n' "$sha" >"$PUBLISH_TEST_STATE_ROOT/remote-tag-sha"
+  printf '%s\n' "$sha" >"$stateRoot/remote-tag-sha"
   exit 0
 fi
 if [[ "$1" == "release" && "$2" == "view" ]]; then
+  wantsAssets=false
+  printf '%s\n' "$*" | rg -q -- '--json' && printf '%s\n' "$*" | rg -q 'assets' && wantsAssets=true
   case "${PUBLISH_TEST_GH_MODE:-absent}" in
-    absent) echo 'release not found' >&2; exit 1 ;;
-    existing) echo '{"tagName":"preview"}'; exit 0 ;;
+    absent)
+      if [[ -f "$createdMarker" ]]; then
+        if [[ "$wantsAssets" == true ]]; then emit_assets_json; else echo '{"tagName":"preview"}'; fi
+        exit 0
+      fi
+      echo 'release not found' >&2
+      exit 1
+      ;;
+    existing)
+      if [[ ! -f "$assetsFile" && -n "${PUBLISH_TEST_EXISTING_ASSETS:-}" ]]; then
+        printf '%s\n' ${PUBLISH_TEST_EXISTING_ASSETS// /$'\n'} >"$assetsFile"
+      fi
+      if [[ "$wantsAssets" == true ]]; then emit_assets_json; else echo '{"tagName":"preview"}'; fi
+      exit 0
+      ;;
     error) echo 'network unavailable' >&2; exit 1 ;;
     *) exit 97 ;;
   esac
 fi
-if [[ "$1" == "release" && ( "$2" == "create" || "$2" == "upload" ) ]]; then
+if [[ "$1" == "release" && "$2" == "create" ]]; then
+  record_assets_from_args "$@"
+  : >"$createdMarker"
+  exit 0
+fi
+if [[ "$1" == "release" && "$2" == "upload" ]]; then
+  record_assets_from_args "$@"
+  : >"$createdMarker"
   exit 0
 fi
 exit 98
 EOF
   chmod +x "$testRoot/bin/"*
+}
+
+write_publish_artifact_set() {
+  local directory="$1"
+  local label="$2"
+  local packageMode="${3:-notarized}"
+  local packageName
+  packageName="$(
+    bash -c '
+      fail() { echo "$1" >&2; exit 1; }
+      source scripts/release_artifact_contracts.sh
+      release_package_name "'"$label"'" "'"$packageMode"'"
+    '
+  )"
+  mkdir -p "$directory"
+  printf 'binary\n' >"$directory/${packageName}.zip"
+  printf 'source\n' >"$directory/AlTab-${label}-source.tar.gz"
+  printf 'manifest\n' >"$directory/AlTab-${label}-BUILD-MANIFEST.md"
+  printf 'notes\n' >"$directory/AlTab-${label}-RELEASE-NOTES.md"
+  printf 'deadbeef  %s\n' "${packageName}.zip" >"$directory/SHA256SUMS"
 }
 
 run_contract_helpers() {
@@ -632,11 +701,9 @@ done
 
 # --- GitHub Release publication behavior ---
 publishRevision=1111111111111111111111111111111111111111
-mkdir -p "$testRoot/publish/one"
-printf 'notes\n' >"$testRoot/publish/one/AlTab-test-RELEASE-NOTES.md"
-printf 'artifact\n' >"$testRoot/publish/one/AlTab-test.zip"
+write_publish_artifact_set "$testRoot/publish/one" "test" notarized
 : >"$testRoot/state/gh-args.log"
-rm -f "$testRoot/state/remote-tag-sha"
+rm -f "$testRoot/state/remote-tag-sha" "$testRoot/state/release-assets" "$testRoot/state/release-created"
 env PATH="$testRoot/bin:$PATH" PUBLISH_TEST_STATE_ROOT="$testRoot/state" PUBLISH_TEST_GH_MODE=absent PUBLISH_TEST_REMOTE_TAG_MODE=missing \
   scripts/publish_release_artifacts.sh "$publishRevision" "$publishRevision" notarized "$testRoot/publish" true \
   >"$testRoot/publish-create.log" 2>&1 || fail "new release publication failed"
@@ -645,9 +712,12 @@ require_text "$testRoot/state/gh-args.log" "--target $publishRevision"
 require_text "$testRoot/state/gh-args.log" '--draft'
 require_text "$testRoot/state/gh-args.log" '--verify-tag'
 require_text "$testRoot/state/gh-args.log" 'api --method POST repos/{owner}/{repo}/git/refs'
+require_text "$testRoot/state/release-assets" 'AlTab-test-macOS.zip'
+require_text "$testRoot/state/release-assets" 'AlTab-test-source.tar.gz'
+require_text "$testRoot/state/release-assets" 'SHA256SUMS'
 
 : >"$testRoot/state/gh-args.log"
-rm -f "$testRoot/state/remote-tag-sha"
+rm -f "$testRoot/state/remote-tag-sha" "$testRoot/state/release-assets" "$testRoot/state/release-created"
 env PATH="$testRoot/bin:$PATH" PUBLISH_TEST_STATE_ROOT="$testRoot/state" PUBLISH_TEST_GH_MODE=existing PUBLISH_TEST_REMOTE_TAG_MODE=present PUBLISH_TEST_REMOTE_TAG_SHA="$publishRevision" \
   scripts/publish_release_artifacts.sh "$publishRevision" "$publishRevision" notarized "$testRoot/publish" false \
   >"$testRoot/publish-upload.log" 2>&1 || fail "existing release upload failed"
@@ -655,14 +725,59 @@ require_text "$testRoot/state/gh-args.log" 'release upload preview-111111111111-
 if rg -q -F 'release create' "$testRoot/state/gh-args.log"; then fail "existing release must not be recreated"; fi
 
 : >"$testRoot/state/gh-args.log"
-rm -f "$testRoot/state/remote-tag-sha"
+rm -f "$testRoot/state/remote-tag-sha" "$testRoot/state/release-assets" "$testRoot/state/release-created"
 env PATH="$testRoot/bin:$PATH" PUBLISH_TEST_STATE_ROOT="$testRoot/state" PUBLISH_TEST_GH_MODE=existing PUBLISH_TEST_REMOTE_TAG_MODE=present PUBLISH_TEST_REMOTE_TAG_SHA="$publishRevision" \
   scripts/publish_release_artifacts.sh altab-v1.2.3 "$publishRevision" notarized "$testRoot/publish" false \
   >"$testRoot/publish-tagged-upload.log" 2>&1 || fail "existing tagged source-only release upload failed"
 require_text "$testRoot/state/gh-args.log" 'release upload altab-v1.2.3'
 
+# Duplicate asset names fail closed unless ALTAB_RELEASE_REPLACE_ASSETS=1.
 : >"$testRoot/state/gh-args.log"
-rm -f "$testRoot/state/remote-tag-sha"
+rm -f "$testRoot/state/remote-tag-sha" "$testRoot/state/release-created"
+printf '%s\n' 'AlTab-test-macOS.zip' >"$testRoot/state/release-assets"
+if env PATH="$testRoot/bin:$PATH" PUBLISH_TEST_STATE_ROOT="$testRoot/state" PUBLISH_TEST_GH_MODE=existing PUBLISH_TEST_REMOTE_TAG_MODE=present PUBLISH_TEST_REMOTE_TAG_SHA="$publishRevision" \
+  scripts/publish_release_artifacts.sh "$publishRevision" "$publishRevision" notarized "$testRoot/publish" false \
+  >"$testRoot/publish-duplicate.log" 2>&1; then
+  fail "duplicate release assets must fail without ALTAB_RELEASE_REPLACE_ASSETS=1"
+fi
+require_text "$testRoot/publish-duplicate.log" 'already has assets'
+if rg -q -F 'release upload' "$testRoot/state/gh-args.log"; then fail "duplicate assets must fail before upload"; fi
+
+: >"$testRoot/state/gh-args.log"
+rm -f "$testRoot/state/remote-tag-sha" "$testRoot/state/release-created"
+printf '%s\n' 'AlTab-test-macOS.zip' >"$testRoot/state/release-assets"
+env PATH="$testRoot/bin:$PATH" PUBLISH_TEST_STATE_ROOT="$testRoot/state" PUBLISH_TEST_GH_MODE=existing PUBLISH_TEST_REMOTE_TAG_MODE=present PUBLISH_TEST_REMOTE_TAG_SHA="$publishRevision" \
+  ALTAB_RELEASE_REPLACE_ASSETS=1 \
+  scripts/publish_release_artifacts.sh "$publishRevision" "$publishRevision" notarized "$testRoot/publish" false \
+  >"$testRoot/publish-replace.log" 2>&1 || fail "explicit asset replacement must succeed"
+require_text "$testRoot/state/gh-args.log" '--clobber'
+require_text "$testRoot/publish-replace.log" 'ALTAB_RELEASE_REPLACE_ASSETS=1'
+
+# Incomplete binary set is rejected before calling gh.
+mkdir -p "$testRoot/publish-incomplete/one"
+printf 'notes\n' >"$testRoot/publish-incomplete/one/AlTab-test-RELEASE-NOTES.md"
+printf 'binary\n' >"$testRoot/publish-incomplete/one/AlTab-test-macOS.zip"
+: >"$testRoot/state/gh-args.log"
+if env PATH="$testRoot/bin:$PATH" PUBLISH_TEST_STATE_ROOT="$testRoot/state" PUBLISH_TEST_GH_MODE=absent PUBLISH_TEST_REMOTE_TAG_MODE=missing \
+  scripts/publish_release_artifacts.sh "$publishRevision" "$publishRevision" notarized "$testRoot/publish-incomplete" false \
+  >"$testRoot/publish-incomplete.log" 2>&1; then
+  fail "incomplete binary artifact set must fail"
+fi
+require_text "$testRoot/publish-incomplete.log" 'missing'
+[[ ! -s "$testRoot/state/gh-args.log" ]] || fail "incomplete set must fail before calling gh"
+
+# Contract helper: source-only asset lists pass; binary without source fails.
+run_contract_helpers "$testRoot/audit-source-only.log" \
+  'release_audit_published_asset_names "AlTab-1.0.0-RELEASE-NOTES.md"' \
+  || fail "source-only release asset list must pass"
+if run_contract_helpers "$testRoot/audit-binary-missing-source.log" \
+  'release_audit_published_asset_names "AlTab-1.0.0-macOS.zip" "SHA256SUMS"'; then
+  fail "binary without source must fail remote audit"
+fi
+require_text "$testRoot/audit-binary-missing-source.log" 'source.tar.gz'
+
+: >"$testRoot/state/gh-args.log"
+rm -f "$testRoot/state/remote-tag-sha" "$testRoot/state/release-assets" "$testRoot/state/release-created"
 if env PATH="$testRoot/bin:$PATH" PUBLISH_TEST_STATE_ROOT="$testRoot/state" PUBLISH_TEST_GH_MODE=absent PUBLISH_TEST_REMOTE_TAG_MODE=present PUBLISH_TEST_REMOTE_TAG_SHA=2222222222222222222222222222222222222222 \
   scripts/publish_release_artifacts.sh "$publishRevision" "$publishRevision" notarized "$testRoot/publish" false \
   >"$testRoot/publish-tag-conflict.log" 2>&1; then
@@ -672,7 +787,7 @@ require_text "$testRoot/publish-tag-conflict.log" 'instead of'
 [[ ! -s "$testRoot/state/gh-args.log" ]] || fail "remote tag conflict must fail before calling gh"
 
 : >"$testRoot/state/gh-args.log"
-rm -f "$testRoot/state/remote-tag-sha"
+rm -f "$testRoot/state/remote-tag-sha" "$testRoot/state/release-assets" "$testRoot/state/release-created"
 if env PATH="$testRoot/bin:$PATH" PUBLISH_TEST_STATE_ROOT="$testRoot/state" PUBLISH_TEST_GH_MODE=error PUBLISH_TEST_REMOTE_TAG_MODE=present PUBLISH_TEST_REMOTE_TAG_SHA="$publishRevision" \
   scripts/publish_release_artifacts.sh "$publishRevision" "$publishRevision" notarized "$testRoot/publish" false \
   >"$testRoot/publish-lookup-error.log" 2>&1; then
@@ -702,7 +817,7 @@ fi
 require_text "$testRoot/publish-many-notes.log" 'expected exactly one release-notes file'
 
 mkdir -p "$testRoot/publish-no-notes/one"
-printf 'artifact\n' >"$testRoot/publish-no-notes/one/AlTab-test.zip"
+printf 'artifact\n' >"$testRoot/publish-no-notes/one/AlTab-test-macOS.zip"
 if env PATH="$testRoot/bin:$PATH" PUBLISH_TEST_STATE_ROOT="$testRoot/state" PUBLISH_TEST_GH_MODE=absent PUBLISH_TEST_REMOTE_TAG_MODE=missing \
   scripts/publish_release_artifacts.sh "$publishRevision" "$publishRevision" notarized "$testRoot/publish-no-notes" false \
   >"$testRoot/publish-no-notes.log" 2>&1; then

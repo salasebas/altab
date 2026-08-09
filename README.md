@@ -13,14 +13,14 @@ An independent, community-maintained fork of [AltTab for macOS](https://github.c
 
 ## Current source milestone
 
-The first audited **source-only** milestone is **[AlTab 1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0)** (`altab-v1.0.0`). It is a Git tag and release notes only—no `.app`, DMG, PKG, or update feed is attached. Product versioning, future milestones, and update/rebuild steps are documented in [docs/releasing.md](docs/releasing.md).
+The latest published **source-only** milestone is **[AlTab 1.1.0](https://github.com/salasebas/altab/releases/tag/altab-v1.1.0)** (`altab-v1.1.0`): a Git tag plus GitHub release notes—no `.app`, DMG, PKG, or update feed is attached. The first audited baseline tag is `altab-v1.0.0`. Product versioning, future milestones, and update/rebuild steps are documented in [docs/releasing.md](docs/releasing.md).
 
-Pin a clean checkout to that milestone when you want a frozen, reviewed revision:
+Pin a clean checkout to a milestone when you want a frozen, reviewed revision:
 
 ```bash
 git clone https://github.com/salasebas/altab.git
 cd altab
-git checkout altab-v1.0.0
+git checkout altab-v1.1.0
 scripts/codesign/setup_local.sh   # once per Mac
 scripts/build_local.sh
 ```
@@ -137,6 +137,8 @@ Last reviewed upstream revision: AltTab `v11.4.4` (`081f3ee4014e03557c2ab39e9e16
 
 ## License and attribution
 
-The application remains available under the [GNU General Public License v3](LICENCE.md). Distributions of modified binaries must satisfy the GPL's source and notice requirements. Copyright and provenance are summarized in [NOTICE.md](NOTICE.md), and third-party acknowledgments and license locations are in [docs/acknowledgments.md](docs/acknowledgments.md).
+The application is licensed **GPL-3.0-only** ([GNU General Public License v3](LICENCE.md)). Distributions of modified binaries must satisfy the GPL's source and notice requirements. Copyright and provenance are summarized in [NOTICE.md](NOTICE.md), and third-party acknowledgments and license locations are in [docs/acknowledgments.md](docs/acknowledgments.md).
+
+App Sandbox is disabled in this project (same retained entitlement as upstream). The supported binary channel—if you package one yourself—is direct distribution (unsigned with a warning, or Developer ID signed/notarized with your identity). Mac App Store distribution is not supported.
 
 The AlTab icon used on this page comes from the maintainer's [earlier AlTab codebase](https://github.com/salasebas/altab-archived) and is separate from the upstream AltTab branding. Its provenance and license are recorded in [docs/brand/README.md](docs/brand/README.md).
