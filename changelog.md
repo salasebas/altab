@@ -11,6 +11,7 @@ Entries below the AlTab fork point are retained upstream AltTab history. They do
 
 ### Bug Fixes
 
+* **release:** Accumulate Unreleased until intentional cut ([ad973a3](https://github.com/salasebas/altab/commit/ad973a39f013b760df5ced86fac904fdb00b9af3)) by @salasebas
 * **release:** Use SemVer basenames and clarify download UX ([59a098c](https://github.com/salasebas/altab/commit/59a098ce5364e02e548ca14c52d02f6d53365d57)) by @salasebas
 * **release:** Harden empty-asset publish and announce 1.0.1 ([#90](https://github.com/salasebas/altab/issues/90)) ([2eace88](https://github.com/salasebas/altab/commit/2eace88d4ae32fb0ef8cb5d55d6ff521357237ac)) by @salasebas in [#90](https://github.com/salasebas/altab/pull/90)
 
