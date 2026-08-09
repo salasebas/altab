@@ -5,9 +5,10 @@
 # package.json on an intentional cut.
 #
 # Commands:
-#   update              Rewrite ## Unreleased from commits since last altab-v* tag
-#   promote <X.Y.Z>     Promote Unreleased → ## [X.Y.Z], clear Unreleased, set package.json version
+#   update              Optional local preview: rewrite ## Unreleased from commits since last altab-v* tag
+#   promote <X.Y.Z>     Write ## [X.Y.Z] from commits since last tag, clear Unreleased, set package.json version
 #   notes <X.Y.Z>       Print release notes body for the given version (stdout)
+# CI runs promote only on intentional workflow_dispatch; update is not run on merge to main.
 set -euo pipefail
 
 repoRoot="$(cd "$(dirname "$0")/.." && pwd)"
