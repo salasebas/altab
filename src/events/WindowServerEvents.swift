@@ -50,6 +50,18 @@ class WindowServerEvents {
             if let app = runningApp(note) {
                 let pid = app.processIdentifier
                 Applications.frontmostPid = pid
+                // Re-evaluate the "ignore shortcuts" exception the moment an app becomes frontmost, whatever
+                // happens to the window MRU below (#5842 / AlTab #43). The window-focus paths also call this,
+                // but they only fire once a window is resolved and bumped — an activation that emits no 808
+                // and whose AX focused-window read fails or races (iTerm2 is AX-heavy) would never disable the
+                // shortcut, and an app already frontmost when AlTab (re)launches never got a bump at all. This
+                // app-activation floor restores the pre-WS-migration guarantee
+                // (`checkIfShortcutsShouldBeDisabled(nil, app)` that closed upstream #5228). `focusedWindow`
+                // may be stale/nil; it only feeds the `.whenFullscreen` rule, and the app itself is what the
+                // `.always` rule keys off. Adapted from upstream e2db26d4.
+                if let frontmostApp = Applications.findOrCreate(pid, false) {
+                    App.checkIfShortcutsShouldBeDisabled(frontmostApp.focusedWindow, frontmostApp)
+                }
                 // On activation macOS emits 808s for the app's on-Space windows: the FIRST is the focused
                 // window (bumped by the 808 handler), the rest are raises (see `pendingActivationRaises`).
                 // Re-fronting the raises would reverse the app's MRU order (regression from the AX→WS
