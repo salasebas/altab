@@ -85,6 +85,19 @@ releaseUpstreamBundleIdPrefix='com.lwouis.'
 releaseLocalSelfSignedIdentity='Local Self-Signed'
 releaseForbiddenIdentityPattern='Local Self-Signed|Apple Development|Apple Distribution|Louis Pontoise'
 
+# Map a Git tag (or untagged marker) to the basename label used in published artifacts.
+# Milestone tags altab-vMAJOR.MINOR.PATCH become MAJOR.MINOR.PATCH so filenames are
+# AlTab-1.0.1-… rather than AlTab-altab-v1.0.1-…. Other tags and short SHAs pass through.
+# The Git tag itself stays altab-v*; only artifact basenames use the SemVer portion.
+release_artifact_label() {
+  local gitTag="$1"
+  if [[ "$gitTag" =~ ^altab-v([0-9]+(\.[0-9]+){0,2})$ ]]; then
+    printf '%s' "${BASH_REMATCH[1]}"
+  else
+    printf '%s' "$gitTag"
+  fi
+}
+
 release_package_name() {
   local label="$1"
   local mode="$2"
