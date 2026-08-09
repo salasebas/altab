@@ -190,6 +190,9 @@
 		BF0C8879F979414A87AB2958 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = BF0C89348E07FC05870FEE62 /* InfoPlist.strings */; };
 		BF0C88A9AB286CB7CDC1019E /* MainMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8468DF35990A7731D86C /* MainMenu.swift */; };
 		BF0C896B5D08B7DA8F2024AC /* KeyRepeatTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8D606B53D315F2D9927B /* KeyRepeatTimer.swift */; };
+		5E5EA12E0000000000000002 /* KeyRepeatTimerTestable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5EA12E0000000000000001 /* KeyRepeatTimerTestable.swift */; };
+		5E5EA12E0000000000000003 /* KeyRepeatTimerTestable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5EA12E0000000000000001 /* KeyRepeatTimerTestable.swift */; };
+		5E5EA12E0000000000000102 /* KeyRepeatTimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E5EA12E0000000000000101 /* KeyRepeatTimerTests.swift */; };
 		BF0C8973EC078169170F2634 /* CliEvents.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8C69316EAAF6DC9AE391 /* CliEvents.swift */; };
 		BF0C898511686611E4D7D81E /* Button.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8B2C057099EDABE46779 /* Button.swift */; };
 		BF0C8991399A3277A9A02FFA /* LightImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BF0C8E63BE7394A6591E74E0 /* LightImageView.swift */; };
@@ -538,6 +541,9 @@
 		BF0C8CE7BBC3B9B0CEC008FF /* vi */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.strings; name = vi; path = Localizable.strings; sourceTree = "<group>"; };
 		BF0C8D57C86AF492D43A576D /* AppearanceTestable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AppearanceTestable.swift; sourceTree = "<group>"; };
 		BF0C8D606B53D315F2D9927B /* KeyRepeatTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyRepeatTimer.swift; sourceTree = "<group>"; };
+		5E5EA12E0000000000000001 /* KeyRepeatTimerTestable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRepeatTimerTestable.swift; sourceTree = "<group>"; };
+		5E5EA12E0000000000000101 /* KeyRepeatTimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyRepeatTimerTests.swift; sourceTree = "<group>"; };
+		5E5EA12E0000000000000201 /* KeyRepeatTimerSpecs.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = KeyRepeatTimerSpecs.md; sourceTree = "<group>"; };
 		BF0C8DC2A355E29516DD2FAF /* CustomRecorderControlTestable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomRecorderControlTestable.swift; sourceTree = "<group>"; };
 		BF0C8DCAC388B07C369E9771 /* test-base.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = "test-base.xcconfig"; sourceTree = "<group>"; };
 		BF0C8FACE000000000000001 /* WindowServerEvents.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowServerEvents.swift; sourceTree = "<group>"; };
@@ -1067,6 +1073,9 @@
 				BF0C84933936C6FE676CD33C /* AppearanceTests.swift */,
 				AA974BA829B7D84C0099A29E /* PreviewPanel.swift */,
 				BF0C8D606B53D315F2D9927B /* KeyRepeatTimer.swift */,
+				5E5EA12E0000000000000001 /* KeyRepeatTimerTestable.swift */,
+				5E5EA12E0000000000000101 /* KeyRepeatTimerTests.swift */,
+				5E5EA12E0000000000000201 /* KeyRepeatTimerSpecs.md */,
 				D04BA62E30174C336E4080FA /* main-window */,
 				F00DCAFE0000000000000002 /* Search.swift */,
 				F00DCAFE0000000000000003 /* SearchTestable.swift */,
@@ -1778,6 +1787,8 @@
 				5EA8E110000000000000DA12 /* DragAndDropResolverTests.swift in Sources */,
 				5F4753072CEE5A2E002C6C5E /* AppearanceTestable.swift in Sources */,
 				BF0C8B787C76D9B961CC2F45 /* KeyboardEventsTests.swift in Sources */,
+				5E5EA12E0000000000000003 /* KeyRepeatTimerTestable.swift in Sources */,
+				5E5EA12E0000000000000102 /* KeyRepeatTimerTests.swift in Sources */,
 				BF0CAAAA0000000000001001 /* SearchTests.swift in Sources */,
 				BF0CBBBB0000000000001001 /* OnActionExtensionTests.swift in Sources */,
 				BF0CDDDD0000000000001001 /* ResizedCopyWithCoreGraphicsTests.swift in Sources */,
@@ -1980,6 +1991,7 @@
 				BF0C8A1B5C3D7E9F01234567 /* SleepWakeEvents.swift in Sources */,
 				BF0C8C3D7E5F90A123456789 /* ScreenLockEvents.swift in Sources */,
 				BF0C896B5D08B7DA8F2024AC /* KeyRepeatTimer.swift in Sources */,
+				5E5EA12E0000000000000002 /* KeyRepeatTimerTestable.swift in Sources */,
 				BF0C8249228867A3188E13F3 /* SystemAppearanceEvents.swift in Sources */,
 				BF0C827A169F0DE86C8F12AD /* SystemScrollerStyleEvents.swift in Sources */,
 				BF0C8846AFEE2FFF93FAB36F /* AppearanceTestable.swift in Sources */,

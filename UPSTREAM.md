@@ -10,7 +10,7 @@ This log records how far upstream has been reviewed. “Reviewed” does not mea
 | Fork point | `v11.4.3` |
 | Fork commit | `10af70aaaaac0a2dbb7d0aaa61cda21b065c203f` |
 | Last reviewed commit | `081f3ee4014e03557c2ab39e9e168dac308fa49b` |
-| Last review date | 2026-08-07 |
+| Last review date | 2026-08-08 |
 | AlTab source milestone at this baseline | `altab-v1.0.0` (product `1.0.0`) |
 
 “Reviewed” and “source milestone” do **not** mean AlTab has automatic security updates or feature parity with upstream.
@@ -31,3 +31,4 @@ This log records how far upstream has been reviewed. “Reviewed” does not mea
 | 2026-08-04 | Through `10af70aa` | Baseline | Repository initialized from upstream `v11.4.3`; intentional divergence begins here. |
 | 2026-08-06 | `10af70aa..081f3ee4` | Skip for issue #19 | Reviewed upstream through `v11.4.4`. The range does not address the inherited restricted-font subset; upstream still carries the same blob and private-use glyph renderer. Implement the compliant symbol catalog locally rather than merging or porting that pipeline. |
 | 2026-08-07 | `081f3ee4` (no new commits) | Reconfirm for issue #10 | `git fetch upstream` for the source-first audit: `upstream/master` still at `081f3ee4` (`v11.4.4`). No new upstream range to classify. |
+| 2026-08-08 | Subset of `c14960bb` (ancestor of `081f3ee4`) | Adapt for issue #60 | Ported only the key-repeat / lost-hold-release keyboard subset: settle a lost modifier release before navigation (`settleLostHoldRelease` + `ATShortcut.settleLostRelease`), keep repeat-timer cleanup separate (`stopRepeatIfUp`), gate artificial repeats on panel visibility (`KeyRepeatTimer` + triad), and stamp `SwitcherSession.panelShownAt` from `TilesPanel.show()`. Left the tracked-window reducer, tab/phantom model, selection, capture, and CLI portions of `c14960bb` for the #51 work breakdown. Preserved AlTab continuous-navigation wrapping and did not import upstream services, licensing, or release code. |
