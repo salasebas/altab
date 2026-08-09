@@ -34,15 +34,16 @@ They're independent, which gives two strengths of phantom:
   first seen, so an inactive tab is briefly flagged phantom (empty `spaceIds`, not-yet-known tabbed); once
   AX confirms the tab this path un-flags it (a real phantom is never part of an AXTabGroup). Without it,
   the monotonic OR left inactive tabs stuck phantom and "separate window per tab" showed one per app.
-- **`cgsVerdict(s, app, inVisibleList, inAllList, visibleSpaceIds)`** — authoritative, runs ~250ms
-  post-show off-main (`Applications.refreshIsPhantom`) with the two CGS lists. Knows both signals; owns
-  the full verdict, including clearing. Disambiguation order (first match wins):
+- **`cgsVerdict(s, app, inVisibleList, inAllList, visibleSpaceIds, isFocused = false)`** — authoritative,
+  runs ~250ms post-show off-main (`Applications.refreshIsPhantom`) with the two CGS lists. Knows both
+  signals; owns the full verdict, including clearing. Disambiguation order (first match wins):
   1. minimized / hidden app / tabbed → not a phantom (legitimate; CGS may list none of these in any Space —
      a background tab especially — so they must clear *before* the strong signal or they'd trip it)
   2. not in `inAllList` → **phantom** (strong)
   3. in `inVisibleList` → not a phantom (currently rendered)
   4. non-empty `spaceIds` ∩ `visibleSpaceIds` == ∅ → not a phantom (other-Space window)
-  5. else → **phantom** (weak: alpha=0 / `orderOut:` on a visible Space)
+  5. `isFocused` → not a phantom (weak-signal exemption only; the focused foreground window — #5849)
+  6. else → **phantom** (weak: alpha=0 / `orderOut:` on a visible Space)
 
 ## Test scenarios
 
@@ -75,3 +76,19 @@ and flips the knobs it exercises.
   exemption must beat the strong signal.
 - **testMinimizedMissingFromAllListsIsNotPhantom** — minimized and missing from both CGS lists → not a
   phantom (same exemption: a legitimate window CGS dropped from its per-Space lists).
+
+### C. The focused window is never a weak-signal phantom (#5849)
+
+`isFocused` means the window is at the front of the MRU AND its app is frontmost, i.e. the window the user
+is looking at right now. Electron apps reopened from the Dock (Slack, Telegram) keep their window tagged
+invisible by CGS for seconds after it is on screen and focused, so the weak signal flagged the FOREGROUND
+window a phantom. Two things then went wrong at once: the app looked windowless, so a placeholder tile was
+spawned, and the hidden window still held its MRU slot, so the switcher's "previously-focused window"
+default counted one visible window too far and landed on the wrong app.
+
+- **testFocusedWindowIsNotWeakSignalPhantom** — the weak-signal inputs plus `isFocused` → not a phantom.
+- **testUnfocusedWeakSignalStaysPhantom** — the same inputs unfocused → still a phantom (the exemption must
+  not widen the weak signal for alpha=0 Outlook reminders and friends).
+- **testFocusedButMissingFromAllListsStaysPhantom** — focused but absent from *both* CGS lists → still a
+  phantom. The exemption is weak-signal only, placed after the strong signal: a wid CGS dropped everywhere
+  is gone whatever a stale focus record says, and clearing it would undo #5714.

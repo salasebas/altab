@@ -115,6 +115,22 @@
 		5F5849A900000000000000A2 /* BruteForceWindowMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5849A900000000000000A1 /* BruteForceWindowMatch.swift */; };
 		5F5849A900000000000000A3 /* BruteForceWindowMatch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5849A900000000000000A1 /* BruteForceWindowMatch.swift */; };
 		5F5849A900000000000000B2 /* BruteForceWindowMatchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5849A900000000000000B1 /* BruteForceWindowMatchTests.swift */; };
+
+		5EAA25AA000000000000A002 /* TrackedWindowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25AA000000000000A001 /* TrackedWindowState.swift */; };
+		5EAA25AA000000000000A003 /* TrackedWindowState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25AA000000000000A001 /* TrackedWindowState.swift */; };
+		5EAA25AB000000000000A002 /* WindowEventReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25AB000000000000A001 /* WindowEventReducer.swift */; };
+		5EAA25AB000000000000A003 /* WindowEventReducer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25AB000000000000A001 /* WindowEventReducer.swift */; };
+		5EAA25AC000000000000A002 /* TrackedWindowStateBridge.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25AC000000000000A001 /* TrackedWindowStateBridge.swift */; };
+		5EAA25AD000000000000A003 /* TestReducerRunner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25AD000000000000A001 /* TestReducerRunner.swift */; };
+		5EAA25AE000000000000A003 /* TestReducerRunnerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25AE000000000000A001 /* TestReducerRunnerTests.swift */; };
+		5EAA25FF000000000000A003 /* TrackedWindowStateFieldsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25FF000000000000A001 /* TrackedWindowStateFieldsTests.swift */; };
+		5EAA25B0000000000000A003 /* TestScenarioSimulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25B0000000000000A001 /* TestScenarioSimulator.swift */; };
+		5EAA25C0000000000000A003 /* TestScenarioGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25C0000000000000A001 /* TestScenarioGenerator.swift */; };
+		5EAA25B2000000000000A003 /* TestInteractionModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25B2000000000000A001 /* TestInteractionModel.swift */; };
+		5EAA25B1000000000000A003 /* TestScenarioSimulatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EAA25B1000000000000A001 /* TestScenarioSimulatorTests.swift */; };
+		5F5849B000000000000000B2 /* WindowEventReducerPhantomTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5849B000000000000000B1 /* WindowEventReducerPhantomTests.swift */; };
+		5F5849B100000000000000B2 /* WindowEventReducerFocusTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5849B100000000000000B1 /* WindowEventReducerFocusTests.swift */; };
+		5F5849B100000000000000C2 /* WindowEventReducerMinimizeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F5849B100000000000000C1 /* WindowEventReducerMinimizeTests.swift */; };
 		5E0DE2A0000000000000D002 /* WindowOrderResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0DE2A0000000000000D001 /* WindowOrderResolver.swift */; };
 		5E0DE2A0000000000000D003 /* WindowOrderResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0DE2A0000000000000D001 /* WindowOrderResolver.swift */; };
 		5E0DE2A0000000000000D102 /* WindowOrderResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E0DE2A0000000000000D101 /* WindowOrderResolverTests.swift */; };
@@ -456,6 +472,20 @@
 		5E7C0F70000000000000E101 /* ExceptionMatcherTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExceptionMatcherTests.swift; sourceTree = "<group>"; };
 		5F5849A900000000000000A1 /* BruteForceWindowMatch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BruteForceWindowMatch.swift; sourceTree = "<group>"; };
 		5F5849A900000000000000B1 /* BruteForceWindowMatchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BruteForceWindowMatchTests.swift; sourceTree = "<group>"; };
+
+		5EAA25AA000000000000A001 /* TrackedWindowState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackedWindowState.swift; sourceTree = "<group>"; };
+		5EAA25AB000000000000A001 /* WindowEventReducer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowEventReducer.swift; sourceTree = "<group>"; };
+		5EAA25AC000000000000A001 /* TrackedWindowStateBridge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackedWindowStateBridge.swift; sourceTree = "<group>"; };
+		5EAA25AD000000000000A001 /* TestReducerRunner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestReducerRunner.swift; sourceTree = "<group>"; };
+		5EAA25AE000000000000A001 /* TestReducerRunnerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestReducerRunnerTests.swift; sourceTree = "<group>"; };
+		5EAA25FF000000000000A001 /* TrackedWindowStateFieldsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackedWindowStateFieldsTests.swift; sourceTree = "<group>"; };
+		5EAA25B0000000000000A001 /* TestScenarioSimulator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenarioSimulator.swift; sourceTree = "<group>"; };
+		5EAA25C0000000000000A001 /* TestScenarioGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenarioGenerator.swift; sourceTree = "<group>"; };
+		5EAA25B2000000000000A001 /* TestInteractionModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestInteractionModel.swift; sourceTree = "<group>"; };
+		5EAA25B1000000000000A001 /* TestScenarioSimulatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestScenarioSimulatorTests.swift; sourceTree = "<group>"; };
+		5F5849B000000000000000B1 /* WindowEventReducerPhantomTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowEventReducerPhantomTests.swift; sourceTree = "<group>"; };
+		5F5849B100000000000000B1 /* WindowEventReducerFocusTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowEventReducerFocusTests.swift; sourceTree = "<group>"; };
+		5F5849B100000000000000C1 /* WindowEventReducerMinimizeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowEventReducerMinimizeTests.swift; sourceTree = "<group>"; };
 		5E0DE2A0000000000000D001 /* WindowOrderResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowOrderResolver.swift; sourceTree = "<group>"; };
 		5E0DE2A0000000000000D101 /* WindowOrderResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowOrderResolverTests.swift; sourceTree = "<group>"; };
 		5E7AB00000000000000D2001 /* TabGroupResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TabGroupResolver.swift; sourceTree = "<group>"; };
@@ -940,6 +970,19 @@
 				5F117E41000000000000F001 /* PhantomWindowDetector.swift */,
 				5E7C0F70000000000000E001 /* ExceptionMatcher.swift */,
 				5F5849A900000000000000A1 /* BruteForceWindowMatch.swift */,
+				5EAA25AA000000000000A001 /* TrackedWindowState.swift */,
+				5EAA25AB000000000000A001 /* WindowEventReducer.swift */,
+				5EAA25AC000000000000A001 /* TrackedWindowStateBridge.swift */,
+				5EAA25AD000000000000A001 /* TestReducerRunner.swift */,
+				5EAA25AE000000000000A001 /* TestReducerRunnerTests.swift */,
+				5EAA25FF000000000000A001 /* TrackedWindowStateFieldsTests.swift */,
+				5EAA25B0000000000000A001 /* TestScenarioSimulator.swift */,
+				5EAA25C0000000000000A001 /* TestScenarioGenerator.swift */,
+				5EAA25B2000000000000A001 /* TestInteractionModel.swift */,
+				5EAA25B1000000000000A001 /* TestScenarioSimulatorTests.swift */,
+				5F5849B000000000000000B1 /* WindowEventReducerPhantomTests.swift */,
+				5F5849B100000000000000B1 /* WindowEventReducerFocusTests.swift */,
+				5F5849B100000000000000C1 /* WindowEventReducerMinimizeTests.swift */,
 				5E0DE2A0000000000000D001 /* WindowOrderResolver.swift */,
 				5E7AB00000000000000D2001 /* TabGroupResolver.swift */,
 				5E7AB00000000000000D2101 /* TabGroupResolverTests.swift */,
@@ -1882,6 +1925,18 @@
 				5E7C0F70000000000000E102 /* ExceptionMatcherTests.swift in Sources */,
 				5F5849A900000000000000A3 /* BruteForceWindowMatch.swift in Sources */,
 				5F5849A900000000000000B2 /* BruteForceWindowMatchTests.swift in Sources */,
+				5EAA25AA000000000000A003 /* TrackedWindowState.swift in Sources */,
+				5EAA25AB000000000000A003 /* WindowEventReducer.swift in Sources */,
+				5EAA25AD000000000000A003 /* TestReducerRunner.swift in Sources */,
+				5EAA25AE000000000000A003 /* TestReducerRunnerTests.swift in Sources */,
+				5EAA25FF000000000000A003 /* TrackedWindowStateFieldsTests.swift in Sources */,
+				5EAA25B0000000000000A003 /* TestScenarioSimulator.swift in Sources */,
+				5EAA25C0000000000000A003 /* TestScenarioGenerator.swift in Sources */,
+				5EAA25B2000000000000A003 /* TestInteractionModel.swift in Sources */,
+				5EAA25B1000000000000A003 /* TestScenarioSimulatorTests.swift in Sources */,
+				5F5849B000000000000000B2 /* WindowEventReducerPhantomTests.swift in Sources */,
+				5F5849B100000000000000B2 /* WindowEventReducerFocusTests.swift in Sources */,
+				5F5849B100000000000000C2 /* WindowEventReducerMinimizeTests.swift in Sources */,
 				5E0DE2A0000000000000D003 /* WindowOrderResolver.swift in Sources */,
 				5E0DE2A0000000000000D102 /* WindowOrderResolverTests.swift in Sources */,
 				5E7AB00000000000000D2003 /* TabGroupResolver.swift in Sources */,
@@ -1943,6 +1998,9 @@
 				5F5790DE7EC7000000000B02 /* PreferencesPersistenceCheck.swift in Sources */,
 				5E7C0F70000000000000E002 /* ExceptionMatcher.swift in Sources */,
 				5F5849A900000000000000A2 /* BruteForceWindowMatch.swift in Sources */,
+				5EAA25AA000000000000A002 /* TrackedWindowState.swift in Sources */,
+				5EAA25AB000000000000A002 /* WindowEventReducer.swift in Sources */,
+				5EAA25AC000000000000A002 /* TrackedWindowStateBridge.swift in Sources */,
 				5E0DE2A0000000000000D002 /* WindowOrderResolver.swift in Sources */,
 				5E7AB00000000000000D2002 /* TabGroupResolver.swift in Sources */,
 				5E2A571E000000000000A002 /* WindowState.swift in Sources */,
