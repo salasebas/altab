@@ -134,7 +134,8 @@ class Applications {
     /// ambiguous — see below), and tab children.
     /// Used for genuinely-new windows only (discovery + discoverWindow). Uses the "generic" bucket so a real
     /// focus event (in the "focus" bucket) is never clobbered.
-    static func addDiscoveredWindow(_ element: AXUIElement, _ raw: WsRawWindow, _ app: Application) {
+    static func addDiscoveredWindow(_ element: AXUIElement, _ raw: WsRawWindow, _ app: Application,
+                                    adoptedAsInactiveTab: Bool = false) {
         let wid = raw.wid
         AXCallScheduler.shared.schedule(key: "wid-\(wid)-generic", context: app.debugId, pid: app.pid, scan: true) { [weak app] in
             guard let app else { return }
@@ -156,43 +157,22 @@ class Applications {
             // Space (it runs on main and must avoid this blocking CGS call, #5721); for an other-Space window
             // that default is wrong, and the first post-show syncSpacesState would then correct it → a visible
             // reflow on the first summon (misaligned space numbers / shifted title). Setting it right here makes
-            // that later correction a no-op.
-            let spaceIds = isSelf ? [CGSSpaceID]() : CGSCallScheduler.windowSpaces(wid)
+            // that later correction a no-op. Skipped for an adopted inactive tab: the query lies for those
+            // (stale old Space), and a background tab's true membership is NO Space.
+            let spaceIds = (isSelf || adoptedAsInactiveTab) ? [CGSSpaceID]() : CGSCallScheduler.windowSpaces(wid)
             DispatchQueue.main.async { [weak app] in
                 guard let app else { return }
                 windowAttributesThrottler.throttleOrProceed(key: "\(wid)-generic") {
-                    // Consume the pending-removal marker up-front, so a window rejected below can't leave it
-                    // dangling. `Windows.windowsPendingSpaceRemoval` remembers a removed-from-Space event that
-                    // arrived while the window was still untracked (a rapid-burst background tab, #5830 — see
-                    // below); consuming here regardless of accept/reject keeps the set self-draining.
-                    let wasRemovedFromSpaceWhileUntracked = Windows.windowsPendingSpaceRemoval.removeValue(forKey: wid) != nil
+                    // The shell's job ends at acquisition + raw-fact ingestion: findOrCreate applies the AX/WS
+                    // attributes (and appends a genuinely-new window). Everything decided AFTER that — the
+                    // pending-removal consume, the MRU promotion, the Space override for background tabs, the
+                    // tab-state update, the reconcile — is the reducer's `.discoveryLanded` branch (issue #57).
+                    // A REJECTED window still dispatches, so the reducer's pending-removal marker stays self-draining.
                     let findOrCreate = Windows.findOrCreate(element, wid, app, CGWindowLevel(raw.level), a.title, a.subrole, a.role, raw.bounds.size, raw.bounds.origin, isFullscreen, isMinimized)
-                    guard let window = findOrCreate.0 else { return }
-                    // override Window.init's current-Space default with the real Space resolved above (new
-                    // windows only; existing ones stay live via events / syncSpacesState).
-                    if findOrCreate.1 {
-                        if wasRemovedFromSpaceWhileUntracked {
-                            // It got a removed-from-Space event while still untracked → it's a background tab.
-                            // Force it Space-less: the per-window CGS query still reports its OLD Space here
-                            // (stale right after backgrounding), so trusting that would keep it looking like a
-                            // separate on-screen window; the empty is what lets geometry group it (#5830).
-                            window.applySpacesAndScreen([wid: []])
-                        } else if !spaceIds.isEmpty {
-                            window.applySpacesAndScreen([wid: spaceIds])
-                        }
-                    }
-                    window.isMainWindow = a.isMain ?? false
-                    var tabStateChanged = false
-                    if tabSiblingTitles != nil || window.tabbedSiblingWids != nil {
-                        tabStateChanged = TabGroup.updateState(window, tabSiblingTitles)
-                    }
-                    // a newly-discovered tab (e.g. switching to a fullscreen window's other tab) joins its
-                    // fullscreen sibling's group here, so it's grouped before the next show rather than during it
-                    if findOrCreate.1 { TabGroup.reconcile() }
-                    if findOrCreate.1 || (tabStateChanged && SwitcherSession.isActive) {
-                        if findOrCreate.1 { Logger.info { "discovered a new window:\(window.debugId)" } }
-                        App.refreshOpenUiAfterExternalEvent([window])
-                    }
+                    findOrCreate.0?.isMainWindow = a.isMain ?? false
+                    TrackedWindowStateBridge.dispatch(.discoveryLanded(wid: wid, accepted: findOrCreate.0 != nil,
+                        newlyTracked: findOrCreate.1, adoptedAsInactiveTab: adoptedAsInactiveTab,
+                        queriedSpaceIds: spaceIds, tabTitles: tabSiblingTitles))
                 }
             }
         }
@@ -243,13 +223,14 @@ class Applications {
     /// (app busy) throws so the scheduler retries with backoff instead of wrongly concluding the window closed.
     static func removeIfClosedAfterOrderOut(_ window: Window) {
         guard let axWindow = window.axUiElement, let wid = window.cgWindowId else { return }
-        AXCallScheduler.shared.schedule(key: "wid-\(wid)-liveness", pid: window.application.pid) {
-            let result = axWindow.liveness(pid: window.application.pid)
+        let pid = window.application.pid
+        AXCallScheduler.shared.schedule(key: "wid-\(wid)-liveness", pid: pid) {
+            let result = axWindow.liveness(pid: pid)
             if result == .cannotComplete { throw AxError.runtimeError }
             guard result == .invalidUIElement else { return }
             DispatchQueue.main.async {
-                guard let window = Windows.byWindowId[wid] else { return }
-                Windows.removeWindows([window], true)
+                // Focused-window removal refront + model remove are reducer-owned (#57 / #5346).
+                TrackedWindowStateBridge.dispatch(.livenessConfirmedDead(wid: wid))
             }
         }
     }
@@ -302,7 +283,7 @@ class Applications {
                         continue
                     }
                     Logger.info { "discovered inactive tab via brute-force: wid:\(wid) '\(title)'" }
-                    addDiscoveredWindow(element, raw, app)
+                    addDiscoveredWindow(element, raw, app, adoptedAsInactiveTab: true)
                 }
             }
         }

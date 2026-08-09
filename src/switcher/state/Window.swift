@@ -469,7 +469,7 @@ class Window {
 
     /// Seed MRU focus order at window creation. WindowServer's focus event (808) keeps it live afterward, but
     /// a window discovered AFTER its app was already frontmost (e.g. cold launch) never saw an 808 for it, so
-    /// read kAXFocusedWindow once and, if it points at this window, bump it to the front (#5665).
+    /// read kAXFocusedWindow once and, if it points at this window, bump it via the reducer's focus path (#5665).
     private func checkIfFocused() {
         let app = application
         guard let appAxUiElement = app.axUiElement else { return }
@@ -477,11 +477,8 @@ class Window {
             guard let app, let focusedWindow = try appAxUiElement.attributes([kAXFocusedWindowAttribute], pid: app.pid).focusedWindow else { return }
             let focusedWid = try focusedWindow.cgWindowId()
             DispatchQueue.main.async {
-                guard let window = (Windows.list.first { $0.isEqualRobust(focusedWindow, focusedWid) }) else { return }
-                app.focusedWindow = window
-                if let windows = Windows.updateLastFocusOrder(window) {
-                    App.refreshOpenUiAfterExternalEvent(windows)
-                }
+                guard (Windows.list.contains { $0.isEqualRobust(focusedWindow, focusedWid) }) else { return }
+                TrackedWindowStateBridge.dispatch(.axFocusedWindowRead(wid: focusedWid, viaActivationBackstop: false))
             }
         }
     }
