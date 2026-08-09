@@ -159,15 +159,16 @@ fi
 remoteTagCommitSha="$(resolve_remote_tag_commit)"
 [[ "$remoteTagCommitSha" == "$commitSha" ]] || fail "remote tag $tagName does not resolve to $commitSha before release creation"
 
-draftArguments=()
+createArguments=(
+  release create "$tagName"
+  --verify-tag
+  --target "$commitSha"
+  --title "AlTab $tagName ($mode)"
+  --notes-file "$notesFile"
+)
 if [[ "$createDraft" == "true" ]]; then
-  draftArguments+=(--draft)
+  createArguments+=(--draft)
 fi
-gh release create "$tagName" \
-  "${draftArguments[@]}" \
-  --verify-tag \
-  --target "$commitSha" \
-  --title "AlTab $tagName ($mode)" \
-  --notes-file "$notesFile" \
-  "${artifacts[@]}"
+createArguments+=("${artifacts[@]}")
+gh "${createArguments[@]}"
 audit_remote_release "$tagName"
