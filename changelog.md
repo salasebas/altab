@@ -1,32 +1,27 @@
-## [1.0.3](https://github.com/salasebas/altab/compare/altab-v1.0.2...altab-v1.0.3) (2026-08-09)
-
-
-### Bug Fixes
-
-* **release:** use SemVer basenames and clarify download UX ([59a098c](https://github.com/salasebas/altab/commit/59a098ce5364e02e548ca14c52d02f6d53365d57)), closes [#91](https://github.com/salasebas/altab/issues/91)
-
-## [1.0.2](https://github.com/salasebas/altab/compare/altab-v1.0.1...altab-v1.0.2) (2026-08-09)
-
-
-### Bug Fixes
-
-* **release:** harden empty-asset publish and announce 1.0.1 ([#90](https://github.com/salasebas/altab/issues/90)) ([2eace88](https://github.com/salasebas/altab/commit/2eace88d4ae32fb0ef8cb5d55d6ff521357237ac))
-
-## [1.0.1](https://github.com/salasebas/altab/compare/altab-v1.0.0...altab-v1.0.1) (2026-08-09)
-
-
-### Bug Fixes
-
-* **release:** allow non-draft GitHub Release publication ([6ddea62](https://github.com/salasebas/altab/commit/6ddea626e8ac00174df7858c712b2ac2b9b74d73))
-* **release:** ship light unsigned .dmg for casual downloads ([#89](https://github.com/salasebas/altab/issues/89)) ([259af0a](https://github.com/salasebas/altab/commit/259af0a65f13980bb4d06d2cf2346da1e7c944c4))
-
 # Changelog
 
 AlTab **source milestones** are listed first. They use Git tags of the form `altab-vMAJOR.MINOR.PATCH` and may attach optional **unsigned** redistribution ZIPs on GitHub Releases (never notarized by this project). AlTab product versions start at **1.0.0** and are **not** numbered like upstream AltTab `v11.x`.
 
 Entries below the AlTab fork point are retained upstream AltTab history. They document inherited provenance and must not be presented as AlTab release notes. Optional unsigned redistribution packaging uses [`.github/RELEASE_NOTES_TEMPLATE.md`](.github/RELEASE_NOTES_TEMPLATE.md).
 
+<!-- altab-changelog:unreleased-start -->
 ## Unreleased
+
+
+
+### Bug Fixes
+
+* **release:** Use SemVer basenames and clarify download UX ([59a098c](https://github.com/salasebas/altab/commit/59a098ce5364e02e548ca14c52d02f6d53365d57)) by @salasebas
+* **release:** Harden empty-asset publish and announce 1.0.1 ([#90](https://github.com/salasebas/altab/issues/90)) ([2eace88](https://github.com/salasebas/altab/commit/2eace88d4ae32fb0ef8cb5d55d6ff521357237ac)) by @salasebas in [#90](https://github.com/salasebas/altab/pull/90)
+
+<!-- altab-changelog:unreleased-end -->
+
+## [1.0.1](https://github.com/salasebas/altab/compare/altab-v1.0.0...altab-v1.0.1) (2026-08-09)
+
+### Bug Fixes
+
+* **release:** allow non-draft GitHub Release publication ([6ddea62](https://github.com/salasebas/altab/commit/6ddea626e8ac00174df7858c712b2ac2b9b74d73))
+* **release:** ship light unsigned .dmg for casual downloads ([#89](https://github.com/salasebas/altab/issues/89)) ([259af0a](https://github.com/salasebas/altab/commit/259af0a65f13980bb4d06d2cf2346da1e7c944c4))
 
 ## [1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0) — first public milestone (2026-08-09)
 
