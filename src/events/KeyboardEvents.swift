@@ -70,16 +70,18 @@ class KeyboardEvents {
     }
 
     static func toggleGlobalShortcuts(_ shouldDisable: Bool) {
-        if shouldDisable != globalShortcutsAreDisabled {
-            let fn = shouldDisable ? unregisterHotKeyIfNeeded : registerHotKeyIfNeeded
-            for shortcutId in KeyboardEventsTestable.globalShortcutsIds.keys {
-                if let shortcut = ControlsTab.shortcuts[shortcutId]?.shortcut {
-                    fn(shortcutId, shortcut)
-                }
+        guard shouldDisable != globalShortcutsAreDisabled else { return }
+        // Flip the flag first so registerHotKeyIfNeeded (re-enable path and concurrent preference
+        // rebinding) observes the intended state. Without this, a disable-then-re-register race from
+        // ControlsTab could re-arm hotkeys while an Ignore-shortcuts exception is still active (#43).
+        globalShortcutsAreDisabled = shouldDisable
+        let fn = shouldDisable ? unregisterHotKeyIfNeeded : registerHotKeyIfNeeded
+        for shortcutId in KeyboardEventsTestable.globalShortcutsIds.keys {
+            if let shortcut = ControlsTab.shortcuts[shortcutId]?.shortcut {
+                fn(shortcutId, shortcut)
             }
-            Logger.info { "disabled:\(shouldDisable)" }
-            globalShortcutsAreDisabled = shouldDisable
         }
+        Logger.info { "disabled:\(shouldDisable)" }
     }
 
     static func reEnableTapIfNeeded() {
@@ -124,6 +126,10 @@ class KeyboardEvents {
     }
 
     private static func registerHotKeyIfNeeded(_ controlId: String, _ shortcut: Shortcut) {
+        // Enforce the disabled invariant: while exceptions have turned shortcuts off, registration is a
+        // no-op. Re-enable goes through toggleGlobalShortcuts (flag cleared first), which re-registers.
+        // This also covers preference rebinding while an Ignore-shortcuts app is frontmost (#43).
+        guard !globalShortcutsAreDisabled else { return }
         if shortcut.keyCode != .none {
             guard let id = KeyboardEventsTestable.globalShortcutsIds[controlId] else { return }
             let hotkeyId = EventHotKeyID(signature: signature, id: UInt32(id))

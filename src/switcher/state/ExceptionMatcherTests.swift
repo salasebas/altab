@@ -140,4 +140,16 @@ final class ExceptionMatcherTests: XCTestCase {
         XCTAssertFalse(ExceptionMatcher.disablesShortcuts(appState(bundleId: nil), isFullscreen: true,
                                                           exceptions: [entry("com.foo", ignore: .always)]))
     }
+
+    /// Activation/launch floor: focused window may be nil, so callers pass `isFullscreen: false`.
+    /// `.always` must still disable; `.whenFullscreen` waits for a later window/Space refinement.
+    func testActivationFloorDisablesAlwaysWithoutResolvedWindow() {
+        let app = appState(bundleId: "com.foo.bar")
+        XCTAssertTrue(ExceptionMatcher.disablesShortcuts(app, isFullscreen: false,
+                                                         exceptions: [entry("com.foo", ignore: .always)]))
+        XCTAssertFalse(ExceptionMatcher.disablesShortcuts(app, isFullscreen: false,
+                                                          exceptions: [entry("com.foo", ignore: .whenFullscreen)]))
+        XCTAssertTrue(ExceptionMatcher.disablesShortcuts(app, isFullscreen: true,
+                                                         exceptions: [entry("com.foo", ignore: .whenFullscreen)]))
+    }
 }

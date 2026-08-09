@@ -349,6 +349,17 @@ class App: NSApplication {
         TrackpadEvents.observe()
         CliEvents.observe()
         PreferencesEvents.initialize()
+        // Evaluate "ignore shortcuts" for the already-frontmost app after the shortcut registry exists
+        // (#5842 / AlTab #43). Upstream e2db26d4 evaluates earlier (right after addEventHandlers), but in
+        // this fork ControlsTab only populates global shortcuts during PreferencesEvents.initialize().
+        // Evaluating before that only flips KeyboardEvents' disabled flag with nothing to unregister, then
+        // initialize registers the hotkeys again. No didActivateApplication fires for the app that was
+        // already frontmost at launch/restart, so without this floor an app with Ignore shortcuts: Always
+        // keeps AlTab shortcuts until the user switches away and back. Adapted from e2db26d4 with launch
+        // ordering fixed for AlTab (no Sparkle auto-update relaunch path).
+        if let frontmostPid = Applications.frontmostPid, let frontmostApp = Applications.findOrCreate(frontmostPid, false) {
+            checkIfShortcutsShouldBeDisabled(frontmostApp.focusedWindow, frontmostApp)
+        }
         BenchmarkRunner.startIfNeeded()
         showSettingsWindowOnFirstLaunchIfNeeded()
         if pendingShowSettingsWindow {
