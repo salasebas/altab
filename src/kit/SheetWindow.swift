@@ -26,7 +26,9 @@ class SheetWindow: NSWindow {
     var doneButton: NSButton!
     private var bodyScrollView: NSScrollView!
     private var bodyContent: NSView!
+    private var headerView: NSView?
     private var bodyHeightConstraint: NSLayoutConstraint!
+    private var headerHeight: CGFloat = 0
     private var sheetWidth: CGFloat { SheetWindow.width + 2 * TableGroupSetView.padding }
 
     convenience init() {
@@ -35,13 +37,22 @@ class SheetWindow: NSWindow {
         setupView()
     }
 
+    /// Optional fixed header above the scrollable body (e.g. Customize more illustration so hover
+    /// previews stay visible while the options list scrolls).
+    func makeHeaderView() -> NSView? { nil }
+
+    func makeContentView() -> NSView {
+        return NSView()
+    }
+
     func setupView() {
         let padding = TableGroupSetView.padding
+        headerView = makeHeaderView()
         bodyContent = makeContentView()
-        // Frame-based document sizing — NSScrollView + full Auto Layout is what paints the purple
-        // "Layout is ambiguous" debugger overlay.
-        let document = FlippedDocumentView(frame: NSRect(x: 0, y: 0, width: sheetWidth, height: 1))
         bodyContent.translatesAutoresizingMaskIntoConstraints = true
+
+        // Frame-based document sizing avoids NSScrollView + Auto Layout ambiguity overlays.
+        let document = FlippedDocumentView(frame: NSRect(x: 0, y: 0, width: sheetWidth, height: 1))
         document.addSubview(bodyContent)
 
         bodyScrollView = NSScrollView()
@@ -60,13 +71,16 @@ class SheetWindow: NSWindow {
 
         let root = WindowContentView(separator)
         root.translatesAutoresizingMaskIntoConstraints = false
+        if let headerView {
+            headerView.translatesAutoresizingMaskIntoConstraints = false
+            root.addSubview(headerView)
+        }
         root.addSubview(bodyScrollView)
         root.addSubview(separator)
         root.addSubview(doneButton)
 
         bodyHeightConstraint = bodyScrollView.heightAnchor.constraint(equalToConstant: 400)
-        NSLayoutConstraint.activate([
-            bodyScrollView.topAnchor.constraint(equalTo: root.topAnchor),
+        var constraints: [NSLayoutConstraint] = [
             bodyScrollView.leadingAnchor.constraint(equalTo: root.leadingAnchor),
             bodyScrollView.trailingAnchor.constraint(equalTo: root.trailingAnchor),
             bodyHeightConstraint,
@@ -82,26 +96,40 @@ class SheetWindow: NSWindow {
             doneButton.widthAnchor.constraint(equalToConstant: 70),
 
             root.widthAnchor.constraint(equalToConstant: sheetWidth),
-        ])
+        ]
+        if let headerView {
+            constraints += [
+                headerView.topAnchor.constraint(equalTo: root.topAnchor, constant: padding),
+                headerView.leadingAnchor.constraint(equalTo: root.leadingAnchor, constant: padding),
+                headerView.trailingAnchor.constraint(equalTo: root.trailingAnchor, constant: -padding),
+                headerView.widthAnchor.constraint(equalToConstant: SheetWindow.width),
+                bodyScrollView.topAnchor.constraint(equalTo: headerView.bottomAnchor, constant: TableGroupSetView.spacing),
+            ]
+        } else {
+            constraints.append(bodyScrollView.topAnchor.constraint(equalTo: root.topAnchor, constant: padding))
+        }
+        NSLayoutConstraint.activate(constraints)
         contentView = root
         layoutDocument()
-        setContentSize(NSSize(width: sheetWidth, height: bodyHeightConstraint.constant + footerHeight()))
+        measureHeader()
+        setContentSize(NSSize(width: sheetWidth, height: totalHeight(body: bodyHeightConstraint.constant)))
     }
 
-    /// Cap height to the space under the parent title bar so AppKit does not move Settings upward.
+    /// Cap height so AppKit does not shove the parent Settings window upward.
     func prepareForDisplay(relativeTo parent: NSWindow) {
         layoutDocument()
+        measureHeader()
         let contentHeight = max(bodyScrollView.documentView?.frame.height ?? 1, 1)
-        let maxBody = max(200, maxHeightPreservingParentPosition(parent) - footerHeight())
+        let chrome = footerHeight() + headerChromeHeight()
+        let maxBody = max(160, maxHeightPreservingParentPosition(parent) - chrome)
         bodyHeightConstraint.constant = min(contentHeight, maxBody)
         contentView?.layoutSubtreeIfNeeded()
-        setContentSize(NSSize(width: sheetWidth, height: bodyHeightConstraint.constant + footerHeight()))
+        setContentSize(NSSize(width: sheetWidth, height: totalHeight(body: bodyHeightConstraint.constant)))
     }
 
     private func layoutDocument() {
         let padding = TableGroupSetView.padding
         guard let document = bodyScrollView.documentView else { return }
-        // Temporarily use Auto Layout only to measure the body, then bake into frames.
         bodyContent.translatesAutoresizingMaskIntoConstraints = false
         let measureConstraints = [
             bodyContent.widthAnchor.constraint(equalToConstant: SheetWindow.width),
@@ -111,15 +139,36 @@ class SheetWindow: NSWindow {
         let bodyHeight = max(bodyContent.fittingSize.height, 1)
         NSLayoutConstraint.deactivate(measureConstraints)
         bodyContent.translatesAutoresizingMaskIntoConstraints = true
-        let documentHeight = bodyHeight + padding
+        // When a sticky header is present, spacing under the header already separates it from the
+        // body; only add top padding inside the document when the body is the first chrome.
+        let topInset = headerView == nil ? padding : 0
+        let documentHeight = bodyHeight + topInset
         document.frame = NSRect(x: 0, y: 0, width: sheetWidth, height: documentHeight)
-        bodyContent.frame = NSRect(x: padding, y: 0, width: SheetWindow.width, height: bodyHeight)
+        bodyContent.frame = NSRect(x: padding, y: topInset, width: SheetWindow.width, height: bodyHeight)
         bodyContent.autoresizingMask = [.maxYMargin]
+    }
+
+    private func measureHeader() {
+        guard let headerView else {
+            headerHeight = 0
+            return
+        }
+        headerView.layoutSubtreeIfNeeded()
+        headerHeight = max(headerView.fittingSize.height, headerView.intrinsicContentSize.height, 1)
+    }
+
+    private func headerChromeHeight() -> CGFloat {
+        guard headerView != nil else { return TableGroupSetView.padding }
+        return TableGroupSetView.padding + headerHeight + TableGroupSetView.spacing
     }
 
     private func footerHeight() -> CGFloat {
         let padding = TableGroupSetView.padding
         return padding + 1 + padding + doneButton.intrinsicContentSize.height + padding
+    }
+
+    private func totalHeight(body: CGFloat) -> CGFloat {
+        headerChromeHeight() + body + footerHeight()
     }
 
     private func maxHeightPreservingParentPosition(_ parent: NSWindow) -> CGFloat {
@@ -128,10 +177,6 @@ class SheetWindow: NSWindow {
         let available = sheetTopY - screen.visibleFrame.minY - 8
         let screenCap = screen.visibleFrame.height * 0.7
         return max(240, min(available, screenCap))
-    }
-
-    func makeContentView() -> NSView {
-        return NSView()
     }
 
     private func makeDoneButton() {
