@@ -133,18 +133,20 @@ if [[ -f .github/workflows/release.yml ]]; then
     [[ $scanStatus -eq 1 ]] || fail "could not scan release workflow for hardcoded credentials"
   fi
 fi
-# Source-only changelog bot (semantic-release): may use GITHUB_TOKEN to commit
-# changelog/package.json, tag altab-v*, and open notes-only GitHub Releases.
+# Source-only changelog / milestone workflow (git-cliff): may use GITHUB_TOKEN to
+# commit changelog.md (Unreleased), and on explicit workflow_dispatch also bump
+# package.json, tag altab-v*, and open notes-only GitHub Releases.
 # Must never package, sign, notarize, or touch appcast/AppCenter/Sparkle.
 if [[ -f .github/workflows/release-notes.yml ]]; then
-  require_text .github/workflows/release-notes.yml 'semantic-release'
-  require_text .github/workflows/release-notes.yml 'pnpm exec semantic-release'
+  require_text .github/workflows/release-notes.yml 'git-cliff'
+  require_text .github/workflows/release-notes.yml 'scripts/changelog_milestone.sh'
+  require_text .github/workflows/release-notes.yml 'workflow_dispatch'
   # Ignore comment-only lines so the file can document what it deliberately omits.
   if rg -n -i \
-    'scripts/package_release\.sh|scripts/package_notarized_release\.sh|codesign|notarytool|CODE_SIGN|DEVELOPMENT_TEAM|xcodebuild[[:space:]]+archive|action-gh-release|appcast|AppCenter|Sparkle|APPLE_|SPARKLE_|NOTARY_' \
+    'scripts/package_release\.sh|scripts/package_notarized_release\.sh|codesign|notarytool|CODE_SIGN|DEVELOPMENT_TEAM|xcodebuild[[:space:]]+archive|action-gh-release|appcast|AppCenter|Sparkle|APPLE_|SPARKLE_|NOTARY_|semantic-release' \
     .github/workflows/release-notes.yml \
     | rg -v '^[0-9]+:\s*#'; then
-    fail "release-notes workflow must stay source-only (no packaging, signing, or inherited services)"
+    fail "release-notes workflow must stay source-only (no packaging, signing, semantic-release, or inherited services)"
   fi
 fi
 # No other workflows may perform release packaging or secret-backed publication.

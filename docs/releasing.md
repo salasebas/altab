@@ -86,48 +86,83 @@ Before tagging a milestone, set the product version in:
 
 `Info.plist` substitutes `$(CURRENT_PROJECT_VERSION)` into both `CFBundleShortVersionString` and `CFBundleVersion`. Preference-schema migrations use a separate constant (`PreferencesMigrations.currentSchemaVersion`) and are not the public app version.
 
-### Changelog and source milestones (semantic-release)
+### Changelog and source milestones (git-cliff, intentional cut)
 
-AlTab uses the same **semantic-release** stack as upstream AltTab to write [changelog.md](../changelog.md) from [Conventional Commits](https://www.conventionalcommits.org/) (enforced by commitlint + husky). Configuration lives in [release.config.js](../release.config.js); CI entry is [`.github/workflows/release-notes.yml`](../.github/workflows/release-notes.yml).
+AlTab does **not** ship-on-every-merge like upstream AltTab. Upstream runs continuous semantic-release + binary packaging on `master`; AlTab keeps **source-first, maintainer-cut** milestones.
 
-On every push to `main` (except commits marked `[skip ci]`), the bot:
+Tooling (reuse, not a custom bot):
 
-1. Analyzes commits since the last `altab-v*` tag
-2. Bumps the SemVer in `package.json` when a release is warranted
-3. Prepends a new section to `changelog.md`
-4. Commits `chore(release): X.Y.Z [skip ci]` (changelog + package.json only)
-5. Creates git tag `altab-vX.Y.Z` and a **source-only** GitHub Release (notes, no binaries)
+| Piece | Role |
+| --- | --- |
+| [git-cliff](https://git-cliff.org/) | Parses [Conventional Commits](https://www.conventionalcommits.org/) (commitlint + husky) into changelog sections |
+| [cliff.toml](../cliff.toml) | Groups, `altab-v*` tag pattern, templates |
+| [scripts/changelog_milestone.sh](../scripts/changelog_milestone.sh) | Thin splice of `## Unreleased` / promote-to-version into [changelog.md](../changelog.md) |
+| [`.github/workflows/release-notes.yml`](../.github/workflows/release-notes.yml) | CI entry: Unreleased on push; cut on `workflow_dispatch` |
 
-What this deliberately **does not** do (unlike upstream `ci_cd.yml`):
+**Why git-cliff (options considered for issue #93):**
 
-- AppCenter / crash symbols
-- Sparkle / appcast
-- Notarization or binary packaging
-- README star/download stats or website redeploy
+| Option | Fit | Why not / why yes |
+| --- | --- | --- |
+| Keep semantic-release on every `main` push | Continuous ship | Wrong product model; auto tags/Releases (what #93 removes) |
+| semantic-release only on `workflow_dispatch` | Explicit cut | Still release-centric; awkward Unreleased-only path; heavy Node plugin stack |
+| [release-please](https://github.com/googleapis/release-please) | release-plz-like PR | Strong, but version is inferred from commits unless overridden; less natural for keep-a-changelog `## Unreleased` |
+| **git-cliff + thin script + Actions** | Unreleased on merge, version chosen at cut | **Chosen:** maintained CLI, no greenfield bot, matches desired model with ~one splice script |
 
-Local dry-run (no publish):
+#### On merge to `main` (automatic)
+
+On every push to `main` (except commits marked `[skip ci]`), CI:
+
+1. Runs git-cliff for commits since the last `altab-v*` tag
+2. Rewrites **only** the `## Unreleased` block in `changelog.md` (markers `<!-- altab-changelog:unreleased-start/end -->`)
+3. Commits `chore(changelog): update Unreleased [skip ci]` when the file changed
+
+It deliberately does **not**:
+
+- Bump SemVer / `package.json`
+- Create `altab-v*` tags
+- Open a GitHub Release
+- Rewrite `config/base.xcconfig` marketing version
+- Package, sign, notarize, or touch appcast / AppCenter / Sparkle
+
+#### When the maintainer cuts a milestone (explicit)
+
+Version bumps are **chosen by the maintainer**, not inferred from `feat`/`fix` on every merge.
+
+Preferred path: GitHub Actions → **Release notes** → **Run workflow** → enter `MAJOR.MINOR.PATCH` (optional dry-run).
+
+That cut:
+
+1. Promotes `## Unreleased` → `## [X.Y.Z] (date)` and clears Unreleased
+2. Aligns `package.json` `version` (tooling metadata only)
+3. Commits `chore(release): X.Y.Z [skip ci]`
+4. Creates annotated tag `altab-vX.Y.Z` and a **source-only** GitHub Release (notes, no binaries)
+
+Optional **unsigned binary packaging** stays a separate explicit path (`scripts/package_release.sh` / `release.yml` `workflow_dispatch`)—never auto-attached on cut.
+
+Local equivalents (requires [git-cliff](https://git-cliff.org/) on `PATH`, e.g. `brew install git-cliff`):
 
 ```bash
-pnpm install
-pnpm release:dry   # only meaningful on main with altab-v* tags fetched
+# Refresh Unreleased only (no tag / no publish)
+scripts/changelog_milestone.sh update
+
+# Dry-run promote in a dirty worktree (inspect diff; do not push)
+scripts/changelog_milestone.sh promote 1.0.4
+git diff -- changelog.md package.json
+# Then either commit/tag/push yourself or discard and use workflow_dispatch
 ```
 
-The product / Xcode marketing version in `config/base.xcconfig` is still set deliberately when you want the running app’s About box to match a milestone; semantic-release does not rewrite `.xcconfig`.
+The product / Xcode marketing version in `config/base.xcconfig` is still set deliberately when you want the running app’s About box to match a milestone; the cut workflow does not rewrite `.xcconfig`.
 
 ### How to cut a source milestone
 
-Preferred path once the baseline tag `altab-v1.0.0` exists on the remote: merge conventional commits to `main` and let **Release notes** CI create the next `altab-v*` tag, changelog section, and GitHub Release.
-
-Manual path (when you need a human-gated milestone):
-
 1. Ensure dependency audits and source/build guards pass on the candidate commit (see [FORK.md](../FORK.md) and `scripts/validate_ci.sh`).
 2. Bump `CURRENT_PROJECT_VERSION` / `MARKETING_VERSION` in `config/base.xcconfig` if the app bundle version should match the milestone.
-3. Align [README.md](../README.md), [FORK.md](../FORK.md), and [UPSTREAM.md](../UPSTREAM.md) provenance notes as needed (do **not** hand-edit versioned changelog sections the bot owns).
-4. Merge to `main`. The semantic-release workflow updates `changelog.md`, tags `altab-vMAJOR.MINOR.PATCH`, and opens the source-only GitHub Release.
+3. Align [README.md](../README.md), [FORK.md](../FORK.md), and [UPSTREAM.md](../UPSTREAM.md) provenance notes as needed (do **not** hand-edit versioned changelog sections the cut owns; Unreleased is fine to tweak before cut).
+4. Run **Release notes** → `workflow_dispatch` with the chosen `version` (or promote locally and push tag + `gh release create` with the same contracts).
 5. Optionally flesh out the GitHub Release body with wording from [`.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md`](../.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md). Attach **no** binaries unless you intentionally run the optional packaging path below and review the artifacts.
 6. Verify the public tag resolves to the intended commit and that a clean clone of the tag builds after `scripts/codesign/setup_local.sh` (once per Mac) and `scripts/build_local.sh`.
 
-Bootstrap (one-time): create and push the first **intentional** public tag so the bot has a floor and does not walk the entire upstream history:
+Bootstrap (one-time): create and push the first **intentional** public tag so git-cliff has a floor and does not walk the entire upstream history:
 
 ```bash
 # Point at the commit you actually want as the public 1.0.0 floor.
@@ -135,7 +170,7 @@ git tag -a altab-v1.0.0 <full-commit-sha> -m "AlTab source milestone 1.0.0"
 git push origin altab-v1.0.0
 ```
 
-If a provisional `altab-v1.1.0` (or other) tag/release was created by automation before the public launch, delete that GitHub Release and tag **before** advertising `1.0.0`, then retag `altab-v1.0.0` at the chosen commit. Do not leave a higher public SemVer than the first intentional milestone.
+If automation previously created empty accidental tags/releases (no binary assets), delete those GitHub Releases and tags before advertising the next intentional SemVer. Do not leave a higher public SemVer than the latest intentional milestone.
 
 ### How users update after a milestone
 

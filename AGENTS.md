@@ -30,7 +30,7 @@
 # Workflow
 
 - Compile: `ai/build.sh`. Interactive Debug/QA: only `scripts/run_debug.sh` — never open DerivedData. Details: `docs/building-and-troubleshooting.md`.
-- Git commit messages must respect our pre-hook conventions, and must be clear and high-level, written for end-users (changelog). Changelog sections are written by semantic-release on `main` (see `release.config.js` and `docs/releasing.md`); do not hand-edit versioned entries the bot owns.
+- Git commit messages must respect our pre-hook conventions, and must be clear and high-level, written for end-users (changelog). On merge to `main`, git-cliff updates only `changelog.md` `## Unreleased` (see `cliff.toml`, `scripts/changelog_milestone.sh`, and `docs/releasing.md`). Versioned sections and `altab-v*` tags are created only on an intentional maintainer cut (`workflow_dispatch`); do not hand-edit versioned entries the cut owns.
 
 # Release identity and unrestricted features
 
