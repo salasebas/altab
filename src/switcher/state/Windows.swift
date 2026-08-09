@@ -280,8 +280,10 @@ class Windows {
         }
         guard let index else { return }
         TilesView.highlight(index)
-        let focusedView = TilesView.recycledViews[index]
-        TilesView.scrollView.contentView.scrollToVisible(focusedView.frame)
+        if !fromMouse {
+            let focusedView = TilesView.recycledViews[index]
+            TilesView.scrollView.contentView.scrollToVisible(focusedView.frame)
+        }
         voiceOverWindow(index)
     }
 
