@@ -13,6 +13,11 @@ Conventional commits merged to `main` accumulate under **Unreleased**. A maintai
 
 * **release:** Install ripgrep for packaging workflow ([dc63cc7](https://github.com/salasebas/altab/commit/dc63cc7d6bc25bc7805062928eb047b3bf139a3d)) by @salasebas
 
+
+### Features
+
+* Find AlTab by alternate names in Spotlight ([b4ba830](https://github.com/salasebas/altab/commit/b4ba83043470aa9590b1279226efb6a828b05504)) by @salasebas
+
 <!-- altab-changelog:unreleased-end -->
 
 ## [1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0) — first public milestone (2026-08-09)
