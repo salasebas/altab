@@ -86,16 +86,15 @@ class Windows {
         // `Applications.syncSpacesState`. Here we
         // only read the cached values, so there is no blocking SkyLight IPC on the way to rendering. A
         // one-frame staleness (e.g. a window just dragged to another Space) self-corrects via the deferred
-        // reconcile. `recomputeIsPhantom` is kept here: it's pure (no IPC) and reads the cached `spaceIds`.
+        // spaces sync. Phantom is derived from the CGS latch + held/group claims (reducer-owned); no per-show
+        // recompute is needed.
         // Per-shortcut prefs and `exceptions` don't change for the duration of one show, but each
         // computed-property access rebuilds the underlying array via N×`CachedUserDefaults.macroPref`
         // calls. Snapshot them once and pass into the per-window helper.
         let filters = WindowFilters.snapshot()
-        // Tab grouping (incl. fullscreen siblings) and active→inactive state mirroring are reconciled
-        // reactively on WindowServer events (TabGroup.reconcile), so the model is already grouped here —
-        // doing it in this synchronous show path would reorder tiles mid-render (UI jump).
+        // Tab grouping is owned by the reducer (`TabGroups` registry applied through the bridge) and is already
+        // settled before show — re-deriving it here would reorder tiles mid-render (UI jump).
         for window in list {
-            window.recomputeIsPhantom()
             refreshIfWindowShouldBeShownToTheUser(window, filters)
         }
         refreshWhichWindowsToShowTheUser()
@@ -359,6 +358,8 @@ class Windows {
     /// nothing to change and the reducer emits no re-render at all; it still runs there, for whatever the
     /// launch pass could not see yet.
     static func sortByLevel() {
+        // CGS on-Space stacking order (top-most first), not the current model list order — stacking is the
+        // only guess we have for never-focused windows. Applied by the reducer's `.zOrderRead` branch.
         CGSCallScheduler.windowsInSpaces(Spaces.visibleSpaces) { wids in   // `thenMain`: already on main
             TrackedWindowStateBridge.dispatch(.zOrderRead(widsTopFirst: wids))
         }
@@ -433,7 +434,7 @@ class Windows {
             WindowServerEvents.subscribe(wid)
             // The freshly-created-window MRU promotion (consuming `windowsPendingFocusPromotion` /
             // `recentlyCreatedWindows`) lives in the reducer's `.discoveryLanded` branch now — every tracked
-            // append flows through it.
+            // window reaches that input, so doing it here too would double-bump. See WindowEventReducer.
         }
         if list.count > TilesView.recycledViews.count {
             TilesView.recycledViews.append(TileView())
@@ -469,7 +470,6 @@ class Windows {
                 windowsPendingSpaceRemoval.removeValue(forKey: wid)
                 windowsHeldVisibleForTab.remove(wid)
                 recentlyCreatedWindows.remove(wid)
-                WindowServerEvents.unsubscribe(wid)
             }
         }
         let toRemove = windows.map { $0.lastFocusOrder }
@@ -498,9 +498,10 @@ class Windows {
                 Applications.windowAttributesThrottler.removeEntries(withPrefix: "\(wid)-")
                 Applications.screenshotThrottler.removeEntry(withKey: "capture-wid-\(wid)")
             }
-            // when a tabbed window is removed, update its former siblings' tab group
-            if let siblingWids = w.tabbedSiblingWids {
-                TabGroup.removedWindowFromGroup(wid: w.cgWindowId, siblingWids: siblingWids)
+            // Registry-only membership: the reducer cannot shrink groups when the live list has already lost
+            // this wid, so the shell does it here through the single funnel.
+            if let wid = w.cgWindowId {
+                TabGroups.remove(wid, reason: "windowRemoved")
             }
         }
         if addWindowlessWindowIfNeeded {
