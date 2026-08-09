@@ -86,16 +86,15 @@ class Windows {
         // `Applications.syncSpacesState`. Here we
         // only read the cached values, so there is no blocking SkyLight IPC on the way to rendering. A
         // one-frame staleness (e.g. a window just dragged to another Space) self-corrects via the deferred
-        // reconcile. `recomputeIsPhantom` is kept here: it's pure (no IPC) and reads the cached `spaceIds`.
+        // spaces sync. Phantom is derived from the CGS latch + held/group claims (reducer-owned); no per-show
+        // recompute is needed.
         // Per-shortcut prefs and `exceptions` don't change for the duration of one show, but each
         // computed-property access rebuilds the underlying array via N×`CachedUserDefaults.macroPref`
         // calls. Snapshot them once and pass into the per-window helper.
         let filters = WindowFilters.snapshot()
-        // Tab grouping (incl. fullscreen siblings) and active→inactive state mirroring are reconciled
-        // reactively on WindowServer events (TabGroup.reconcile), so the model is already grouped here —
-        // doing it in this synchronous show path would reorder tiles mid-render (UI jump).
+        // Tab grouping is owned by the reducer (`TabGroups` registry applied through the bridge) and is already
+        // settled before show — re-deriving it here would reorder tiles mid-render (UI jump).
         for window in list {
-            window.recomputeIsPhantom()
             refreshIfWindowShouldBeShownToTheUser(window, filters)
         }
         refreshWhichWindowsToShowTheUser()
@@ -340,21 +339,11 @@ class Windows {
     /// call, so it runs off-main via CGSCallScheduler (#5721); the list reseed + a refresh land on main when
     /// it returns. (First-summon-only, so the seed lands a frame after that first show — acceptable.)
     static func sortByLevel() {
-        CGSCallScheduler.windowsInSpaces(Spaces.visibleSpaces) { wids in
-            var windowLevelMap = [CGWindowID?: Int]()
-            for (index, cgWindowId) in wids.enumerated() {
-                windowLevelMap[cgWindowId] = index
-            }
-            list = list
-            .sorted { w1, w2 in
-                (windowLevelMap[w1.cgWindowId] ?? .max) < (windowLevelMap[w2.cgWindowId] ?? .max)
-            }
-            .enumerated()
-            .map { (index, window) -> Window in
-                window.lastFocusOrder = index
-                return window
-            }
-            if SwitcherSession.isActive { App.refreshOpenUiAfterExternalEvent(Windows.list) }
+        // The z-order → MRU rewrite is the reducer's `.zOrderRead` branch: collect the ordered wids and
+        // hand them off so the pure path owns the decision and the bridge applies lastFocusOrder.
+        let wids = list.compactMap { $0.cgWindowId }
+        if !wids.isEmpty {
+            TrackedWindowStateBridge.dispatch(.zOrderRead(widsTopFirst: wids))
         }
     }
 
@@ -453,17 +442,9 @@ class Windows {
         if let wid = window.cgWindowId {
             byWindowId[wid] = window
             WindowServerEvents.subscribe(wid)
-            // Promote a freshly-created window to the front of the MRU the moment it's tracked, no matter which
-            // path discovered it (event or full rescan). `windowsPendingFocusPromotion`: a focus event (808)
-            // outran the async discovery. `recentlyCreatedWindows`: a WindowServer create event flagged it new —
-            // this is what reliably fronts cmd-N-burst windows, since it doesn't depend on each window emitting
-            // its own 808 (some don't) nor on the app still being frontmost when that 808 is processed. Both
-            // flags are consumed so the window is bumped exactly once, here at its first appearance.
-            let wasPendingFocus = windowsPendingFocusPromotion.removeValue(forKey: wid) != nil
-            let wasJustCreated = recentlyCreatedWindows.remove(wid) != nil
-            if wasPendingFocus || wasJustCreated {
-                _ = updateLastFocusOrder(window)
-            }
+            // The freshly-created-window MRU promotion (consuming `windowsPendingFocusPromotion` /
+            // `recentlyCreatedWindows`) lives in the reducer's `.discoveryLanded` branch now — every tracked
+            // window reaches that input, so doing it here too would double-bump. See WindowEventReducer.
         }
         if list.count > TilesView.recycledViews.count {
             TilesView.recycledViews.append(TileView())
@@ -499,7 +480,6 @@ class Windows {
                 windowsPendingSpaceRemoval.removeValue(forKey: wid)
                 windowsHeldVisibleForTab.remove(wid)
                 recentlyCreatedWindows.remove(wid)
-                WindowServerEvents.unsubscribe(wid)
             }
         }
         let toRemove = windows.map { $0.lastFocusOrder }
@@ -528,9 +508,10 @@ class Windows {
                 Applications.windowAttributesThrottler.removeEntries(withPrefix: "\(wid)-")
                 Applications.screenshotThrottler.removeEntry(withKey: "capture-wid-\(wid)")
             }
-            // when a tabbed window is removed, update its former siblings' tab group
-            if let siblingWids = w.tabbedSiblingWids {
-                TabGroup.removedWindowFromGroup(wid: w.cgWindowId, siblingWids: siblingWids)
+            // Registry-only membership: the reducer cannot shrink groups when the live list has already lost
+            // this wid, so the shell does it here through the single funnel.
+            if let wid = w.cgWindowId {
+                TabGroups.remove(wid, reason: "windowRemoved")
             }
         }
         if addWindowlessWindowIfNeeded {

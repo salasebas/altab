@@ -73,4 +73,12 @@ enum WindowThumbnails {
         // wired fully in issue #58
         _ = window
     }
+
+    /// Whether a freshly captured thumbnail is worth showing. Full mid-animation / restore partial-frame
+    /// rejection lands with issue #58; until then every frame is accepted so the #56 reducer cutover can call
+    /// through `Window.refreshThumbnail` without regressing ordinary captures.
+    static func acceptCapture(_ window: Window, _ contents: CALayerContents) -> Bool {
+        _ = (window, contents)
+        return true
+    }
 }
