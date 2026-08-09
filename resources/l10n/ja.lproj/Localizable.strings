@@ -23,6 +23,8 @@
 "AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "AlTab の設定ファイルにあなたのアカウントで書き込みできません。ここでファイルの所有者と権限を修正してください:";
 "AlTab will show if the window is currently minimized or fullscreen with a status icon." = "ウインドウが現在最小化またはフルスクリーンの場合、AlTab はステータスアイコンで表示します。";
 "Always" = "常に";
+"Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio." = "表示中の最も広いウィンドウに合わせて、すべてのサムネイルタイルの外枠幅を揃えます。サムネイル画像のサイズと縦横比はそのままです。";
+"Uniform tile widths" = "タイル幅を揃える";
 "and press" = "を押す";
 "Animations" = "アニメーション";
 "Animations…" = "アニメーション…";

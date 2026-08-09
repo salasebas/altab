@@ -23,6 +23,8 @@
 "AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "ملف إعدادات AlTab غير قابل للكتابة بواسطة حسابك. الرجاء تصحيح المالك والأذونات لهذا الملف هنا:";
 "AlTab will show if the window is currently minimized or fullscreen with a status icon." = "سيُظهر AlTab ما إذا كانت النافذة مصغّرة أو بملء الشاشة حاليًا برمز حالة.";
 "Always" = "دائمًا";
+"Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio." = "يجعل كل بلاطة مصغّرة بنفس العرض الخارجي استنادًا إلى أوسع نافذة في المجموعة الحالية. تبقى صور المصغّرات بحجمها ونسبتها.";
+"Uniform tile widths" = "عرض بلاط موحّد";
 "and press" = "ثم اضغط";
 "Animations" = "الرسوم المتحركة";
 "Animations…" = "الرسوم المتحركة…";

@@ -9,6 +9,67 @@ final class AppearanceTests: XCTestCase {
         XCTAssertEqual(TileSpacingPreference.clamped(17), 16)
     }
 
+    func testUniformTileWidthsDefaultIsOffAndOnlyAppliesToThumbnails() {
+        XCTAssertEqual(Preferences.defaultValues["uniformTileWidths"] as? String, "false")
+        XCTAssertTrue(AppearanceTestable.usesUniformTileWidths(.thumbnails, true))
+        XCTAssertFalse(AppearanceTestable.usesUniformTileWidths(.thumbnails, false))
+        XCTAssertFalse(AppearanceTestable.usesUniformTileWidths(.appIcons, true))
+        XCTAssertFalse(AppearanceTestable.usesUniformTileWidths(.titles, true))
+    }
+
+    func testUniformTileWidthsOffModePreservesNaturalWidths() {
+        let natural: [CGFloat] = [80, 140, 100]
+        XCTAssertEqual(AppearanceTestable.resolvedTileWidths(natural, false), natural)
+        XCTAssertEqual(AppearanceTestable.resolvedTileWidths([], false), [])
+        XCTAssertEqual(AppearanceTestable.resolvedTileWidths([], true), [])
+    }
+
+    func testUniformTileWidthsUsesWidestNaturalWidthForAllTiles() {
+        let natural: [CGFloat] = [80, 140, 100]
+        XCTAssertEqual(AppearanceTestable.resolvedTileWidths(natural, true), [140, 140, 140])
+        XCTAssertEqual(AppearanceTestable.resolvedTileWidths([55], true), [55])
+    }
+
+    func testNaturalOuterTileWidthAppliesMinFloorWithoutChangingAspectContent() {
+        XCTAssertEqual(AppearanceTestable.naturalOuterTileWidth(40, 10, 100), 100)
+        XCTAssertEqual(AppearanceTestable.naturalOuterTileWidth(120, 10, 100), 140)
+        XCTAssertEqual(AppearanceTestable.naturalOuterTileWidth(120.4, 10, 50), 140)
+    }
+
+    func testUniformTileWidthsLayoutWrapsUsingSharedWidth() {
+        let natural: [CGFloat] = [80, 140, 100]
+        let shared = AppearanceTestable.resolvedTileWidths(natural, true)
+        let spacing: CGFloat = 8
+        // Wide enough for 80+140 side-by-side, but not for 140+140, so uniform wraps earlier.
+        let widthMax: CGFloat = 250
+        var uniformLayout = TileGridLayout(widthMax: widthMax, tileHeight: 50, spacing: spacing, isLeftToRight: true)
+        let uniformPlacements = shared.map { uniformLayout.place($0) }
+        XCTAssertEqual(uniformPlacements.map(\.startsNewRow), [false, true, true])
+        XCTAssertEqual(Set(shared), [140])
+        var variableLayout = TileGridLayout(widthMax: widthMax, tileHeight: 50, spacing: spacing, isLeftToRight: true)
+        let variablePlacements = natural.map { variableLayout.place($0) }
+        XCTAssertEqual(variablePlacements.map(\.startsNewRow), [false, false, true])
+        XCTAssertGreaterThan(uniformLayout.maxY, variableLayout.maxY)
+    }
+
+    func testUniformTileWidthsMirrorsInRightToLeftLayout() {
+        let natural: [CGFloat] = [70, 120, 90]
+        let widths = AppearanceTestable.resolvedTileWidths(natural, true)
+        let widthMax: CGFloat = 300
+        let spacing: CGFloat = 10
+        var ltr = TileGridLayout(widthMax: widthMax, tileHeight: 40, spacing: spacing, isLeftToRight: true)
+        var rtl = TileGridLayout(widthMax: widthMax, tileHeight: 40, spacing: spacing, isLeftToRight: false)
+        let ltrFrames = widths.map { CGRect(origin: ltr.place($0).origin, size: CGSize(width: $0, height: 40)) }
+        let rtlFrames = widths.map { CGRect(origin: rtl.place($0).origin, size: CGSize(width: $0, height: 40)) }
+        XCTAssertEqual(ltr.maxX, rtl.maxX)
+        let rtlOffset = TileGridGeometry.documentOffsetX(widthMax, rtl.maxX, false)
+        for index in widths.indices {
+            XCTAssertEqual(rtlFrames[index].minX - rtlOffset, ltr.maxX - ltrFrames[index].maxX)
+            XCTAssertEqual(rtlFrames[index].minY, ltrFrames[index].minY)
+            XCTAssertEqual(rtlFrames[index].width, ltrFrames[index].width)
+        }
+    }
+
     func testTileSpacingAppliesOnlyToGridStyles() {
         for value in TileSpacingPreference.validRange {
             let spacing = CGFloat(value)

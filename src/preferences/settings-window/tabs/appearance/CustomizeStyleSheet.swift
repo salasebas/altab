@@ -4,6 +4,71 @@ private let tileSpacingResetTitle = NSLocalizedString("Default", comment: "Resto
 private let tileSpacingAccessibilityHelp = NSLocalizedString("Horizontal and vertical space between tiles, from 0 to 16 points.", comment: "Tile spacing slider accessibility help")
 private let tileSpacingResetHelp = NSLocalizedString("Restore tile spacing to 8 points.", comment: "Tile spacing reset button help")
 private let tileSpacingValueFormat = NSLocalizedString("%d pt", comment: "Tile spacing value in points")
+private let uniformTileWidthsAccessibilityHelp = NSLocalizedString(
+    "Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio.",
+    comment: "Uniform tile widths switch accessibility help")
+
+/// Live preview of variable vs uniform outer tile widths for the Thumbnails layout option.
+private final class UniformTileWidthsPreviewView: NSView {
+    private let tiles = (0..<3).map { _ in NSView() }
+    private let images = (0..<3).map { _ in NSView() }
+    private var uniform: Bool
+
+    init(_ uniform: Bool) {
+        self.uniform = uniform
+        super.init(frame: .zero)
+        translatesAutoresizingMaskIntoConstraints = false
+        widthAnchor.constraint(equalToConstant: 460).isActive = true
+        heightAnchor.constraint(equalToConstant: 96).isActive = true
+        wantsLayer = true
+        layer?.cornerRadius = 10
+        layer?.backgroundColor = NSColor.quaternaryLabelColor.cgColor
+        setAccessibilityElement(false)
+        for (tile, image) in zip(tiles, images) {
+            tile.wantsLayer = true
+            tile.layer?.cornerRadius = 8
+            tile.layer?.backgroundColor = NSColor.systemBlue.withAlphaComponent(0.22).cgColor
+            image.wantsLayer = true
+            image.layer?.cornerRadius = 6
+            image.layer?.backgroundColor = NSColor.systemBlue.withAlphaComponent(0.85).cgColor
+            tile.addSubview(image)
+            addSubview(tile)
+        }
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("Class only supports programmatic initialization")
+    }
+
+    func update(_ uniform: Bool) {
+        self.uniform = uniform
+        needsLayout = true
+    }
+
+    override func layout() {
+        super.layout()
+        let imageWidths: [CGFloat] = [44, 78, 56]
+        let imageHeight: CGFloat = 48
+        let inset: CGFloat = 8
+        let spacing: CGFloat = 12
+        let naturalOuter = imageWidths.map { $0 + inset * 2 }
+        let outerWidths = AppearanceTestable.resolvedTileWidths(naturalOuter, uniform)
+        let rowWidth = outerWidths.reduce(CGFloat(0), +) + spacing * CGFloat(outerWidths.count - 1)
+        var x = ((bounds.width - rowWidth) / 2).rounded()
+        let y = ((bounds.height - imageHeight - inset * 2) / 2).rounded()
+        for index in tiles.indices {
+            let outer = outerWidths[index]
+            tiles[index].frame = CGRect(x: x, y: y, width: outer, height: imageHeight + inset * 2)
+            let imageWidth = imageWidths[index]
+            images[index].frame = CGRect(
+                x: ((outer - imageWidth) / 2).rounded(),
+                y: inset,
+                width: imageWidth,
+                height: imageHeight)
+            x += outer + spacing
+        }
+    }
+}
 
 private final class TileSpacingPreviewView: NSView {
     private let tiles = (0..<6).map { _ in NSView() }
@@ -111,6 +176,7 @@ class CustomizeStyleSheet: SheetWindow {
     private static let labelLayout = NSLocalizedString("Layout", comment: "")
     private static let labelTileSpacing = NSLocalizedString("Tile spacing", comment: "")
     private static let labelRowAlignment = NSLocalizedString("Row alignment", comment: "")
+    private static let labelUniformTileWidths = NSLocalizedString("Uniform tile widths", comment: "")
 
     /// Pre-build search index for the open-button. See `SettingsSearchIndex.sheetSearchableStrings`.
     static var searchableStrings: [String] {
@@ -129,6 +195,9 @@ class CustomizeStyleSheet: SheetWindow {
             strings += [labelLayout, labelTileSpacing, labelRowAlignment, tileSpacingResetTitle, tileSpacingAccessibilityHelp, tileSpacingResetHelp]
                 + RowAlignmentPreference.allCases.map { $0.localizedString }
         }
+        if Preferences.appearanceStyle == .thumbnails {
+            strings += [labelUniformTileWidths, uniformTileWidthsAccessibilityHelp]
+        }
         return strings
     }
 
@@ -138,6 +207,7 @@ class CustomizeStyleSheet: SheetWindow {
     var illustratedImageView: IllustratedImageThemeView!
     var showHideIllustratedView: ShowHideIllustratedView!
     private var tileSpacingControl: TileSpacingControl!
+    private var uniformTileWidthsPreview: UniformTileWidthsPreviewView?
 
     /// Keep the style illustration pinned above the scrolling options so hover previews stay visible
     /// even when the list is long (Layout / Show & Hide / titles).
@@ -186,6 +256,21 @@ class CustomizeStyleSheet: SheetWindow {
         table.addRow(rowAlignment, onMouseEntered: { [weak self] _, _ in
             self?.showRowAlignmentIllustratedImage()
         })
+        if style == .thumbnails {
+            let preview = UniformTileWidthsPreviewView(Preferences.uniformTileWidths)
+            uniformTileWidthsPreview = preview
+            let uniformSwitch = LabelAndControl.makeSwitch("uniformTileWidths", extraAction: { [weak self] _ in
+                self?.uniformTileWidthsPreview?.update(Preferences.uniformTileWidths)
+            })
+            uniformSwitch.setAccessibilityLabel(Self.labelUniformTileWidths)
+            uniformSwitch.setAccessibilityHelp(uniformTileWidthsAccessibilityHelp)
+            table.addRow(
+                leftViews: [TableGroupView.makeText(Self.labelUniformTileWidths)],
+                rightViews: [uniformSwitch],
+                secondaryViews: [preview],
+                secondaryViewsAlignment: .right,
+                secondaryViewsTopGap: 8)
+        }
         tileSpacingControl = TileSpacingControl(Self.labelTileSpacing)
         table.addRow(leftViews: [TableGroupView.makeText(Self.labelTileSpacing)], rightViews: [tileSpacingControl.controls], secondaryViews: [tileSpacingControl.preview], secondaryViewsAlignment: .right, secondaryViewsTopGap: 8)
         table.onMouseExited = { [weak self] event, view in

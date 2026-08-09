@@ -447,17 +447,24 @@ class TilesView {
         let labelHeight = Self.layoutCache.labelHeight
         let height = TileView.height(labelHeight)
         let isLeftToRight = App.shared.userInterfaceLayoutDirection == .leftToRight
-        var layout = TileGridLayout(widthMax: widthMax, tileHeight: height, spacing: Appearance.interCellPadding, isLeftToRight: isLeftToRight)
+        let useUniform = AppearanceTestable.usesUniformTileWidths(
+            Preferences.effectiveAppearanceStyle(SwitcherSession.activeShortcutIndex),
+            Preferences.uniformTileWidths)
+        var naturalWidths = [CGFloat]()
         var index = 0
         while index < TilesView.recycledViews.count {
-            guard SwitcherSession.isActive else { return layout.maxY }
+            guard SwitcherSession.isActive else { break }
             defer { index += 1 }
             let view = TilesView.recycledViews[index]
             guard index < Windows.list.count else { break }
             let window = Windows.list[index]
             guard Windows.shouldDisplay(window) else { view.frame = .zero; continue }
             view.updateRecycledCellWithNewContent(window, index, height)
-            _ = layout.place(view.frame.size.width)
+            naturalWidths.append(view.frame.size.width)
+        }
+        var layout = TileGridLayout(widthMax: widthMax, tileHeight: height, spacing: Appearance.interCellPadding, isLeftToRight: isLeftToRight)
+        for width in AppearanceTestable.resolvedTileWidths(naturalWidths, useUniform) {
+            _ = layout.place(width)
         }
         return layout.maxY
     }
@@ -466,11 +473,13 @@ class TilesView {
         let labelHeight = Self.layoutCache.labelHeight
         let height = TileView.height(labelHeight)
         let isLeftToRight = App.shared.userInterfaceLayoutDirection == .leftToRight
-        var layout = TileGridLayout(widthMax: widthMax, tileHeight: height, spacing: Appearance.interCellPadding, isLeftToRight: isLeftToRight)
-        var newViews = [TileView]()
-        var rowSignature = [Int]()
-        rows.removeAll(keepingCapacity: true)
-        rows.append([TileView]())
+        let useUniform = AppearanceTestable.usesUniformTileWidths(
+            Preferences.effectiveAppearanceStyle(SwitcherSession.activeShortcutIndex),
+            Preferences.uniformTileWidths)
+        var displayedViews = [TileView]()
+        var naturalWidths = [CGFloat]()
+        var displayedIndices = [Int]()
+        var displayedWindows = [Window]()
         var index = 0
         while index < TilesView.recycledViews.count {
             guard SwitcherSession.isActive else { return nil }
@@ -483,22 +492,39 @@ class TilesView {
                     continue
                 }
                 view.updateRecycledCellWithNewContent(window, index, height)
-                let width = view.frame.size.width
-                let placement = layout.place(width)
-                view.frame.origin = placement.origin
-                if placement.startsNewRow {
-                    rows.append([TileView]())
-                }
-                rows[rows.count - 1].append(view)
-                newViews.append(view)
-                rowSignature.append(index)
-                window.rowIndex = rows.count - 1
+                displayedViews.append(view)
+                naturalWidths.append(view.frame.size.width)
+                displayedIndices.append(index)
+                displayedWindows.append(window)
             } else {
                 // release images and stale window references from unused recycledViews; they take lots of RAM
                 view.thumbnail.releaseImage()
                 view.appIcon.releaseImage()
                 view.window_ = nil
             }
+        }
+        let widths = AppearanceTestable.resolvedTileWidths(naturalWidths, useUniform)
+        var layout = TileGridLayout(widthMax: widthMax, tileHeight: height, spacing: Appearance.interCellPadding, isLeftToRight: isLeftToRight)
+        var newViews = [TileView]()
+        var rowSignature = [Int]()
+        rows.removeAll(keepingCapacity: true)
+        rows.append([TileView]())
+        for i in displayedViews.indices {
+            guard SwitcherSession.isActive else { return nil }
+            let view = displayedViews[i]
+            let width = widths[i]
+            if width != view.frame.size.width {
+                view.applyOuterWidth(width, height)
+            }
+            let placement = layout.place(width)
+            view.frame.origin = placement.origin
+            if placement.startsNewRow {
+                rows.append([TileView]())
+            }
+            rows[rows.count - 1].append(view)
+            newViews.append(view)
+            rowSignature.append(displayedIndices[i])
+            displayedWindows[i].rowIndex = rows.count - 1
         }
         scrollView.documentView!.subviews = newViews
         scrollView.documentView!.addSubview(thumbnailOverView)

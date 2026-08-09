@@ -23,6 +23,8 @@
 "AlTab preferences file isn’t writable by your account. Please fix ownership and permissions of the file here:" = "AlTab 的偏好设置文件无法被你的账户写入。请在此处修正该文件的所有者和权限：";
 "AlTab will show if the window is currently minimized or fullscreen with a status icon." = "AlTab 将通过状态图标显示窗口当前是否已最小化或全屏。";
 "Always" = "始终";
+"Make every thumbnail tile the same outer width, based on the widest window in the current set. Thumbnail images keep their size and aspect ratio." = "使每个缩略图拼贴使用相同的外边宽度，以当前集合中最宽的窗口为准。缩略图本身保持原有大小与宽高比。";
+"Uniform tile widths" = "统一拼贴宽度";
 "and press" = "然后按";
 "Animations" = "动画";
 "Animations…" = "动画…";

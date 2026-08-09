@@ -619,11 +619,22 @@ class TileView: FlippedView {
         } else {
             contentWidth = Appearance.iconSize
         }
-        let frameWidth = (contentWidth + Appearance.edgeInsetsSize * 2).rounded()
-        let widthMin = TileView.minThumbnailWidth()
-        let width = max(frameWidth, widthMin).rounded()
+        let width = AppearanceTestable.naturalOuterTileWidth(contentWidth, Appearance.edgeInsetsSize, TileView.minThumbnailWidth())
         assignIfDifferent(&frame.size.width, width)
         assignIfDifferent(&frame.size.height, newHeight)
+    }
+
+    /// Expand the outer tile frame after natural sizing (uniform tile widths). Thumbnail layer size is
+    /// left unchanged; title/status layout and horizontal thumbnail centering re-run for the new width.
+    func applyOuterWidth(_ width: CGFloat, _ newHeight: CGFloat) {
+        assignIfDifferent(&frame.size.width, width.rounded())
+        assignIfDifferent(&frame.size.height, newHeight)
+        if Preferences.effectiveAppearanceStyle(SwitcherSession.activeShortcutIndex) != .appIcons {
+            let hWidth = frame.width - Appearance.edgeInsetsSize * 2
+            let labelWidth = hWidth - appIcon.frame.width - Appearance.appIconLabelSpacing - statusIcons.totalWidth
+            label.setWidth(labelWidth)
+        }
+        updatePositions(newHeight)
     }
 
     private func getAccessibilityHelp(_ appName: String?, _ dockLabel: String?) -> String {
