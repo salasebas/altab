@@ -63,4 +63,14 @@ enum WindowThumbnails {
         WindowCaptureScreenshots.oneTimeScreenshots(windowsToFetch, .refreshOnlyThumbnailsAfterShowUi,
             prioritizedIds: selectedId.map { [$0] } ?? [], fullRes: true)
     }
+
+    static func captureFocusedInBackground(_ window: Window) {
+        // no-op shell; full capture path remains refreshAsync / Preview (#45)
+        _ = window
+    }
+
+    static func deferCaptureUntilRestoreEnds(_ window: Window) {
+        // wired fully in issue #58
+        _ = window
+    }
 }

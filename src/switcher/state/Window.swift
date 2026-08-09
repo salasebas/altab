@@ -27,6 +27,20 @@ class Window {
     var swAppResults: [SWResult] = []
     var swTitleResults: [SWResult] = []
     var swBestSimilarity = 0.0
+    /// SYNTHETIC: `spaceIds` was copied from a tab sibling, not reported by CGS (reducer ownership; #56).
+    var spaceIsBorrowed = false
+    /// SYNTHETIC: `isFullscreen` was mirrored from the active tab sibling (reducer ownership; #56).
+    var isFullscreenMirrored = false
+    /// Space this window most recently left (a 1326); cleared when it joins one again.
+    var lastLeftSpaceId: UInt64?
+    /// Handover edge: the wid that took this window's place on the Space it left.
+    var replacedByWid: CGWindowID?
+    /// Handover edge: the wid this window replaced on the Space it joined.
+    var replacedWid: CGWindowID?
+    /// Tab-button count from the last AXTabGroup read (0 = none / not tabbed).
+    var tabCount = 0
+    /// Uptime when the OS last reported this window focused; 0 = never.
+    var focusedAt: TimeInterval = 0
 
     /// Forwards every `WindowState` field by name — `window.title` resolves to `state.title`,
     /// `window.isFullscreen = true` writes through. Replaces a stack of one-per-field computed
@@ -116,6 +130,17 @@ class Window {
     /// would clobber that on every show. See PhantomWindowDetector.syncVerdict and PhantomWindowDetection.swift (#5714).
     func recomputeIsPhantom() {
         self.isPhantom = PhantomWindowDetector.syncVerdict(state, application.state)
+    }
+
+    /// CGS phantom latch surface for `TrackedWindowStateBridge` snapshot/apply. Full derived-`isPhantom`
+    /// rewrite is deferred to #56; for now the latch is the stored `isPhantom` bit.
+    var cgsPhantomLatch: Bool { state.isPhantom }
+
+    @discardableResult
+    func applyCgsPhantomVerdict(_ verdict: Bool) -> Bool {
+        let before = state.isPhantom
+        state.isPhantom = verdict
+        return state.isPhantom != before
     }
 
     /// A real window that just un-phantomed (its Space membership recovered) may belong to an app still
@@ -405,7 +430,8 @@ class Window {
         return true
     }
 
-    private func updateScreenId() {
+    /// Also invoked by `TrackedWindowStateBridge` via `.updateScreenId` effect.
+    func updateScreenId() {
         screenId = NSScreen.screens.first { isOnScreen($0) }?.cachedUuid()
     }
 

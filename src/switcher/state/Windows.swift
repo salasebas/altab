@@ -7,7 +7,7 @@ class Windows {
     /// `appendWindow` consumes this to promote the window to the front of the MRU the moment it's added,
     /// regardless of whether event-discovery or the full rescan adds it — so a freshly-focused window (e.g.
     /// one of many from spamming cmd-N) isn't stranded at the back. Drained on append; cleared on destroy.
-    static var windowsPendingFocusPromotion = Set<CGWindowID>()
+    static var windowsPendingFocusPromotion = [CGWindowID: TrackedWindowState.FocusPromotion]()
     /// wids flagged brand-new by a WindowServer `windowCreated` event, not yet promoted in the MRU. A new window
     /// must land at the front, but the focus event (808) that would do it isn't a reliable trigger: it only
     /// fires while the window's app is frontmost, and even then can be *processed* a beat late — after the user
@@ -21,8 +21,10 @@ class Windows {
     /// before its async discovery lands, so discovery would otherwise keep the wrong current-Space default and
     /// the background tab would show as a separate window until the next show (#5830). `addDiscoveredWindow`
     /// consumes this to record the tab Space-less at discovery. Cleared if the wid is re-added to a Space, or
-    /// on destroy/removal.
-    static var windowsPendingSpaceRemoval = Set<CGWindowID>()
+    /// on destroy/removal. Value is the Space it was removed from (handover needs the Space, not just the fact).
+    static var windowsPendingSpaceRemoval = [CGWindowID: UInt64]()
+    /// SYNTHETIC: a just-backgrounded tab kept visible through the new-tab discovery gap (reducer ownership; #56).
+    static var windowsHeldVisibleForTab = Set<CGWindowID>()
     private static var lastWindowActivityType = WindowActivityType.none
     private static var shouldSelectBestMatchOnSearchChange = false
     private static var shouldRestoreDefaultSelectionOnSearchClear = false
@@ -457,7 +459,7 @@ class Windows {
             // this is what reliably fronts cmd-N-burst windows, since it doesn't depend on each window emitting
             // its own 808 (some don't) nor on the app still being frontmost when that 808 is processed. Both
             // flags are consumed so the window is bumped exactly once, here at its first appearance.
-            let wasPendingFocus = windowsPendingFocusPromotion.remove(wid) != nil
+            let wasPendingFocus = windowsPendingFocusPromotion.removeValue(forKey: wid) != nil
             let wasJustCreated = recentlyCreatedWindows.remove(wid) != nil
             if wasPendingFocus || wasJustCreated {
                 _ = updateLastFocusOrder(window)
@@ -493,7 +495,9 @@ class Windows {
             }
             if let wid = w.cgWindowId {
                 byWindowId.removeValue(forKey: wid)
-                windowsPendingFocusPromotion.remove(wid)
+                windowsPendingFocusPromotion.removeValue(forKey: wid)
+                windowsPendingSpaceRemoval.removeValue(forKey: wid)
+                windowsHeldVisibleForTab.remove(wid)
                 recentlyCreatedWindows.remove(wid)
                 WindowServerEvents.unsubscribe(wid)
             }

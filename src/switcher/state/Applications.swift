@@ -165,7 +165,7 @@ class Applications {
                     // dangling. `Windows.windowsPendingSpaceRemoval` remembers a removed-from-Space event that
                     // arrived while the window was still untracked (a rapid-burst background tab, #5830 — see
                     // below); consuming here regardless of accept/reject keeps the set self-draining.
-                    let wasRemovedFromSpaceWhileUntracked = Windows.windowsPendingSpaceRemoval.remove(wid) != nil
+                    let wasRemovedFromSpaceWhileUntracked = Windows.windowsPendingSpaceRemoval.removeValue(forKey: wid) != nil
                     let findOrCreate = Windows.findOrCreate(element, wid, app, CGWindowLevel(raw.level), a.title, a.subrole, a.role, raw.bounds.size, raw.bounds.origin, isFullscreen, isMinimized)
                     guard let window = findOrCreate.0 else { return }
                     // override Window.init's current-Space default with the real Space resolved above (new
@@ -284,7 +284,9 @@ class Applications {
     /// user activates another. When an AXTabGroup names tabs we have no window for (`untrackedTitles`), the
     /// inactive tab's accessibility element is still reachable: brute-force the app for the matching untracked
     /// standard windows and adopt them through the normal discovery path. Throttled per app, off-main, bounded.
-    static func discoverInactiveTabs(_ app: Application, _ untrackedTitles: [String]) {
+    static func discoverInactiveTabs(_ app: Application, _ untrackedTitles: [String], _ requesterWid: CGWindowID? = nil) {
+        // requesterWid reserved for #54 deferred scan (reject candidates of another window's tabs)
+        _ = requesterWid
         let pid = app.pid
         let appWindowCount = Windows.list.reduce(0) { $1.application.pid == pid ? $0 + 1 : $0 }
         let situation = "\(untrackedTitles.sorted().joined(separator: "\u{1}"))|\(appWindowCount)"

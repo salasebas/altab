@@ -186,13 +186,13 @@ class WindowServerEvents {
                 // focus so it isn't lost: discovery is async, so the window is promoted the moment it's
                 // appended (Windows.appendWindow), else a freshly-focused window (e.g. cmd-N spam) whose 808
                 // outran its discovery would land at the back of the MRU.
-                Windows.windowsPendingFocusPromotion.insert(w0)
+                Windows.windowsPendingFocusPromotion[w0] = .asserted
                 Applications.discoverWindow(w0)
             }
         case .remove:
-            Windows.windowsPendingFocusPromotion.remove(w0)
+            Windows.windowsPendingFocusPromotion.removeValue(forKey: w0)
             Windows.recentlyCreatedWindows.remove(w0)
-            Windows.windowsPendingSpaceRemoval.remove(w0)
+            Windows.windowsPendingSpaceRemoval.removeValue(forKey: w0)
             if let window = Windows.byWindowId[w0] {
                 Windows.removeWindows([window], true)
             }
@@ -251,8 +251,8 @@ class WindowServerEvents {
             // (a rapid-burst background tab whose remove fires before it's tracked, #5830); a later add cancels
             // it. Then the missed delta no longer strands the tab shown-as-separate until the next show.
             guard let window = Windows.byWindowId[widInSpace] else {
-                if n == .windowRemovedFromSpace { Windows.windowsPendingSpaceRemoval.insert(widInSpace) }
-                else { Windows.windowsPendingSpaceRemoval.remove(widInSpace) }
+                if n == .windowRemovedFromSpace { Windows.windowsPendingSpaceRemoval[widInSpace] = space }
+                else { Windows.windowsPendingSpaceRemoval.removeValue(forKey: widInSpace) }
                 return
             }
             // A tab SWITCH emits no focus event at all — just this Space swap (1325 for the tab coming
@@ -308,7 +308,8 @@ class WindowServerEvents {
     /// APPLICATION_FRONT_SWITCHED handler. This is the WEAK signal: the AX read races the app's internal focus
     /// update and can return the PREVIOUS window (iTerm, #5596), so it YIELDS to the activation's first 808
     /// (`focusBumped`) — checked at apply time on main, since the read is async and can land after the 808.
-    private static func bumpFocusOnActivation(_ pid: pid_t) {
+    /// Also invoked by `TrackedWindowStateBridge` via `.bumpFocusViaAxBackstop`.
+    static func bumpFocusOnActivation(_ pid: pid_t) {
         guard let app = Applications.findOrCreate(pid, false), let appAx = app.axUiElement else { return }
         AXCallScheduler.shared.schedule(key: "pid-\(pid)-activation-focus", pid: pid) {
             // Our own windows (e.g. Preferences) are tracked like any app's, so self activation gets the same MRU
@@ -354,6 +355,19 @@ class WindowServerEvents {
             App.checkIfShortcutsShouldBeDisabled(focusedWindow, nil)
         }
         App.refreshOpenUiAfterExternalEvent(Windows.list)
+    }
+
+    /// Hold-release re-check interval shared with the pure reducer (`WindowEventReducer.holdReleaseMaxAttempts`).
+    static let recheckInterval: TimeInterval = 0.4
+
+    static func armHoldReleaseCheck(_ wid: CGWindowID, attempt: Int) {
+        // #56 wires this to TrackedWindowStateBridge.dispatch(.holdReleaseCheck)
+        _ = (wid, attempt)
+    }
+
+    static func armDragOutCheck(_ wid: CGWindowID, previousRepWid: CGWindowID, attempt: Int) {
+        // #56 wires this to TrackedWindowStateBridge.dispatch(.dragOutCheck)
+        _ = (wid, previousRepWid, attempt)
     }
 
     private static func runningApp(_ note: Notification) -> NSRunningApplication? {

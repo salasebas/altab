@@ -40,6 +40,10 @@ class Logger {
         return f
     }()
 
+    /// True when debug-level messages are emitted (CLI `--logs=debug` / `verbose`). Used by
+    /// `TrackedWindowStateBridge` to skip joining decision facts when they would be discarded.
+    static var debugEnabled: Bool { minLevel <= .debug }
+
     static func initialize() {
         minLevel = decideLevel()
     }
