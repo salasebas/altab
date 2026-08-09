@@ -15,9 +15,11 @@ An independent, community-maintained fork of [AltTab for macOS](https://github.c
 
 AlTab’s product version is **1.0.1** (independent of upstream AltTab’s `v11.x` line). Tag: **`altab-v1.0.1`**.
 
-- **Download (optional):** [GitHub Release altab-v1.0.1](https://github.com/salasebas/altab/releases/tag/altab-v1.0.1)
-  - **Casual:** `AlTab-altab-v1.0.1-macOS-unsigned.dmg` — light drag-to-Applications image (**unsigned and not notarized**)
-  - **Full package:** `AlTab-altab-v1.0.1-macOS-unsigned.zip` (app + dSYM + notices), matching source tarball, manifest, notes, and `SHA256SUMS`
+- **Download (optional):** [GitHub Release altab-v1.0.1](https://github.com/salasebas/altab/releases/tag/altab-v1.0.1) — **unsigned and not notarized**
+  1. **Casual:** `AlTab-1.0.1-macOS-unsigned.dmg` — light drag-to-Applications image (just run AlTab)
+  2. **Full package:** `AlTab-1.0.1-macOS-unsigned.zip` — app + dSYM + notices
+  3. **Source + integrity:** `AlTab-1.0.1-source.tar.gz` (packager corresponding source; not GitHub’s automatic Source code archives) and `SHA256SUMS`
+  4. **Secondary:** build manifest (and release-notes file used for the Release body; also inside the full ZIP)
 - **Supported path:** clone the tag and build locally with **Local Self-Signed** (stable permissions; not a distributable identity).
 
 ```bash

@@ -77,16 +77,19 @@ require_text scripts/package_notarized_release.sh 'scripts/verify_release_artifa
 require_text scripts/package_notarized_release.sh 'notarytool'
 require_text scripts/package_notarized_release.sh 'stapler'
 require_text scripts/package_release.sh 'release_package_name'
+require_text scripts/package_release.sh 'release_artifact_label'
 require_text scripts/package_release.sh 'release_light_dmg_name'
 require_text scripts/package_release.sh 'release_create_light_unsigned_dmg'
 require_text scripts/package_release.sh 'hdiutil'
 require_text scripts/package_release.sh 'Light download artifact'
 require_text scripts/package_notarized_release.sh 'release_package_name'
+require_text scripts/package_notarized_release.sh 'release_artifact_label'
 require_text scripts/verify_release_artifacts.sh 'release_package_name'
 require_text scripts/verify_release_artifacts.sh 'release_detect_package_mode'
 require_text scripts/verify_release_artifacts.sh 'release_validate_light_unsigned_dmg'
 require_text scripts/verify_release_artifacts.sh 'notarized'
 require_text scripts/verify_release_artifacts.sh 'release_validate_notarized_app'
+require_text scripts/release_artifact_contracts.sh 'release_artifact_label'
 require_text scripts/release_artifact_contracts.sh 'release_create_light_unsigned_dmg'
 require_text scripts/release_artifact_contracts.sh 'release_validate_light_unsigned_dmg'
 require_text scripts/release_artifact_contracts.sh 'release_light_dmg_name'
@@ -94,7 +97,21 @@ require_text scripts/release_artifact_contracts.sh 'macOS-unsigned.dmg'
 require_text scripts/publish_release_artifacts.sh 'release_audit_published_asset_names'
 require_text docs/releasing.md 'macOS-unsigned.dmg'
 require_text docs/releasing.md 'drag-to-Applications'
+require_text docs/releasing.md 'release_artifact_label'
+require_text docs/releasing.md 'AlTab-1.0.1-macOS-unsigned.dmg'
+require_text docs/releasing.md 'automatic Source code'
 require_text README.md 'macOS-unsigned.dmg'
+require_text README.md 'AlTab-1.0.1-macOS-unsigned.dmg'
+require_text .github/RELEASE_NOTES_TEMPLATE.md 'automatic Source code'
+require_text .github/RELEASE_NOTES_TEMPLATE.md '{{DMG_ARTIFACT}}'
+[[ "$(release_artifact_label altab-v1.0.1)" == "1.0.1" ]] || fail "artifact label must strip altab-v prefix for milestone tags"
+[[ "$(release_artifact_label altab-v2)" == "2" ]] || fail "artifact label must accept altab-vMAJOR tags"
+[[ "$(release_artifact_label v1.0.1)" == "v1.0.1" ]] || fail "artifact label must leave non-altab tags unchanged"
+[[ "$(release_artifact_label untagged)" == "untagged" ]] || fail "artifact label must pass through untagged marker"
+[[ "$(release_package_name "$(release_artifact_label altab-v1.0.1)" unsigned)" == "AlTab-1.0.1-macOS-unsigned" ]] \
+  || fail "milestone package basename must use SemVer without altab-v doubling"
+[[ "$(release_light_dmg_name "$(release_artifact_label altab-v1.0.1)")" == "AlTab-1.0.1-macOS-unsigned.dmg" ]] \
+  || fail "milestone light DMG basename must use SemVer without altab-v doubling"
 # Publish audit: unsigned ZIP without the light DMG must fail (subshell so fail() cannot abort the check).
 auditMissingDmgLog="$(mktemp "${TMPDIR:-/tmp}/altab-audit-missing-dmg.XXXXXX")"
 if (release_audit_published_asset_names \

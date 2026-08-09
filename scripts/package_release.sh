@@ -40,7 +40,7 @@ if [[ "$gitTag" == "untagged" ]]; then
   exactTags="$(git tag --points-at "$commit" | LC_ALL=C sort)"
   [[ -z "$exactTags" ]] || gitTag="$(printf '%s\n' "$exactTags" | sed -n '1p')"
 fi
-label="$gitTag"
+label="$(release_artifact_label "$gitTag")"
 [[ "$label" != "untagged" ]] || label="$(git rev-parse --short=12 "$commit")"
 [[ "$label" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || fail "release label is unsafe for artifact names: $label"
 releaseBundleVersion="0"
@@ -214,7 +214,8 @@ dmgCreateLog="$workRoot/dmg-create.log"
 release_create_light_unsigned_dmg "$appPath" "$publishRoot/$dmgFilename" "AlTab" "$dmgStage" "$dmgCreateLog"
 (
   cd "$publishRoot"
-  for artifact in "$binaryFilename" "$dmgFilename" "$sourceFilename" "$manifestFilename" "$notesFilename"; do
+  # Casual download first, then full ZIP, then source + provenance (notes stay attached but secondary).
+  for artifact in "$dmgFilename" "$binaryFilename" "$sourceFilename" "$manifestFilename" "$notesFilename"; do
     shasum -a 256 "$artifact"
   done > SHA256SUMS
 )

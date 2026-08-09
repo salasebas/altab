@@ -110,6 +110,9 @@ rg -q 'bundle ID is required' "$testRoot/missing-bundle-id.log" || fail "missing
 
 [[ "$(release_package_name test unsigned)" == "AlTab-test-macOS-unsigned" ]] || fail "unsigned package-name helper is incorrect"
 [[ "$(release_package_name test notarized)" == "AlTab-test-macOS" ]] || fail "notarized package-name helper is incorrect"
+[[ "$(release_artifact_label altab-v1.0.1)" == "1.0.1" ]] || fail "artifact label must strip altab-v for notarized packaging too"
+[[ "$(release_package_name "$(release_artifact_label altab-v1.0.1)" notarized)" == "AlTab-1.0.1-macOS" ]] \
+  || fail "notarized milestone package basename must use SemVer without altab-v doubling"
 [[ "$(release_detect_package_mode AlTab-test-macOS-unsigned.zip)" == "unsigned" ]] || fail "unsigned package-mode detection is incorrect"
 [[ "$(release_detect_package_mode AlTab-test-macOS.zip)" == "notarized" ]] || fail "notarized package-mode detection is incorrect"
 if (release_package_name test unknown) >"$testRoot/bad-package-mode.log" 2>&1; then fail "unknown package mode must fail"; fi

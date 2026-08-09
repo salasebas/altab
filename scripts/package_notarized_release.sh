@@ -170,7 +170,7 @@ if [[ "$gitTag" == "untagged" ]]; then
   exactTags="$(git tag --points-at "$commit" | LC_ALL=C sort)"
   [[ -z "$exactTags" ]] || gitTag="$(printf '%s\n' "$exactTags" | sed -n '1p')"
 fi
-label="$gitTag"
+label="$(release_artifact_label "$gitTag")"
 [[ "$label" != "untagged" ]] || label="$(git rev-parse --short=12 "$commit")"
 [[ "$label" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]] || fail "release label is unsafe for artifact names: $label"
 releaseBundleVersion="0"

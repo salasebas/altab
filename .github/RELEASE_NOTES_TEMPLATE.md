@@ -9,15 +9,18 @@ Notarization status: **not notarized**
 
 ## Download
 
-| Asset | Purpose |
-| --- | --- |
-| `{{DMG_ARTIFACT}}` | Light install image: `AlTab.app` + Applications shortcut (**unsigned**, casual download) |
-| `{{BINARY_ARTIFACT}}` | Full redistribution ZIP: app + dSYM + notices (**unsigned**) |
-| `{{SOURCE_ARTIFACT}}` | Exact corresponding source for the binary |
-| `{{MANIFEST}}` | Toolchain and build command |
-| `SHA256SUMS` | Checksums for every asset above |
+| Priority | Asset | Purpose |
+| --- | --- | --- |
+| 1 | `{{DMG_ARTIFACT}}` | **Just run AlTab** — light install image (`AlTab.app` + Applications shortcut). **Unsigned and not notarized.** |
+| 2 | `{{BINARY_ARTIFACT}}` | Full redistribution ZIP: app + dSYM + notices (**unsigned**) |
+| 3 | `{{SOURCE_ARTIFACT}}` + `SHA256SUMS` | Exact corresponding source for this binary, plus checksums |
+| 4 | `{{MANIFEST}}` | Toolchain / provenance (secondary) |
 
 Prefer the `.dmg` if you only want to run AlTab. Prefer the full ZIP (or build from source) when you need symbols, notices, or redistribution provenance.
+
+For this binary, the corresponding source is `{{SOURCE_ARTIFACT}}` (not GitHub’s automatic Source code zip/tar.gz archives attached to the tag).
+
+`RELEASE-NOTES.md` is generated for the GitHub Release body and shipped inside the full ZIP; it is not a primary standalone download.
 
 ## Changes
 

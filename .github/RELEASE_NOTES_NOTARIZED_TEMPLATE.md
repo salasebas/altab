@@ -15,6 +15,18 @@ Notarization status: **notarized and stapled**
 
 - Describe the user-visible changes in this release.
 
+## Download
+
+| Priority | Asset | Purpose |
+| --- | --- | --- |
+| 1 | `{{BINARY_ARTIFACT}}` | Notarized redistribution ZIP: app + dSYM + notices |
+| 2 | `{{SOURCE_ARTIFACT}}` + `SHA256SUMS` | Exact corresponding source for this binary, plus checksums |
+| 3 | `{{MANIFEST}}` | Toolchain / provenance (secondary) |
+
+For this binary, the corresponding source is `{{SOURCE_ARTIFACT}}` (not GitHub’s automatic Source code zip/tar.gz archives attached to the tag).
+
+`RELEASE-NOTES.md` is generated for the GitHub Release body and shipped inside the full ZIP; it is not a primary standalone download.
+
 ## Source and provenance
 
 - Git tag: `{{TAG}}`
