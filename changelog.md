@@ -4,6 +4,37 @@ AlTab **source milestones** are listed first. They use Git tags of the form `alt
 
 Entries below the AlTab fork point are retained upstream AltTab history. They document inherited provenance and must not be presented as AlTab release notes. Optional unsigned redistribution packaging (not used for official milestones) uses [`.github/RELEASE_NOTES_TEMPLATE.md`](.github/RELEASE_NOTES_TEMPLATE.md).
 
+## Unreleased (on `main` after `altab-v1.0.0`)
+
+Selective product ports from upstream AltTab **v11.4.4** (`081f3ee4`). Full commit classification, local PR map, deferrals, and hard skips: [UPSTREAM.md](UPSTREAM.md) and tracker [#61](https://github.com/salasebas/altab/issues/61). No automatic parity claimed.
+
+### Reliability and compatibility
+
+* Restore Ignore shortcuts on app activation and launch (#43 / PR #68; upstream `e2db26d4`)
+* Weak-link ScreenCaptureKit and route macOS 26 screenshots safely (#44 / PR #67; upstream `893673cf`)
+* Lazy, session-scoped full-resolution Preview captures (#45 / PR #72; upstream `499006c1`)
+* Guard Customize Style illustration loading (#46 / PR #63; upstream `726c5fd1`)
+* Keep the switcher viewport still under mouse hover (#47 / PR #62; upstream `a2d05275`)
+* Persist Vim/arrow shortcut conflict resolution (#48 / PR #70; upstream `1014601a`)
+* Prevent synthetic focus from resizing windows (#49 / PR #65; upstream `ec30bb13`)
+* Remove Dock/menu-bar lag from gesture detection (#50 / PR #64; upstream `1a85669b`)
+* Refresh Space topology before the first switcher frame during transitions (#52 / PR #83; upstream `767b96fc`)
+
+### Tracked-window state (upstream `c14960bb`, parent #51)
+
+* Harden AX root-window matching (#54 / PR #66)
+* Pure tracked-window reducer and offline replay harness (#55 / PR #73)
+* Route tab, phantom, and liveness through the reducer (#56 / PR #77)
+* Move focus, MRU, selection, and reopen onto the reducer (#57 / PR #76)
+* Restore-safe minimized thumbnails (#58 / PR #75)
+* Harden CLI replies and local QA diagnostics (#59 / PR #71)
+* Settle lost modifier releases before navigation (#60 / PR #69)
+
+### Intentionally not taken from v11.4.4
+
+* Default Space number labels remain visible (`e20c3277` deferred)
+* Appcast license-tier analytics, semantic-release README stats, and upstream release metadata skipped (`3c095716`, `0af0336d`, `081f3ee4`)
+
 ## [1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0) — source milestone (2026-08-07)
 
 First audited **source-only** AlTab milestone. Tag: `altab-v1.0.0`.
