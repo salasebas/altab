@@ -1,3 +1,11 @@
+## [1.0.1](https://github.com/salasebas/altab/compare/altab-v1.0.0...altab-v1.0.1) (2026-08-09)
+
+
+### Bug Fixes
+
+* **release:** allow non-draft GitHub Release publication ([6ddea62](https://github.com/salasebas/altab/commit/6ddea626e8ac00174df7858c712b2ac2b9b74d73))
+* **release:** ship light unsigned .dmg for casual downloads ([#89](https://github.com/salasebas/altab/issues/89)) ([259af0a](https://github.com/salasebas/altab/commit/259af0a65f13980bb4d06d2cf2346da1e7c944c4))
+
 # Changelog
 
 AlTab **source milestones** are listed first. They use Git tags of the form `altab-vMAJOR.MINOR.PATCH` and may attach optional **unsigned** redistribution ZIPs on GitHub Releases (never notarized by this project). AlTab product versions start at **1.0.0** and are **not** numbered like upstream AltTab `v11.x`.
