@@ -207,32 +207,43 @@ class WindowServerEvents {
                     // -screen, not a close, and the post-transition syncSpacesState reconcile covers it.
                     if !inSpaceTransition {
                         Applications.removeIfClosedAfterOrderOut(window)
-                        // Minimize has no dedicated WS event — it surfaces as an order-out that isn't a close — so
-                        // re-read kAXMinimized here. Without it the model keeps a stale isMinimized and minDemin
-                        // toggles the wrong way (a just-minimized window's "unminimize" re-minimizes it instead).
-                        // Do NOT reconcile tabs on an order-out: a window going off-screen
-                        // (minimize, fullscreen, Space-move) reports its AXTabGroup inconsistently
-                        // mid-transition, so a transient empty read would wrongly dissolve the tab
-                        // group and strand its inactive tabs as phantoms (the fullscreen-tab
-                        // disappearance). Order-out never changes tab membership anyway.
+                        // Minimize has no dedicated WS event — it surfaces as an order-out that isn't a close.
+                        // Minimized is now read from `WsWindowState.minimizedTag` via the WS state refresh
+                        // below's path siblings use; do NOT re-read kAXMinimized (it stalls on a busy app).
+                        // Title may still change on order-out; tabs must NOT be reconciled mid-transition.
                         if let axWindow = window.axUiElement {
                             Applications.refreshWindowTitleAndTabs(axWindow, w0, window.application, false)
+                        }
+                        // Prompt minimized flag: the order-out's follow-up WS query lands ~11ms later with
+                        // bit 60 set. Until then keep the last known frame and wait for that query.
+                        Applications.windowAttributesThrottler.throttleOrProceed(key: "wid-\(w0)-wsstate") {
+                            Applications.updateWindowStatesViaWindowServer([w0])
                         }
                     }
                 } else {
                     // moved/resized/ordered-in for a tracked window → refresh just that window's WindowServer
-                    // facts (geometry, fullscreen) from a WS query, NOT an AX read. Coalesced per-wid so a
-                    // resize drag collapses to ≤1 query/200ms.
+                    // facts (geometry, fullscreen, minimized) from a WS query, NOT an AX read. Coalesced
+                    // per-wid so a resize drag collapses to ≤1 query/200ms.
                     Applications.windowAttributesThrottler.throttleOrProceed(key: "wid-\(w0)-wsstate") {
                         Applications.updateWindowStatesViaWindowServer([w0])
                     }
-                    // De-minimize likewise has no dedicated WS event; it surfaces as an order-in →
-                    // re-read kAXMinimized. Like order-out, do NOT reconcile tabs here: an order-in
-                    // during a fullscreen or Space transition reports the AXTabGroup inconsistently,
-                    // and a transient empty read would dissolve the group and strand its inactive
-                    // tabs as phantoms (the fullscreen-tab disappearance). Tab membership is
-                    // reconciled at the stable points — discovery and each show.
-                    if n == .windowOrderedIn, let axWindow = window.axUiElement {
+                    // Un-minimize has no dedicated WS event either. An order-in of a window we believe is
+                    // minimized IS the un-minimize: both AX and the WS tag clear LATE on a Dock restore
+                    // (~530ms / ~644ms), so deriving the clear from the event is the only prompt path
+                    // (WindowEventReducerMinimizeSpecs). Full MRU/reducer cutover is #56–#57; until then
+                    // clear the flag, repaint an open switcher, and hold captures through the restore
+                    // animation so a partial frame cannot replace a correct thumbnail.
+                    if n == .windowOrderedIn, !inSpaceTransition, window.isMinimized {
+                        window.isMinimized = false
+                        window.recomputeIsPhantom()
+                        TabGroup.reconcile()
+                        WindowThumbnails.deferCaptureUntilRestoreEnds(window)
+                        if SwitcherSession.isActive {
+                            App.refreshOpenUiAfterExternalEvent([window])
+                        }
+                        Logger.debug { "unminimized #\(w0) (ws orderedIn while flagged minimized)" }
+                    } else if n == .windowOrderedIn, let axWindow = window.axUiElement {
+                        // Title-only refresh; tabs still not reconciled mid-transition.
                         Applications.refreshWindowTitleAndTabs(axWindow, w0, window.application, false)
                     }
                 }

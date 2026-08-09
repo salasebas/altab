@@ -58,7 +58,23 @@ Main-thread snapshots of size, scale, fullscreen state, and per-request `fullRes
 hopping to `screenshotsQueue`. Capture completion always balances `ActiveWindowCaptures`, ignores
 inactive UI (`refreshOnlyThumbnailsAfterShowUi` when the switcher is gone), and does **not** fall back
 to `captureSampleBuffer` after a `captureScreenshot` failure. Full-res deliveries go to the session
-cache (`deliver(..., fullRes: true)`); thumbnail deliveries call `Window.refreshThumbnail`.
+cache (`deliver(..., fullRes: true)`); thumbnail deliveries call `Window.refreshThumbnail` only after
+`WindowThumbnails.acceptCapture` (issue #58). Requested pixel size is shared via
+`WindowThumbnails.capturePixelSize` so ask-size and expect-size cannot drift.
+
+## Restore-safe partial frames (issue #58 / `c14960bb`)
+
+An un-minimize orders the window in while the OS is still drawing it scaled down for the restore
+animation (~0.65s genie). The order-in's geometry refresh re-captures mid-animation and would replace a
+correct thumbnail with a mini window in transparent pixels. Two layers prevent that:
+
+1. **Defer**: `WindowThumbnails.deferCaptureUntilRestoreEnds` holds every capture of that wid for 0.7s,
+   then takes one. `refreshAsync` / `fetchPreviewFrames` skip wids in the restoring set.
+2. **Reject**: on macOS 26+ SCK paths only, `isPartialFrame` compares delivered pixel size against
+   `capturePixelSize` of the window's *current* size (ratio 0.9). Thumbnails retry up to 3 times
+   (0.25s apart) via `acceptCapture`; full-res Preview frames are simply refused (cache stays empty so
+   the next selection re-fetches; thumbnail stands in). Below macOS 26, `CGSHWCaptureWindowList` sizes
+   its own output — no partial heuristic, existing path unchanged.
 
 ## Edge cases
 

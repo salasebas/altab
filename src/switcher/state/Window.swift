@@ -108,16 +108,21 @@ class Window {
         recomputeIsPhantom()
     }
 
-    /// Update the WindowServer-owned facts (geometry, fullscreen) from a WS snapshot — the live path for
-    /// move/resize events. Title/subrole/tabs/minimized stay on the AX read: WS can't give them cleanly, and
-    /// minimized in particular can't be inferred from the WS ordered-out bit (which also fires for closing /
-    /// other-Space / app-hidden windows). Returns whether a filter-relevant field changed.
+    /// Update the WindowServer-owned facts (geometry, fullscreen, minimized) from a WS snapshot — the live
+    /// path for move/resize/visibility events. Title/subrole/tabs stay on the AX read. Minimized comes from
+    /// `WsWindowState.minimizedTag` (not the ordered-out bit, and not AX `kAXMinimized`). Callers that apply
+    /// a late `true` on a Dock restore must gate it the same way the reducer does (believe a true only while
+    /// the window is still off-screen). Returns whether a filter-relevant field changed.
     @discardableResult
-    func updateFromWindowServer(position: CGPoint, size: CGSize, isFullscreen: Bool) -> Bool {
-        let changed = self.position != position || self.size != size || self.isFullscreen != isFullscreen
+    func updateFromWindowServer(position: CGPoint, size: CGSize, isFullscreen: Bool, isMinimized: Bool? = nil) -> Bool {
+        var changed = self.position != position || self.size != size || self.isFullscreen != isFullscreen
         self.position = position
         self.size = size
         self.isFullscreen = isFullscreen
+        if let isMinimized, self.isMinimized != isMinimized {
+            self.isMinimized = isMinimized
+            changed = true
+        }
         if changed { recomputeIsPhantom() }
         return changed
     }

@@ -129,9 +129,8 @@ class Applications {
     }
 
     /// Acquire-and-discriminate a newly-discovered window. WindowServer-owned facts (geometry, level,
-    /// fullscreen) come from the snapshot `raw`; AX is read for what WS can't give cleanly — subrole/role
-    /// (discrimination), title (AX title is preferred), the main flag, minimized (the WS ordered-out bit is
-    /// ambiguous — see below), and tab children.
+    /// fullscreen, minimized) come from the snapshot `raw`; AX is read for what WS can't give cleanly —
+    /// subrole/role (discrimination), title (AX title is preferred), the main flag, and tab children.
     /// Used for genuinely-new windows only (discovery + discoverWindow). Uses the "generic" bucket so a real
     /// focus event (in the "focus" bucket) is never clobbered.
     static func addDiscoveredWindow(_ element: AXUIElement, _ raw: WsRawWindow, _ app: Application) {
@@ -144,14 +143,14 @@ class Applications {
             // its own window, skip it; otherwise it can't be ours, so proceed.
             if let panel = TilesPanel.shared, wid == panel.windowNumber { return }
             let isSelf = app.pid == AXUIElement.currentProcessPid
-            // minimized comes from AX (kAXMinimized) — a reliable, unambiguous signal — NOT the WS ordered-out
-            // bit, which is also cleared for closing / app-hidden / other-Space windows. (yabai sources
-            // minimize from AX the same way: seed kAXMinimized, then track miniaturize/deminiaturize.)
-            let keys = [kAXTitleAttribute, kAXSubroleAttribute, kAXRoleAttribute, kAXMainAttribute, kAXMinimizedAttribute] + (isSelf ? [] : [kAXChildrenAttribute])
+            // Minimized used to be an AX `kAXMinimized` read; it is `WsWindowState.minimizedTag` now (same
+            // WindowServer snapshot this discovery already holds), so it cannot be delayed by the app being
+            // busy, and one fewer attribute crosses the AX boundary per window.
+            let keys = [kAXTitleAttribute, kAXSubroleAttribute, kAXRoleAttribute, kAXMainAttribute] + (isSelf ? [] : [kAXChildrenAttribute])
             let a = try element.attributes(keys, pid: app.pid)
             let tabSiblingTitles = isSelf ? nil : TabGroup.extractTabTitles(a.children)
             let isFullscreen = WsWindowState.isFullscreen(raw)
-            let isMinimized = a.isMinimized ?? false
+            let isMinimized = WsWindowState.isMinimized(raw)
             // Resolve the window's REAL Space(s) now, off-main. Window.init defaults spaceIds to the current
             // Space (it runs on main and must avoid this blocking CGS call, #5721); for an other-Space window
             // that default is wrong, and the first post-show syncSpacesState would then correct it → a visible
@@ -198,14 +197,16 @@ class Applications {
         }
     }
 
-    /// WindowServer-driven per-window state refresh (geometry + fullscreen), replacing the AX attribute read
-    /// on move/resize/visibility events and the Space-change fullscreen re-read. ONE batched WS query for the
-    /// whole wid set (off-main: ~84µs for a full screen vs ~15µs × N serial), decoded by WsWindowState,
-    /// applied on main in a single UI reconcile. Minimized is NOT read here — it's an AX fact (kAXMinimized),
-    /// refreshed at discovery + on each show, because the WS ordered-out bit can't tell minimized from
-    /// closing/other-Space. Callers coalesce upstream where the input self-floods: the per-event path
-    /// throttles per-wid (windowAttributesThrottler, ≤1 query/200ms on a resize drag); the Space-change path
-    /// calls this once per transition.
+    /// WindowServer-driven per-window state refresh (geometry + fullscreen + minimized), replacing the AX
+    /// attribute read on move/resize/visibility events and the Space-change fullscreen re-read. ONE batched
+    /// WS query for the whole wid set (off-main: ~84µs for a full screen vs ~15µs × N serial), decoded by
+    /// WsWindowState, applied on main in a single UI reconcile. Minimized IS read here
+    /// (`WsWindowState.minimizedTag`) — the ordered-out BIT cannot tell minimized from closing/other-Space,
+    /// but the tag can, and unlike the AX read it replaced it cannot be delayed by the window's own app.
+    /// A late `true` on a Dock restore is rejected while the window is already ordered back in (same rule as
+    /// the reducer). Callers coalesce upstream where the input self-floods: the per-event path throttles
+    /// per-wid (windowAttributesThrottler, ≤1 query/200ms on a resize drag); the Space-change path calls this
+    /// once per transition.
     static func updateWindowStatesViaWindowServer(_ wids: [CGWindowID]) {
         guard !wids.isEmpty else { return }
         CGSCallScheduler.run {
@@ -216,13 +217,22 @@ class Applications {
                 var toCapture = [Window]()
                 for raw in raws {
                     guard let window = Windows.byWindowId[raw.wid] else { continue }
-                    if window.updateFromWindowServer(position: raw.bounds.origin, size: raw.bounds.size, isFullscreen: WsWindowState.isFullscreen(raw)) {
+                    let visible = WsWindowState.isVisible(raw)
+                    let reportedMinimized = WsWindowState.isMinimized(raw)
+                    // Believe a minimized=true only while the window is still off-screen. On a Dock restore
+                    // the tag stays set for ~644ms after the order-in, and writing that stale true back would
+                    // undo the event-derived un-minimize (WindowEventReducerMinimizeSpecs).
+                    let applyMinimized = !reportedMinimized || !visible
+                    let newMinimized = applyMinimized ? reportedMinimized : window.isMinimized
+                    if window.updateFromWindowServer(position: raw.bounds.origin, size: raw.bounds.size,
+                                                     isFullscreen: WsWindowState.isFullscreen(raw),
+                                                     isMinimized: newMinimized) {
                         changedAny = true
                         // Re-capture only on-screen windows. A window that just ordered out (a closing window
                         // orders out for ~1s before its destroy event fires; a minimize too) can't be
                         // screenshotted — a capture grabs a torn-down/blank "skeleton" — so keep its last
                         // on-screen frame and just refresh the layout for the geometry change.
-                        if WsWindowState.isVisible(raw) { toCapture.append(window) }
+                        if visible { toCapture.append(window) }
                     }
                 }
                 if changedAny {
@@ -309,10 +319,10 @@ class Applications {
     }
 
     /// Light per-window AX read for already-tracked windows: the facts WindowServer can't deliver cleanly —
-    /// title (no WS title-change event), the main-window flag, minimized (AX kAXMinimized, the reliable
-    /// signal — the WS ordered-out bit conflates minimized with closing/other-Space), and tab siblings.
+    /// title (no WS title-change event), the main-window flag, and tab siblings. Minimized is no longer
+    /// among them: it is `WsWindowState.minimizedTag`, read from the WS query instead.
     /// Shares the "wid-N-generic" dedup/throttle key so it never double-reads a window the discovery pass
-    /// just refreshed. Runs for every tracked window on each show, so minimized stays fresh from AX.
+    /// just refreshed. Runs for every tracked window on each show for title/tabs freshness.
     static func refreshWindowTitleAndTabs(_ axWindow: AXUIElement, _ wid: CGWindowID, _ app: Application, _ reconcileTabs: Bool = true) {
         AXCallScheduler.shared.schedule(key: "wid-\(wid)-generic", context: app.debugId, pid: app.pid, scan: true) { [weak app] in
             guard let app else { return }
@@ -326,7 +336,7 @@ class Applications {
             // ordered-out window reports its AXTabGroup inconsistently mid-transition, and order-out never
             // changes tab membership anyway. Saves the kAXChildren IPC too.
             let readTabs = !isSelf && reconcileTabs
-            let keys = [kAXTitleAttribute, kAXMainAttribute, kAXMinimizedAttribute] + (readTabs ? [kAXChildrenAttribute] : [])
+            let keys = [kAXTitleAttribute, kAXMainAttribute] + (readTabs ? [kAXChildrenAttribute] : [])
             let a = try axWindow.attributes(keys, pid: app.pid)
             let tabSiblingTitles = readTabs ? TabGroup.extractTabTitles(a.children) : nil
             DispatchQueue.main.async {
@@ -336,12 +346,6 @@ class Applications {
                     var changed = window.title != newTitle
                     if changed { window.title = newTitle; window.lastSearchQuery = nil }
                     window.isMainWindow = a.isMain ?? false
-                    let newMinimized = a.isMinimized ?? false
-                    if window.isMinimized != newMinimized {
-                        window.isMinimized = newMinimized
-                        window.recomputeIsPhantom()
-                        changed = true
-                    }
                     if reconcileTabs, tabSiblingTitles != nil || window.tabbedSiblingWids != nil {
                         if TabGroup.updateState(window, tabSiblingTitles) { changed = true }
                     }
@@ -354,9 +358,8 @@ class Applications {
     }
 
     /// Re-read the AX-only facts WindowServer can't deliver, for all tracked windows, in case events were
-    /// incomplete: title, the main-window flag, minimized (AX kAXMinimized — reliable, unlike the WS
-    /// ordered-out bit), and tab siblings. Geometry/fullscreen are WindowServer-maintained (806/807), so
-    /// those are NOT re-read or overwritten here.
+    /// incomplete: title, the main-window flag, and tab siblings. Geometry/fullscreen/minimized are
+    /// WindowServer-maintained, so those are NOT re-read or overwritten here.
     static func reviewExistingWindows() {
         for window in Windows.list {
             guard !window.isWindowlessApp,

@@ -23,7 +23,7 @@ query. See [`project_window_focus_skylight`] and the AX pipeline in `../events/`
 |---|---|---|
 | `../events/WindowServerEvents.swift` | impure | installs the SLS notify-proc tap; the app's source of window state |
 | `WsEventRouting` (triad) | pure | WindowServer notification id → the model action it implies |
-| `WsWindowState` (triad) | pure | decode raw SLS fields (attrs/level/spaceMask) → on-screen/fullscreen/app-level |
+| `WsWindowState` (triad) | pure | decode raw SLS fields (attrs/tags/level/spaceMask) → on-screen/minimized/fullscreen/app-level |
 | `WindowAcquisitionPolicy.swift` | pure | names the two AX-element acquisition routes (current-Space vs other-Space) |
 | `WindowServerQuery.swift` | impure | the "one big SLS call": batch-query the WindowServer → `[WsRawWindow]` |
 

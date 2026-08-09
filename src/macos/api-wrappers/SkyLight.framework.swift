@@ -325,6 +325,11 @@ func SLSWindowIteratorGetLevel(_ iterator: CFTypeRef) -> Int32
 @_silgen_name("SLSWindowIteratorGetSpaceTypeMask")
 func SLSWindowIteratorGetSpaceTypeMask(_ iterator: CFTypeRef) -> UInt64
 
+/// Second bitfield alongside `attributes`. Carries minimized/hidden tags — decoded by `WsWindowState`
+/// (see `WsWindowStateSpecs.md` for the mapped bits and the state matrix that proves each one specific).
+@_silgen_name("SLSWindowIteratorGetTags")
+func SLSWindowIteratorGetTags(_ iterator: CFTypeRef) -> UInt64
+
 // returns the window frame in top-left-origin global coordinates — same system as kAXPosition/kAXSize and
 // kCGWindowBounds (verified equal to both on macOS 26).
 //
