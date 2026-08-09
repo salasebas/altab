@@ -95,6 +95,43 @@ release_package_name() {
   esac
 }
 
+# Given basenames attached to a GitHub Release (or local artifact dir), fail unless every
+# binary ZIP has exactly one matching source archive, manifest, notes, and SHA256SUMS.
+release_audit_published_asset_names() {
+  local assetNames=("$@")
+  local name
+  local binaryCount=0
+  local labels=()
+  local label
+  [[ ${#assetNames[@]} -gt 0 ]] || fail "release asset audit received an empty asset list"
+  for name in "${assetNames[@]}"; do
+    case "$name" in
+      AlTab-*-macOS-unsigned.zip|AlTab-*-macOS.zip)
+        binaryCount=$((binaryCount + 1))
+        label="${name#AlTab-}"
+        label="${label%-macOS-unsigned.zip}"
+        label="${label%-macOS.zip}"
+        labels+=("$label")
+        ;;
+    esac
+  done
+  [[ $binaryCount -gt 0 ]] || return 0
+  printf '%s\n' "${assetNames[@]}" | rg -qx 'SHA256SUMS' || fail "published binary release is missing SHA256SUMS"
+  for label in "${labels[@]}"; do
+    printf '%s\n' "${assetNames[@]}" | rg -qx "AlTab-${label}-source.tar.gz" || fail "published binary release is missing AlTab-${label}-source.tar.gz"
+    printf '%s\n' "${assetNames[@]}" | rg -qx "AlTab-${label}-BUILD-MANIFEST.md" || fail "published binary release is missing AlTab-${label}-BUILD-MANIFEST.md"
+    printf '%s\n' "${assetNames[@]}" | rg -qx "AlTab-${label}-RELEASE-NOTES.md" || fail "published binary release is missing AlTab-${label}-RELEASE-NOTES.md"
+  done
+  local binaryNames
+  binaryNames="$(printf '%s\n' "${assetNames[@]}" | rg -x 'AlTab-.*-macOS(-unsigned)?\.zip' || true)"
+  local sourceNames
+  sourceNames="$(printf '%s\n' "${assetNames[@]}" | rg -x 'AlTab-.*-source\.tar\.gz' || true)"
+  local binaryLineCount sourceLineCount
+  binaryLineCount="$(printf '%s\n' "$binaryNames" | sed '/^$/d' | wc -l | tr -d ' ')"
+  sourceLineCount="$(printf '%s\n' "$sourceNames" | sed '/^$/d' | wc -l | tr -d ' ')"
+  [[ "$binaryLineCount" == "$sourceLineCount" ]] || fail "published release must attach exactly one source archive per binary package"
+}
+
 release_detect_package_mode() {
   local binaryFilename="$1"
   case "$binaryFilename" in

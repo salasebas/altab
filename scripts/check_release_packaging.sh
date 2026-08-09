@@ -52,9 +52,22 @@ require_file .github/SOURCE_MILESTONE_NOTES_TEMPLATE.md
 for placeholder in VERSION TAG COMMIT CHANGES; do
   require_text .github/SOURCE_MILESTONE_NOTES_TEMPLATE.md "{{$placeholder}}"
 done
+require_text .github/SOURCE_MILESTONE_NOTES_TEMPLATE.md 'Local Self-Signed'
+require_text .github/SOURCE_MILESTONE_NOTES_TEMPLATE.md 'GPL-3.0-only'
+require_text .github/SOURCE_MILESTONE_NOTES_TEMPLATE.md 'App Sandbox'
+if rg -n -i 'ad-hoc build|optional local self-signing|optional per-user self-signing' .github/SOURCE_MILESTONE_NOTES_TEMPLATE.md; then
+  fail "SOURCE_MILESTONE notes must describe required Local Self-Signed, not ad-hoc/optional signing"
+fi
 require_text docs/releasing.md 'altab-vMAJOR.MINOR.PATCH'
 require_text docs/releasing.md 'source-only'
 require_text docs/releasing.md 'scripts/package_notarized_release.sh'
+require_text docs/releasing.md 'App Sandbox'
+require_text docs/releasing.md 'Mac App Store'
+require_text docs/releasing.md 'AlTab-<release>-source.tar.gz'
+require_text docs/releasing.md 'ALTAB_RELEASE_REPLACE_ASSETS'
+require_text scripts/publish_release_artifacts.sh 'release_audit_published_asset_names'
+require_text scripts/publish_release_artifacts.sh 'ALTAB_RELEASE_REPLACE_ASSETS'
+require_text scripts/release_artifact_contracts.sh 'release_audit_published_asset_names'
 require_text scripts/package_release.sh 'altab-v'
 require_text scripts/package_release.sh 'scripts/verify_release_artifacts.sh'
 require_text scripts/package_release.sh 'scripts/check_service_isolation.sh'
