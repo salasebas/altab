@@ -62,7 +62,7 @@ class App: NSApplication {
         Tooltips.hideAll()
         hideTilesPanelWithoutChangingKeyWindow()
         if !keepPreview {
-            PreviewPanel.shared.orderOut(nil)
+            PreviewPanel.hide()
         }
         MainMenu.toggle(true)
     }
@@ -214,7 +214,7 @@ class App: NSApplication {
                 moveCursorToSelectedWindow(window)
             }
         } else {
-            PreviewPanel.shared.orderOut(nil)
+            PreviewPanel.hide()
         }
     }
 
@@ -304,6 +304,8 @@ class App: NSApplication {
         guard SwitcherSession.isActive else { return }
         TilesPanel.shared.show()
         WindowThumbnails.previewSelectedIfNeeded()
+        // enqueue the full-res Preview fetches BEFORE the thumbnail pass below, so the Preview sharpens first
+        WindowThumbnails.fetchPreviewFrames()
         if TilesView.isSearchEditing {
             TilesView.enableSearchEditing()
         }

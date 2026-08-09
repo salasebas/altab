@@ -37,4 +37,28 @@ final class SwitcherSession {
     var hoveredIndex: Int?
     var selectedTarget: String?
     var searchQuery: String = ""
+
+    /// Full-resolution frames for the Preview panel, fetched just-in-time for the selected window and
+    /// its cycling neighbors (`WindowThumbnails.fetchPreviewFrames`, #5861 / issue #45). Living on the
+    /// session, they are released wholesale when it ends, so idle RAM only holds thumbnail-scale images.
+    /// Capped + least-recently-used-evicted so a long session arrow-keying through many windows stays bounded.
+    private var previewFrames = [CGWindowID: CALayerContents]()
+    private var previewFramesLru = [UInt32]() // most recently used last; CGWindowID raw values
+
+    func hasPreviewFrame(_ wid: CGWindowID) -> Bool { previewFrames[wid] != nil }
+
+    func previewFrame(_ wid: CGWindowID) -> CALayerContents? {
+        guard let frame = previewFrames[wid] else { return nil }
+        previewFramesLru = PreviewFrameLru.touch(UInt32(wid), order: previewFramesLru)
+        return frame
+    }
+
+    func storePreviewFrame(_ wid: CGWindowID, _ frame: CALayerContents) {
+        previewFrames[wid] = frame
+        let result = PreviewFrameLru.afterStore(UInt32(wid), order: previewFramesLru)
+        previewFramesLru = result.order
+        if let evicted = result.evicted {
+            previewFrames.removeValue(forKey: CGWindowID(evicted))
+        }
+    }
 }

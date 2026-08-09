@@ -367,6 +367,17 @@ class Preferences {
         WindowCaptureApiRouting.anyShortcutUsesPreview(maxIndex: maxShortcutCount, effectivePreview: effectivePreviewSelectedWindow)
     }
 
+    /// Whether any shortcut's effective settings display window captures at all: the Thumbnails style
+    /// (tile screenshots) and/or the Preview overlay (whose instant first frame upscales the stored
+    /// thumbnail). When neither is configured, stored images would never be shown, so all capture work
+    /// is skipped and no image RAM is held.
+    static var anyShortcutShowsWindowCaptures: Bool {
+        WindowCaptureApiRouting.anyShortcutShowsWindowCaptures(
+            maxIndex: maxShortcutCount,
+            usesPreview: effectivePreviewSelectedWindow,
+            usesThumbnails: { effectiveAppearanceStyle($0) == .thumbnails })
+    }
+
     /// Which Screen-Recording-dependent features any shortcut's effective settings rely on: the
     /// Thumbnails appearance style (window screenshots) and/or the "preview selected window" overlay.
     /// These are the only features needing the permission, so when none are configured the menubar
