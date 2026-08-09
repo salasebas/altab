@@ -396,7 +396,14 @@ extension App: NSApplicationDelegate {
         // modal and builds a Window while the model is half-built. A translocated instance the user moves
         // relaunches from /Applications, so the setup we skip by returning here early is thrown away anyway.
         #if DEBUG
-        UserDefaults.standard.set(true, forKey: "NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints")
+        // Opt-in only: the purple Auto Layout overlay confuses day-to-day QA. Enable with
+        // `defaults write dev.salasebas.AlTabDev NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints -bool true`
+        // or set ALTAB_DEBUG_CONSTRAINTS=1 in the environment before launch.
+        if ProcessInfo.processInfo.environment["ALTAB_DEBUG_CONSTRAINTS"] == "1" {
+            UserDefaults.standard.set(true, forKey: "NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints")
+        } else {
+            UserDefaults.standard.removeObject(forKey: "NSConstraintBasedLayoutVisualizeMutuallyExclusiveConstraints")
+        }
         #else
         MoveToApplicationsFolder.promptIfNeeded()
         #endif
