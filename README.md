@@ -11,26 +11,22 @@ An independent, community-maintained fork of [AltTab for macOS](https://github.c
 > [!IMPORTANT]
 > This repository is not affiliated with or endorsed by the AltTab maintainers. Please report problems with this fork in [AlTab Issues](https://github.com/salasebas/altab/issues), not to the upstream project. There is **no** in-app updater. Optional GitHub Release binaries are **unsigned and not notarized** (Gatekeeper will warn); prefer building from source when you can.
 
-## Current public milestone: 1.0.1
+## Current public milestone: 1.0.0
 
-AlTab’s product version is **1.0.1** (independent of upstream AltTab’s `v11.x` line). Tag: **`altab-v1.0.1`**.
+AlTab’s product version is **1.0.0** (independent of upstream AltTab’s `v11.x` line). Tag: **`altab-v1.0.0`**. Based on the upstream tree around **v11.4.x** without claiming automatic parity.
 
-- **Download (optional):** [GitHub Release altab-v1.0.1](https://github.com/salasebas/altab/releases/tag/altab-v1.0.1) — **unsigned and not notarized**
-  1. **Casual:** `AlTab-1.0.1-macOS-unsigned.dmg` — light drag-to-Applications image (just run AlTab)
-  2. **Full package:** `AlTab-1.0.1-macOS-unsigned.zip` — app + dSYM + notices
-  3. **Source + integrity:** `AlTab-1.0.1-source.tar.gz` (packager corresponding source; not GitHub’s automatic Source code archives) and `SHA256SUMS`
-  4. **Secondary:** build manifest (and release-notes file used for the Release body; also inside the full ZIP)
+- **Release notes:** [GitHub Release altab-v1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0) (source milestone; optional unsigned packages may be attached later)
 - **Supported path:** clone the tag and build locally with **Local Self-Signed** (stable permissions; not a distributable identity).
 
 ```bash
 git clone https://github.com/salasebas/altab.git
 cd altab
-git checkout altab-v1.0.1
+git checkout altab-v1.0.0
 scripts/codesign/setup_local.sh   # once per Mac
 scripts/build_local.sh
 ```
 
-Versioning and redistribution details: [docs/releasing.md](docs/releasing.md).
+Versioning, changelog (Unreleased → intentional cut), and redistribution: [docs/releasing.md](docs/releasing.md). [changelog.md](changelog.md) lists AlTab milestones only (upstream history is not mirrored).
 
 ## Direction
 
