@@ -1,4 +1,4 @@
-# Changelog + source milestone tags via semantic-release (upstream-style bot).
+# Changelog + source milestone tags (altab-v*) via semantic-release (upstream-style bot).
 # No AppCenter, Sparkle, appcast, notarization, or binary packaging.
 name: Release notes
 
