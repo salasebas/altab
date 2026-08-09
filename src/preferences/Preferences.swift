@@ -361,6 +361,12 @@ class Preferences {
         return override ?? previewSelectedWindow
     }
 
+    /// Captures aren't tied to a specific shortcut, so anything sized or routed for Preview
+    /// must consider every slot's effective setting. Pure OR lives in `WindowCaptureApiRouting`.
+    static var anyShortcutUsesPreview: Bool {
+        WindowCaptureApiRouting.anyShortcutUsesPreview(maxIndex: maxShortcutCount, effectivePreview: effectivePreviewSelectedWindow)
+    }
+
     /// Which Screen-Recording-dependent features any shortcut's effective settings rely on: the
     /// Thumbnails appearance style (window screenshots) and/or the "preview selected window" overlay.
     /// These are the only features needing the permission, so when none are configured the menubar

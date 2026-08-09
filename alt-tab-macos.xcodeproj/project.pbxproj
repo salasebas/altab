@@ -62,6 +62,9 @@
 		5EA8E110000000000000F002 /* AxQueryRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA8E110000000000000F001 /* AxQueryRouting.swift */; };
 		5EA8E110000000000000F003 /* AxQueryRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA8E110000000000000F001 /* AxQueryRouting.swift */; };
 		5EA8E110000000000000F102 /* AxQueryRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA8E110000000000000F101 /* AxQueryRoutingTests.swift */; };
+		5EA8E220000000000000F002 /* WindowCaptureApiRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA8E220000000000000F001 /* WindowCaptureApiRouting.swift */; };
+		5EA8E220000000000000F003 /* WindowCaptureApiRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA8E220000000000000F001 /* WindowCaptureApiRouting.swift */; };
+		5EA8E220000000000000F102 /* WindowCaptureApiRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5EA8E220000000000000F101 /* WindowCaptureApiRoutingTests.swift */; };
 		5C5A1100000000000000A002 /* WsEventRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5A1100000000000000A001 /* WsEventRouting.swift */; };
 		5C5A1100000000000000A003 /* WsEventRouting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5A1100000000000000A001 /* WsEventRouting.swift */; };
 		5C5A1100000000000000A102 /* WsEventRoutingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5C5A1100000000000000A101 /* WsEventRoutingTests.swift */; };
@@ -400,6 +403,8 @@
 		5E2700000000000000000201 /* ContinuousNavigationResolverSpecs.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ContinuousNavigationResolverSpecs.md; sourceTree = "<group>"; };
 		5EA8E110000000000000F001 /* AxQueryRouting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AxQueryRouting.swift; sourceTree = "<group>"; };
 		5EA8E110000000000000F101 /* AxQueryRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AxQueryRoutingTests.swift; sourceTree = "<group>"; };
+		5EA8E220000000000000F001 /* WindowCaptureApiRouting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WindowCaptureApiRouting.swift; sourceTree = "<group>"; };
+		5EA8E220000000000000F101 /* WindowCaptureApiRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowCaptureApiRoutingTests.swift; sourceTree = "<group>"; };
 		5C5A1100000000000000A001 /* WsEventRouting.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WsEventRouting.swift; sourceTree = "<group>"; };
 		5C5A1100000000000000A101 /* WsEventRoutingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WsEventRoutingTests.swift; sourceTree = "<group>"; };
 		5CAF00000000000000000001 /* ActivationFocusResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivationFocusResolver.swift; sourceTree = "<group>"; };
@@ -797,6 +802,8 @@
 				BF0C8B5D1A9658E64F8ECB56 /* SystemScrollerStyleEvents.swift */,
 				BF0C8F8E1B7A3C4D5E6F7081 /* ContextMenuEvents.swift */,
 				5F04852D2F09AC9700235D4A /* WindowCaptureEvents.swift */,
+				5EA8E220000000000000F001 /* WindowCaptureApiRouting.swift */,
+				5EA8E220000000000000F101 /* WindowCaptureApiRoutingTests.swift */,
 				D04BA4A621A8A15660F973C1 /* KeyboardEvents.swift */,
 				BF0C8643F524515224BF1618 /* KeyboardEventsTestable.swift */,
 				BF0C899905524253DC170B56 /* KeyboardEventsTests.swift */,
@@ -1772,6 +1779,8 @@
 				BF0C81FA62D810342F59291A /* AppearanceTests.swift in Sources */,
 				5EA8E110000000000000F003 /* AxQueryRouting.swift in Sources */,
 				5EA8E110000000000000F102 /* AxQueryRoutingTests.swift in Sources */,
+				5EA8E220000000000000F003 /* WindowCaptureApiRouting.swift in Sources */,
+				5EA8E220000000000000F102 /* WindowCaptureApiRoutingTests.swift in Sources */,
 				5C5A1100000000000000A003 /* WsEventRouting.swift in Sources */,
 				5C5A1100000000000000A102 /* WsEventRoutingTests.swift in Sources */,
 				5CAF00000000000000000003 /* ActivationFocusResolver.swift in Sources */,
@@ -1981,6 +1990,7 @@
 				AA0C8B000000000000000011 /* MoveToApplicationsFolder.swift in Sources */,
 				BF0C83578F7292F307E30751 /* PopupButtonLikeSystemSettings.swift in Sources */,
 				5F04852E2F09AC9700235D4A /* WindowCaptureEvents.swift in Sources */,
+				5EA8E220000000000000F002 /* WindowCaptureApiRouting.swift in Sources */,
 				1C961F9CF4F1BEDF04ACAEE0 /* Switch.swift in Sources */,
 				1C96182D2ECA735740ED474E /* ImageTextButtonView.swift in Sources */,
 				BF0C860F1779DDE8C0171EA0 /* WindowlessAppIndicator.swift in Sources */,
