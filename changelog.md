@@ -7,20 +7,6 @@ Conventional commits merged to `main` accumulate under **Unreleased**. A maintai
 <!-- altab-changelog:unreleased-start -->
 ## Unreleased
 
-
-
-### Bug Fixes
-
-* **release:** Accumulate Unreleased until intentional cut ([ad973a3](https://github.com/salasebas/altab/commit/ad973a39f013b760df5ced86fac904fdb00b9af3)) by @salasebas
-* **release:** Use SemVer basenames and clarify download UX ([59a098c](https://github.com/salasebas/altab/commit/59a098ce5364e02e548ca14c52d02f6d53365d57)) by @salasebas
-* **release:** Harden empty-asset publish and announce 1.0.1 ([#90](https://github.com/salasebas/altab/issues/90)) ([2eace88](https://github.com/salasebas/altab/commit/2eace88d4ae32fb0ef8cb5d55d6ff521357237ac)) by @salasebas in [#90](https://github.com/salasebas/altab/pull/90)
-
-
-### Documentation
-
-* **release:** Align packaging examples with 1.0.0 milestone ([05b4524](https://github.com/salasebas/altab/commit/05b4524ba1ce7d2c52c9a4756ffc93e710469c28)) by @salasebas
-* **release:** Bootstrap clean 1.0.0 AlTab-only changelog ([c97f443](https://github.com/salasebas/altab/commit/c97f443ef7ad5eea6445e27517cd5216fe95034a)) by @salasebas
-
 <!-- altab-changelog:unreleased-end -->
 
 ## [1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0) — first public milestone (2026-08-09)
