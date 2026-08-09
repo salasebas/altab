@@ -102,6 +102,8 @@ preflight_existing_assets() {
     [[ -n "$remoteName" ]] || continue
     remoteNames+=("$remoteName")
   done < <(list_remote_release_asset_names "$releaseTag")
+  # Bash 3.2 + set -u: empty arrays cannot expand with ${arr[@]}.
+  [[ ${#remoteNames[@]} -eq 0 ]] && return 0
   local localName
   for localName in "${localAssetNames[@]}"; do
     if printf '%s\n' "${remoteNames[@]}" | rg -qx "$localName"; then
