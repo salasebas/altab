@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/salasebas/altab/compare/altab-v1.0.1...altab-v1.0.2) (2026-08-09)
+
+
+### Bug Fixes
+
+* **release:** harden empty-asset publish and announce 1.0.1 ([#90](https://github.com/salasebas/altab/issues/90)) ([2eace88](https://github.com/salasebas/altab/commit/2eace88d4ae32fb0ef8cb5d55d6ff521357237ac))
+
 ## [1.0.1](https://github.com/salasebas/altab/compare/altab-v1.0.0...altab-v1.0.1) (2026-08-09)
 
 
