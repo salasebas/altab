@@ -147,13 +147,18 @@ extension AXUIElement {
                 // This makes it very hard to know what's real. For example, if an app has no MainWindow, it will return .axError. If we cast it to AXUIElement, it will succeed, but the object will have its attributes zero'd
                 // we have to check for .axError, which we map to nil values
                 return nil
+            // AXValueGetValue leaves the out-param UNTOUCHED when it fails, so ignoring its Bool handed back
+            // the zero-initialized value as if the OS had said so: a failed size read became 0×0 and a failed
+            // position read became @0,0 (same zeroing the .axError comment above describes). Live, a new Finder
+            // tab read back `0x0@0,0`, so no thumbnail could be drawn and the switcher showed one tile of empty
+            // pixels until the next read healed it. A failed read is unknown, not zero — say nil.
             case .cgSize:
                 var size = CGSize.zero
-                AXValueGetValue(axValue, .cgSize, &size)
+                guard AXValueGetValue(axValue, .cgSize, &size) else { return nil }
                 return size as? T
             case .cgPoint:
                 var point = CGPoint.zero
-                AXValueGetValue(axValue, .cgPoint, &point)
+                guard AXValueGetValue(axValue, .cgPoint, &point) else { return nil }
                 return point as? T
             case let unknownAXValueType:
                 Logger.error { unknownAXValueType }
@@ -213,13 +218,23 @@ extension AXUIElement {
     }
 
     /// Resolve the AX element for ONE other-Space wid (there is no wid→element API). Returns the INSTANT a
-    /// candidate's window id matches — matching by wid (rather than collecting every window and reading a subrole
-    /// per id) early-exits at the target's index, reaching far higher ids within the budget. Subrole is judged
-    /// downstream by the discriminator; here we only locate.
+    /// candidate is the target's WINDOW element — matching by wid (rather than collecting every window and
+    /// reading a subrole per id) early-exits near the target's index, reaching far higher ids within the
+    /// budget. Subrole is judged downstream by the discriminator; here we only locate — but locating must
+    /// check the ROLE: `_AXUIElementGetWindow` on ANY descendant returns the CONTAINING window's id, so every
+    /// button/toolbar of the target also matches its wid, and a tabbed window's "tab bar" element routinely
+    /// gets a LOWER AXUIElementID than the window element itself. Returning the first wid match handed the
+    /// discriminator that tab bar (role AXTabGroup, subrole nil), which it rightly rejected — so the launch
+    /// scan consistently missed every TABBED window until the first show's rescan got luckier. The role
+    /// read costs IPC only on the target's own descendants: other elements fail the cheap wid guard.
     static func windowByBruteForce(_ pid: pid_t, _ wid: CGWindowID) -> AXUIElement? {
         var found: AXUIElement?
         bruteForceElements(pid) { candidate in
+            // Cheap wid gate first, so the role read costs IPC only on the target's own descendants; the
+            // root-vs-descendant verdict is the `BruteForceWindowMatch` kernel (#5849 / AlTab #54).
             guard (try? candidate.cgWindowId()) == wid else { return false }
+            let role = (try? candidate.attributes([kAXRoleAttribute]))?.role
+            guard BruteForceWindowMatch.isTargetWindowRoot(candidateWid: wid, candidateRole: role, targetWid: wid) else { return false }
             found = candidate
             return true
         }
