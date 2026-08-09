@@ -61,3 +61,14 @@ Mirrors `ExceptionMatcherTests.swift` 1:1.
 - **testDoesNotDisableWhenIgnoreNone** — `.none` → enabled.
 - **testDoesNotDisableWhenPrefixDiffers** — non-matching prefix → enabled.
 - **testDoesNotDisableWhenAppBundleIdNil** — nil app bundle-id → enabled.
+- **testActivationFloorDisablesAlwaysWithoutResolvedWindow** — activation/launch floor with no focused window (`isFullscreen: false`) still disables for `.always`, and leaves `.whenFullscreen` enabled until a later focus/Space event refines it (#43 / upstream #5842).
+
+## Lifecycle call sites (integration; not unit-tested here)
+
+`ExceptionMatcher.disablesShortcuts` is invoked via `App.checkIfShortcutsShouldBeDisabled`:
+
+1. **App activation floor** — `WindowServerEvents` right after assigning `Applications.frontmostPid`, before the 808/AX focus path resolves a window. Covers activations that emit no focus event or fail the AX focused-window read.
+2. **Launch / restart floor** — `App.continueAppLaunchAfterPermissionsAreGranted` **after** `PreferencesEvents.initialize()` (when `ControlsTab` has registered global shortcuts). Evaluating earlier would only flip the disabled flag with nothing to unregister; later registration would re-arm hotkeys. Covers AlTab start/restart while an ignored app is already frontmost (no `didActivateApplication`).
+3. **Window / Space refinement** — focus bumps, Space changes, and fullscreen updates re-call with a resolved window so `.whenFullscreen` can tighten or relax the app-level result.
+
+`KeyboardEvents.registerHotKeyIfNeeded` refuses to register while the disabled flag is set, so preference rebinding cannot re-arm hotkeys while an Ignore-shortcuts exception is active.
