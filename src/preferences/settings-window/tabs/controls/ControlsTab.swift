@@ -845,15 +845,7 @@ class ControlsTab {
             if SettingsWindow.shared == nil || !shouldClearConflictingShortcuts(conflicts.map { $0.value }, NSLocalizedString("Arrow keys already assigned to other actions:\n%@", comment: "")) {
                 return false
             }
-            conflicts.forEach {
-                removeShortcutIfExists($0.key)
-                let existing = shortcutControls[$0.key]
-                if existing != nil {
-                    existing!.0.objectValue = nil
-                    shortcutChangedCallback(existing!.0)
-                    LabelAndControl.controlWasChanged(existing!.0, $0.key)
-                }
-            }
+            conflicts.forEach { unassignShortcut($0.key) }
         }
         return true
     }
@@ -887,15 +879,7 @@ class ControlsTab {
             if SettingsWindow.shared == nil || !shouldClearConflictingShortcuts(conflicts.map { $0.value }, NSLocalizedString("Vim keys already assigned to other actions:\n%@", comment: "")) {
                 return false
             }
-            conflicts.forEach {
-                removeShortcutIfExists($0.key)
-                let existing = shortcutControls[$0.key]
-                if existing != nil {
-                    existing!.0.objectValue = nil
-                    shortcutChangedCallback(existing!.0)
-                    LabelAndControl.controlWasChanged(existing!.0, $0.key)
-                }
-            }
+            conflicts.forEach { unassignShortcut($0.key) }
         }
         return true
     }
@@ -926,10 +910,7 @@ class ControlsTab {
     /// press" (nextWindowShortcut) part — e.g. ⌥+Tab becomes ⌥+(unassigned) — whether the conflict
     /// was reported against the hold or the press.
     static func unassignShortcut(_ id: String) {
-        let keyToClear = (id.hasPrefix("holdShortcut") || id.hasPrefix("nextWindowShortcut"))
-            ? Preferences.indexToName("nextWindowShortcut", Preferences.nameToIndex(id))
-            : id
-        Preferences.setShortcut(keyToClear, nil)
+        let keyToClear = ShortcutUnassign.clearPreference(forConflictId: id)
         shortcutControls[keyToClear]?.0.objectValue = nil
     }
 
