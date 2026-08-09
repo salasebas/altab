@@ -9,19 +9,24 @@ An independent, community-maintained fork of [AltTab for macOS](https://github.c
 </div>
 
 > [!IMPORTANT]
-> This repository is not affiliated with or endorsed by the AltTab maintainers. Please report problems with this fork in [AlTab Issues](https://github.com/salasebas/altab/issues), not to the upstream project. This repository does **not** publish official binaries and has **no** in-app updater.
+> This repository is not affiliated with or endorsed by the AltTab maintainers. Please report problems with this fork in [AlTab Issues](https://github.com/salasebas/altab/issues), not to the upstream project. There is **no** in-app updater. Optional GitHub Release binaries are **unsigned and not notarized** (Gatekeeper will warn); prefer building from source when you can.
 
-## Version and first public milestone
+## Current public milestone: 1.0.0
 
-AlTab’s product version is **1.0.0** (independent of upstream AltTab’s `v11.x` line). The first public **source-only** milestone will be **`altab-v1.0.0`**: a Git tag plus release notes—no `.app`, DMG, PKG, or update feed. Until that milestone is intentionally published, build from `main` or a pinned commit. Versioning policy: [docs/releasing.md](docs/releasing.md).
+AlTab’s product version is **1.0.0** (independent of upstream AltTab’s `v11.x` line). Tag: **`altab-v1.0.0`**.
+
+- **Download (optional):** [GitHub Release altab-v1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0) — universal macOS ZIP, **unsigned and not notarized**, plus matching source tarball, manifest, notes, and `SHA256SUMS`.
+- **Supported path:** clone the tag and build locally with **Local Self-Signed** (stable permissions; not a distributable identity).
 
 ```bash
 git clone https://github.com/salasebas/altab.git
 cd altab
-# After the first public milestone: git checkout altab-v1.0.0
+git checkout altab-v1.0.0
 scripts/codesign/setup_local.sh   # once per Mac
 scripts/build_local.sh
 ```
+
+Versioning and redistribution details: [docs/releasing.md](docs/releasing.md).
 
 ## Direction
 

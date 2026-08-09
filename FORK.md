@@ -12,7 +12,7 @@ This file distinguishes current facts from the intended AlTab product. Do not ma
 - License: GPL-3.0-only
 - Relationship: independent fork; no affiliation or endorsement
 - Product version: `1.0.0` (AlTab SemVer; **not** upstream AltTab `v11.x`)
-- First public source milestone (planned): `altab-v1.0.0` — see [docs/releasing.md](docs/releasing.md)
+- First public milestone: `altab-v1.0.0` — source tag plus optional **unsigned** GitHub Release binaries (not notarized); see [docs/releasing.md](docs/releasing.md)
 - App Sandbox: disabled (`com.apple.security.app-sandbox` = `false`), same retained policy as upstream; Mac App Store distribution is not supported
 
 ## Product model

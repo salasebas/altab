@@ -2,13 +2,29 @@
 
 # Changelog
 
-AlTab **source milestones** are listed first. They use Git tags of the form `altab-vMAJOR.MINOR.PATCH` and publish source-only GitHub release notes ([`.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md`](.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md)). No official compiled application binary is attached. AlTab product versions start at **1.0.0** and are **not** numbered like upstream AltTab `v11.x`.
+AlTab **source milestones** are listed first. They use Git tags of the form `altab-vMAJOR.MINOR.PATCH` and may attach optional **unsigned** redistribution ZIPs on GitHub Releases (never notarized by this project). AlTab product versions start at **1.0.0** and are **not** numbered like upstream AltTab `v11.x`.
 
-Entries below the AlTab fork point are retained upstream AltTab history. They document inherited provenance and must not be presented as AlTab release notes. Optional unsigned redistribution packaging (not used for official milestones) uses [`.github/RELEASE_NOTES_TEMPLATE.md`](.github/RELEASE_NOTES_TEMPLATE.md).
+Entries below the AlTab fork point are retained upstream AltTab history. They document inherited provenance and must not be presented as AlTab release notes. Optional unsigned redistribution packaging uses [`.github/RELEASE_NOTES_TEMPLATE.md`](.github/RELEASE_NOTES_TEMPLATE.md).
 
-## Unreleased (toward first public `altab-v1.0.0`)
+## Unreleased
 
-Work on `main` before the intentional first public source milestone. Product / bundle version remains **1.0.0**.
+## [1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0) — first public milestone (2026-08-09)
+
+First public AlTab milestone. Tag: `altab-v1.0.0`. Product version **1.0.0**. Independent of upstream AltTab `v11.x`.
+
+### Distribution
+
+* Git tag + GitHub Release notes
+* Optional **unsigned and not notarized** universal macOS ZIP plus matching source tarball, build manifest, release notes, and `SHA256SUMS` on the same release
+* Supported local path remains clone + `Local Self-Signed` + `scripts/build_local.sh`
+* App Sandbox remains disabled; Mac App Store distribution is not supported
+
+### Product
+
+* Independent GPL-3.0-only fork of AltTab with AlTab branding, bundle IDs, and repository links
+* Every included user-facing feature available without license, trial, account, or paid-access state
+* One-time local import of compatible AltTab preferences into missing AlTab keys
+* No Sparkle updater, AppCenter/crash reporting, analytics, or upstream licensing endpoints
 
 ### Selective ports from upstream AltTab v11.4.4
 
@@ -41,9 +57,7 @@ Selective product ports from upstream AltTab **v11.4.4** (`081f3ee4`). Full comm
 * Default Space number labels remain visible (`e20c3277` deferred)
 * Appcast license-tier analytics, semantic-release README stats, and upstream release metadata skipped (`3c095716`, `0af0336d`, `081f3ee4`)
 
-### Other pre-1.0 development (folded from premature bot notes)
-
-Semantic-release once emitted a provisional `1.1.0` section before any intentional public AlTab milestone. That work is **not** a published AlTab release; it stays unreleased until `altab-v1.0.0` is cut deliberately.
+### Additional fixes and features included in 1.0.0
 
 #### Bug Fixes
 
@@ -85,23 +99,6 @@ Semantic-release once emitted a provisional `1.1.0` section before any intention
 * optionally hide symbols in hover controls ([a4f7439](https://github.com/salasebas/altab/commit/a4f7439fde0301d9283248120f0d2f44fb822518))
 * restore semantic-release for changelog and source tags ([e1d400c](https://github.com/salasebas/altab/commit/e1d400c524ccb71e28982bc7e44ddc65b3286d6f))
 
-## [1.0.0] — planned first public source milestone
-
-First public **source-only** AlTab milestone when intentionally tagged `altab-v1.0.0`. Product / Xcode marketing version: **1.0.0**. Independent of upstream AltTab `v11.x` numbering.
-
-### Product
-
-* Independent GPL-3.0-only fork of AltTab with AlTab branding, bundle IDs, and repository links
-* Every included user-facing feature available without license, trial, account, or paid-access state
-* One-time local import of compatible AltTab preferences into missing AlTab keys
-* No Sparkle updater, AppCenter/crash reporting, analytics, or upstream licensing endpoints
-
-### Build and distribution model
-
-* Supported path: once-per-Mac `scripts/codesign/setup_local.sh` (**Local Self-Signed**), then `scripts/build_local.sh` (Xcode 26)
-* App Sandbox remains disabled; Mac App Store distribution is not supported
-* Source validation CI only; optional GPL redistribution packaging is isolated and never publishes automatically
-* Redistributable symbol assets (no restricted Apple font subset)
 
 ### Provenance
 
