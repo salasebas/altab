@@ -61,7 +61,8 @@ extension AXUIElement {
         return try body()
     }
 
-    // periphery:ignore
+    /// This element's own AXUIElementID. Used to ANCHOR a brute-force sweep near an app's windows instead of
+    /// at id 0, which is what made the inactive-tab scan find anything (`InactiveTabScanPolicy.scanStart`).
     func id() -> AXUIElementID? {
         let pointer = UnsafeRawPointer(Unmanaged.passUnretained(self).toOpaque()).advanced(by: 0x20)
         let cfDataPointer = pointer.load(as: CFData?.self)
@@ -200,21 +201,29 @@ extension AXUIElement {
     /// the only way to reach windows absent from every CGS list: other-Space windows and inactive OS tabs) and
     /// hand it to `inspect`, until `inspect` returns true (it found what it wanted) or the budget elapses.
     /// IPC per id — off the main thread only. The token's id field is the only part rewritten per iteration.
-    private static func bruteForceElements(_ pid: pid_t, _ inspect: (AXUIElement) -> Bool) {
+    ///
+    /// Returns the id the sweep stopped at, so a caller that can be RETRIED resumes instead of re-walking the
+    /// same dead prefix. That matters because the budget is wall-clock while the id space is `UInt64`: a scan
+    /// covers a window of ids, not the space, and restarting always at 0 means every retry inspects exactly the
+    /// ids that already failed.
+    @discardableResult
+    private static func bruteForceElements(_ pid: pid_t, from startId: AXUIElementID = 0,
+                                           _ inspect: (AXUIElement) -> Bool) -> AXUIElementID {
         // 20 bytes: pid (4) + 0 (4) + magic 0x636f636f "coco" (4) + AXUIElementID (8); byte order matters.
         var remoteToken = Data(count: 20)
         remoteToken.replaceSubrange(0..<4, with: withUnsafeBytes(of: pid) { Data($0) })
         remoteToken.replaceSubrange(4..<8, with: withUnsafeBytes(of: Int32(0)) { Data($0) })
         remoteToken.replaceSubrange(8..<12, with: withUnsafeBytes(of: Int32(0x636f636f)) { Data($0) })
         let timer = LightweightTimer()
-        for axUiElementId: AXUIElementID in 0..<AXUIElementID.max {
+        for axUiElementId: AXUIElementID in startId..<AXUIElementID.max {
             remoteToken.replaceSubrange(12..<20, with: withUnsafeBytes(of: axUiElementId) { Data($0) })
             if let candidate = _AXUIElementCreateWithRemoteToken(remoteToken as CFData)?.takeRetainedValue(),
                inspect(candidate) {
-                return
+                return axUiElementId + 1
             }
-            if timer.hasElapsed(milliseconds: bruteForceBudgetMs) { return }
+            if timer.hasElapsed(milliseconds: bruteForceBudgetMs) { return axUiElementId + 1 }
         }
+        return AXUIElementID.max
     }
 
     /// Resolve the AX element for ONE other-Space wid (there is no wid→element API). Returns the INSTANT a
@@ -246,10 +255,15 @@ extension AXUIElement {
     /// through the remote token. A tracked window's child elements resolve to its (excluded) wid, so they're
     /// skipped before the subrole read; only untracked wids pay for it. Returns each match's wid + element +
     /// title; stops once `titles.count` are found.
-    static func untrackedWindowsByBruteForce(_ pid: pid_t, excluding: Set<CGWindowID>, matching titles: [String]) -> [(CGWindowID, AXUIElement, String)] {
+    /// `from` / the returned `nextId` let successive attempts RESUME: this scan is retried per app (see
+    /// `InactiveTabScanPolicy`), and restarting at 0 each time re-inspected the same ids that had already
+    /// failed, so no number of retries could ever reach a long-lived app's windows. The caller owns the cursor.
+    static func untrackedWindowsByBruteForce(_ pid: pid_t, excluding: Set<CGWindowID>, matching titles: [String],
+                                             from startId: AXUIElementID = 0)
+                                             -> (found: [(CGWindowID, AXUIElement, String)], nextId: AXUIElementID) {
         var seen = Set<CGWindowID>()
         var result = [(CGWindowID, AXUIElement, String)]()
-        bruteForceElements(pid) { candidate in
+        let nextId = bruteForceElements(pid, from: startId) { candidate in
             guard let wid = try? candidate.cgWindowId(), wid != 0, !excluding.contains(wid), !seen.contains(wid),
                   let a = try? candidate.attributes([kAXSubroleAttribute, kAXTitleAttribute]),
                   a.subrole == kAXStandardWindowSubrole, let title = a.title, titles.contains(title) else { return false }
@@ -257,7 +271,7 @@ extension AXUIElement {
             result.append((wid, candidate, title))
             return result.count >= titles.count
         }
-        return result
+        return (result, nextId)
     }
 }
 
