@@ -12,6 +12,8 @@ class WindowCaptureScreenshots {
         let window: Window
         let size: CGSize
         let scaleFactor: CGFloat
+        let isFullscreen: Bool
+        let usesPreview: Bool
     }
 
     static func oneTimeScreenshots(_ windowsToScreenshot: [Window], _ source: RefreshCausedBy, prioritizedIds: Set<CGWindowID>? = nil) {
@@ -22,6 +24,7 @@ class WindowCaptureScreenshots {
         // Trade-off: size is fixed at call time, so a window resized between snapshot and capture will be captured
         // at the old size. Acceptable because the next refresh will re-snapshot.
         var requests = [CGWindowID: CaptureRequest]()
+        let usesPreview = Preferences.anyShortcutUsesPreview
         for window in windowsToScreenshot {
             guard let wid = window.cgWindowId, let size = window.size else { continue }
             let scaleFactor: CGFloat
@@ -30,7 +33,8 @@ class WindowCaptureScreenshots {
             } else {
                 scaleFactor = NSScreen.preferred.backingScaleFactor
             }
-            requests[wid] = CaptureRequest(window: window, size: size, scaleFactor: scaleFactor)
+            requests[wid] = CaptureRequest(window: window, size: size, scaleFactor: scaleFactor,
+                isFullscreen: window.isFullscreen, usesPreview: usesPreview)
         }
         guard !requests.isEmpty else { return }
         let prioritized = prioritizedIds ?? []
@@ -99,17 +103,54 @@ class WindowCaptureScreenshots {
             let config = SCStreamConfiguration.forWindow(scWindow, size, scaleFactor, false)
             let filter = SCContentFilter(desktopIndependentWindow: scWindow)
             ActiveWindowCaptures.increment()
-            SCScreenshotManager.captureSampleBuffer(contentFilter: filter, configuration: config) { [weak window] sampleBuffer, error in
-                ActiveWindowCaptures.decrement()
-                guard let window else { return }
-                guard let sampleBuffer, error == nil else { Logger.error { "\(window.debugId) \(sampleBuffer == nil) \(error)" }; return }
-                guard source != .refreshOnlyThumbnailsAfterShowUi || SwitcherSession.isActive else { return }
-                guard let pixelBuffer = sampleBuffer.pixelBuffer() ?? sampleBuffer.imageBuffer else { Logger.error { "\(window.debugId) no pixelBuffer" }; return }
-                DispatchQueue.main.async {
-                    guard source != .refreshOnlyThumbnailsAfterShowUi || SwitcherSession.isActive else { return }
-                    window.refreshThumbnail(.pixelBuffer(pixelBuffer))
-                }
+            // captureSampleBuffer spins up a short-lived capture stream per call; on some macOS 26 machines that
+            // churn leaks WindowServer memory until the session is force-logged-out (#5786). captureScreenshot
+            // avoids the churn, but fails (SCStreamError -3811) on fullscreen windows whose Space is inactive,
+            // and returns a copied CGImage instead of sharing an IOSurface, which slows full-resolution Preview
+            // captures on large windows. Those two cases stay on captureSampleBuffer.
+            // Route selection is pure `WindowCaptureApiRouting` (unit-tested); the #available gate only limits
+            // which concrete API entry points exist on this OS.
+            if #available(macOS 26.0, *), WindowCaptureApiRouting.api(isFullscreen: request.isFullscreen, usesPreview: request.usesPreview) == .captureScreenshot {
+                captureScreenshot(filter, config, window, source)
+            } else {
+                captureSampleBuffer(filter, config, window, source)
             }
+        }
+    }
+
+    @available(macOS 26.0, *)
+    private static func captureScreenshot(_ filter: SCContentFilter, _ streamConfig: SCStreamConfiguration, _ window: Window, _ source: RefreshCausedBy) {
+        let config = SCScreenshotConfiguration()
+        config.width = streamConfig.width
+        config.height = streamConfig.height
+        config.showsCursor = false
+        config.dynamicRange = .sdr
+        SCScreenshotManager.captureScreenshot(contentFilter: filter, configuration: config) { [weak window] output, error in
+            ActiveWindowCaptures.decrement()
+            guard let window else { return }
+            // no captureSampleBuffer fallback: the only known failure is a stale isFullscreen snapshot during a
+            // fullscreen transition, and the next refresh re-routes it. Retrying here would silently reintroduce
+            // the stream churn this path exists to avoid, and would hide new failure modes from the logs.
+            guard let cgImage = output?.sdrImage, error == nil else { Logger.error { "\(window.debugId) \(output == nil) \(error)" }; return }
+            refreshThumbnail(window, source, .cgImage(cgImage))
+        }
+    }
+
+    private static func captureSampleBuffer(_ filter: SCContentFilter, _ config: SCStreamConfiguration, _ window: Window, _ source: RefreshCausedBy) {
+        SCScreenshotManager.captureSampleBuffer(contentFilter: filter, configuration: config) { [weak window] sampleBuffer, error in
+            ActiveWindowCaptures.decrement()
+            guard let window else { return }
+            guard let sampleBuffer, error == nil else { Logger.error { "\(window.debugId) \(sampleBuffer == nil) \(error)" }; return }
+            guard let pixelBuffer = sampleBuffer.pixelBuffer() ?? sampleBuffer.imageBuffer else { Logger.error { "\(window.debugId) no pixelBuffer" }; return }
+            refreshThumbnail(window, source, .pixelBuffer(pixelBuffer))
+        }
+    }
+
+    private static func refreshThumbnail(_ window: Window, _ source: RefreshCausedBy, _ contents: CALayerContents) {
+        guard source != .refreshOnlyThumbnailsAfterShowUi || SwitcherSession.isActive else { return }
+        DispatchQueue.main.async { [weak window] in
+            guard source != .refreshOnlyThumbnailsAfterShowUi || SwitcherSession.isActive else { return }
+            window?.refreshThumbnail(contents)
         }
     }
 }
@@ -302,8 +343,7 @@ extension SCStreamConfiguration {
         // Use full-resolution capture if any shortcut has preview-selected-window enabled (could be
         // the global or a per-shortcut override). Background captures aren't tied to a specific
         // shortcut, so we err on the side of full-res when any shortcut might need it.
-        let anyPreview = (0...Preferences.maxShortcutCount).contains { Preferences.effectivePreviewSelectedWindow($0) }
-        if anyPreview {
+        if Preferences.anyShortcutUsesPreview {
             width = Int(originalSize.width)
             height = Int(originalSize.height)
         } else {
