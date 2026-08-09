@@ -1,4 +1,7 @@
 #!/bin/bash
+# DerivedData Instruments/profile launcher only — not for interactive Debug/QA.
+# For interactive use and permission-sensitive testing, run scripts/run_debug.sh
+# (canonical /Applications/AlTab Dev.app). See docs/building-and-troubleshooting.md.
 
 profileFile="/tmp/profile_$(date +%Y%m%d_%H%M%S)"
 

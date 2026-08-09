@@ -29,7 +29,7 @@
 
 # Workflow
 
-- Copy commands from ai/build.sh and run them, to confirm compilation works after you're done with implementing a change
+- Compile: `ai/build.sh`. Interactive Debug/QA: only `scripts/run_debug.sh` — never open DerivedData. Details: `docs/building-and-troubleshooting.md`.
 - Git commit messages must respect our pre-hook conventions, and must be clear and high-level, written for end-users (changelog)
 
 # Release identity and unrestricted features
