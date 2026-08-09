@@ -1,3 +1,10 @@
+## [1.0.3](https://github.com/salasebas/altab/compare/altab-v1.0.2...altab-v1.0.3) (2026-08-09)
+
+
+### Bug Fixes
+
+* **release:** use SemVer basenames and clarify download UX ([59a098c](https://github.com/salasebas/altab/commit/59a098ce5364e02e548ca14c52d02f6d53365d57)), closes [#91](https://github.com/salasebas/altab/issues/91)
+
 ## [1.0.2](https://github.com/salasebas/altab/compare/altab-v1.0.1...altab-v1.0.2) (2026-08-09)
 
 

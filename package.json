@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "altab",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Tooling for the AlTab GPL-3.0-only macOS application",
   "author": "salasebas and contributors",
   "license": "GPL-3.0-only",
