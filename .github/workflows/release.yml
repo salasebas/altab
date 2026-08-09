@@ -123,6 +123,16 @@ jobs:
           commitSha="$(git rev-parse --verify "${revisionRef}^{commit}")"
           echo "COMMIT_SHA=$commitSha" >>"$GITHUB_ENV"
 
+      - name: Install packaging CLI dependencies
+        run: |
+          set -euo pipefail
+          # package_release.sh / publish_release_artifacts.sh require ripgrep (rg).
+          if ! command -v rg >/dev/null 2>&1; then
+            brew install ripgrep
+          fi
+          command -v rg
+          rg --version | head -1
+
       - name: Package unsigned redistribution artifacts
         if: ${{ inputs.distribution_mode == 'unsigned' }}
         run: |
