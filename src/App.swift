@@ -251,6 +251,9 @@ class App: NSApplication {
     static func showUiOrCycleSelection(_ shortcutIndex: Int, _ forceDoNothingOnRelease_: Bool) {
         let session = SwitcherSession.current ?? {
             let new = SwitcherSession()
+            // Snapshot the model at the press so the default pick can step over only genuine newcomers
+            // (see `SwitcherSession.windowIdsAtSummon`).
+            new.windowIdsAtSummon = Set(Windows.list.map { $0.id })
             SwitcherSession.current = new
             KeyboardEvents.updateEscapeAbsorptionTap() // session opened: enable Esc keyDown tap if bound (#5585)
             return new
@@ -346,6 +349,15 @@ class App: NSApplication {
         ScreenLockEvents.observe()
         SleepWakeEvents.observe()
         Applications.initialDiscovery()
+        // The one initial window inventory; later ones ride events + switcher shows. Deferred a beat so it
+        // doesn't compete with the rest of launch. Seed the MRU from screen stacking HERE, off the critical
+        // path, rather than only on the first summon: the query blocks, so its answer lands after that
+        // summon's first render and the user watches the list re-order. Seeded now, the first summon's own
+        // call finds nothing to change and draws nothing twice (issue #57 / `c14960bb`).
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
+            Applications.manuallyRefreshAllWindows()
+            Windows.sortByLevel()
+        }
         KeyboardEvents.addEventHandlers()
         CursorEvents.observe()
         TrackpadEvents.observe()

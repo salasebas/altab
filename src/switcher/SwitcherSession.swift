@@ -36,6 +36,28 @@ final class SwitcherSession {
     var selectedIndex: Int = 0
     var hoveredIndex: Int?
     var selectedTarget: String?
+    /// True once the USER moved the selection themselves (cycled with the shortcut/arrows, or hovered), as
+    /// opposed to it sitting on the default pick. It decides whether `selectedTarget` is a commitment to
+    /// follow or just where the default landed: a user's pick must stay on ITS window however the list
+    /// reorders (#5665), while the default must keep tracking the model — the window set is still settling
+    /// when the switcher opens, and locking the default onto whatever occupied the slot mid-churn made the
+    /// selection trail that window to a nonsense position as the list reordered.
+    var userPickedSelection = false
+    /// Every window id the model held when the shortcut was pressed. A window in here is one the user was
+    /// already choosing among, so it can never be a "newcomer" the default pick steps over, however its
+    /// focus moves afterwards.
+    ///
+    /// Gaining focus is NOT enough on its own, which cost a live bug: a tab group re-elected its
+    /// representative mid-session (one tab of a window handing off to another tab of the SAME window), the
+    /// incoming tab was focused and therefore stepped over, and the pick slid one tile further — repeatedly,
+    /// so the selection walked away from where the user was aiming. No tile appeared; only which member of
+    /// an existing group was drawn changed. Presence at the summon is what tells a genuine newcomer from a
+    /// reshuffle of what was already on screen.
+    var windowIdsAtSummon = Set<String>()
+    /// How many windows were DRAWN when the shortcut was pressed, measured on the first selection pass of the
+    /// summon (see `Windows.selectionInputs`). Newcomers only push the default pick along while the list is
+    /// longer than this — one that merely took the tile of a window that left it moved nothing.
+    var visibleWindowCountAtSummon: Int?
     var searchQuery: String = ""
 
     /// Full-resolution frames for the Preview panel, fetched just-in-time for the selected window and
