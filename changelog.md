@@ -1,3 +1,47 @@
+# [1.1.0](https://github.com/salasebas/altab/compare/altab-v1.0.0...altab-v1.1.0) (2026-08-09)
+
+
+### Bug Fixes
+
+* allow source-only release-notes workflow in compliance checks ([02887de](https://github.com/salasebas/altab/commit/02887de9940bb5a4a26eb3623191deb49b86a439))
+* avoid crash when Customize Style illustrations fail to load ([#63](https://github.com/salasebas/altab/issues/63)) ([a33c35a](https://github.com/salasebas/altab/commit/a33c35ad0488d8302f7c62099d34d5c4782da2e5))
+* capture macOS 26 screenshots without WindowServer leaks ([#67](https://github.com/salasebas/altab/issues/67)) ([fe6aa23](https://github.com/salasebas/altab/commit/fe6aa230ae189deee765a3efd7403f071e0f33cb))
+* dock and menu bar lag while gestures are enabled (closes [#5911](https://github.com/salasebas/altab/issues/5911)) ([631fc3d](https://github.com/salasebas/altab/commit/631fc3d57b58f71b8b7ac2cf853f23af4eda2517))
+* focusing a window might make it expand (closes [#5900](https://github.com/salasebas/altab/issues/5900)) ([7d72d15](https://github.com/salasebas/altab/commit/7d72d15be479b00c0eb706de94ed6701537b2206))
+* harden AX root-window matching and failed geometry reads ([#66](https://github.com/salasebas/altab/issues/66)) ([6abc765](https://github.com/salasebas/altab/commit/6abc765455e1899d80265742d25ef8c0d1feca6d)), closes [#54](https://github.com/salasebas/altab/issues/54)
+* harden CLI replies and add local QA diagnostics ([#71](https://github.com/salasebas/altab/issues/71)) ([489b976](https://github.com/salasebas/altab/commit/489b976aed8a14b25ef288020e0a4c234fc32ece)), closes [#59](https://github.com/salasebas/altab/issues/59)
+* keep the switcher still when hovering tiles ([b5ae76c](https://github.com/salasebas/altab/commit/b5ae76c17b702c5b00b56d61aaf3af047c26d622))
+* keep the switcher still when hovering tiles ([#62](https://github.com/salasebas/altab/issues/62)) ([e337734](https://github.com/salasebas/altab/commit/e3377346466177ce9d93a38b8ec3b839da4a1b3e))
+* make Preview full-resolution captures lazy and session-scoped ([#72](https://github.com/salasebas/altab/issues/72)) ([eb6cd25](https://github.com/salasebas/altab/commit/eb6cd25f083c4ac440ea05ea6cbb6d02f1b92398)), closes [#45](https://github.com/salasebas/altab/issues/45)
+* prevent synthetic activation from resizing windows ([#65](https://github.com/salasebas/altab/issues/65)) ([3056afb](https://github.com/salasebas/altab/commit/3056afb2ce4bd1d68151345b057d9a7b9a362278)), closes [#49](https://github.com/salasebas/altab/issues/49)
+* preview hover controls without symbols ([e765cda](https://github.com/salasebas/altab/commit/e765cdaf6e6babf6e42b704729a8a256ab97aaca))
+* **release:** harden notarized artifact publication ([e5568af](https://github.com/salasebas/altab/commit/e5568af7de218f6e1839c92ef711bb7196434fb7))
+* require stable local signing and quiet Screen Recording prompts ([3483065](https://github.com/salasebas/altab/commit/3483065e0ba89c9aba394c727eeec2e52ede495d))
+* restore Ignore shortcuts on app activation and launch ([#68](https://github.com/salasebas/altab/issues/68)) ([c56b4f6](https://github.com/salasebas/altab/commit/c56b4f6bbf1fad29f22289cc2581c21e1410e513))
+* restore TESTING flag for unit-tests Debug builds ([#82](https://github.com/salasebas/altab/issues/82)) ([842c7ca](https://github.com/salasebas/altab/commit/842c7ca036bf436eea3861daabcfa7651b765762)), closes [#81](https://github.com/salasebas/altab/issues/81)
+* restore-safe minimized thumbnails and WindowServer minimize decode ([6826f65](https://github.com/salasebas/altab/commit/6826f6514c24dbebc049ab63f11a9210d71f952c))
+* route tab, phantom, and liveness through the tracked-window reducer ([#77](https://github.com/salasebas/altab/issues/77)) ([3cd6b42](https://github.com/salasebas/altab/commit/3cd6b424e4eed17a4ed16302d0668be1dccb2c4c)), closes [#56](https://github.com/salasebas/altab/issues/56)
+* settle lost modifier releases before navigation ([e633ecb](https://github.com/salasebas/altab/commit/e633ecb5a997e174fc09828077c82b43a567e62b))
+* shortcut conflicts were not properly remembered (closes [#5897](https://github.com/salasebas/altab/issues/5897)) ([67f5d29](https://github.com/salasebas/altab/commit/67f5d2933a41f4f19aa882130659d4c48fdc68cf))
+* switcher might show previous space briefly (closes [#5864](https://github.com/salasebas/altab/issues/5864)) ([9e8c36e](https://github.com/salasebas/altab/commit/9e8c36ec2028d7ec7bc2b70664ec0a89a1503c50))
+
+
+### Features
+
+* add bring-your-own Developer ID release packaging ([580c3ed](https://github.com/salasebas/altab/commit/580c3ed81ebe2e1129572ff3cf86dfeccc5d6696))
+* add optional continuous navigation wrapping ([e2b9d59](https://github.com/salasebas/altab/commit/e2b9d5908074a21d9901cceb078932f354f1f387))
+* add precise tile spacing slider ([752168e](https://github.com/salasebas/altab/commit/752168e4d0390249e461f9a96e1ad2dc8f815f2d))
+* add tracked-window reducer and offline replay harness ([e2c8485](https://github.com/salasebas/altab/commit/e2c8485661ed98aab65ea6f60cb1c54b768b3f9d)), closes [#55](https://github.com/salasebas/altab/issues/55)
+* add tracked-window reducer and offline replay harness ([#73](https://github.com/salasebas/altab/issues/73)) ([665dfb9](https://github.com/salasebas/altab/commit/665dfb98d4a80747fb0dc05bf88bc9cef5c05191))
+* add wrapped-row alignment options ([470cc49](https://github.com/salasebas/altab/commit/470cc499938f2df12d9b1a3e7cce459e19ce0932))
+* default tile spacing to 8 points ([b723fcf](https://github.com/salasebas/altab/commit/b723fcf0dff081c88648bdbb62e153fabb56b10e))
+* install debug builds from a stable path ([ba46704](https://github.com/salasebas/altab/commit/ba46704615f9547a6efb307aa85e3ec08746fa84))
+* make switcher tile spacing configurable ([188e9cd](https://github.com/salasebas/altab/commit/188e9cdb19fb951c8752905a378a1e24296fcb8e))
+* move focus, MRU, and selection into the tracked-window reducer ([be8183c](https://github.com/salasebas/altab/commit/be8183cf159b16e73ea50b3ccb94df5f3506c5ce)), closes [#57](https://github.com/salasebas/altab/issues/57)
+* optional uniform widths for thumbnail tiles ([#80](https://github.com/salasebas/altab/issues/80)) ([3cef9af](https://github.com/salasebas/altab/commit/3cef9afecf6cdc9d4ead10f02f7f503d272630a0))
+* optionally hide symbols in hover controls ([a4f7439](https://github.com/salasebas/altab/commit/a4f7439fde0301d9283248120f0d2f44fb822518))
+* restore semantic-release for changelog and source tags ([e1d400c](https://github.com/salasebas/altab/commit/e1d400c524ccb71e28982bc7e44ddc65b3286d6f))
+
 # Changelog
 
 AlTab **source milestones** are listed first. They use Git tags of the form `altab-vMAJOR.MINOR.PATCH` and publish source-only GitHub release notes ([`.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md`](.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md)). No official compiled application binary is attached.
