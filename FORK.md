@@ -8,6 +8,7 @@ This file distinguishes current facts from the intended AlTab product. Do not ma
 - Fork repository: [salasebas/altab](https://github.com/salasebas/altab)
 - Fork point: `v11.4.3`
 - Fork commit: `10af70aaaaac0a2dbb7d0aaa61cda21b065c203f`
+- Last reviewed upstream: `v11.4.4` / `081f3ee4014e03557c2ab39e9e168dac308fa49b` (selective product integration complete; see [UPSTREAM.md](UPSTREAM.md))
 - License: GPL-3.0
 - Relationship: independent fork; no affiliation or endorsement
 - First source milestone: `altab-v1.0.0` (product version `1.0.0`; see [docs/releasing.md](docs/releasing.md))

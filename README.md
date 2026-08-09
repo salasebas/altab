@@ -133,7 +133,7 @@ GitHub Actions: manual workflow [Release packaging](.github/workflows/release.ym
 
 This fork began at AltTab `v11.4.3` (`10af70aaaaac0a2dbb7d0aaa61cda21b065c203f`). The original Git history is retained so authorship and provenance remain visible.
 
-Upstream changes are reviewed periodically, with security, crash, compatibility, and performance fixes prioritized. Changes are integrated selectively; AlTab is not automatically synchronized and may lag behind upstream. See [UPSTREAM.md](UPSTREAM.md) for the last reviewed revision and the integration policy.
+Last reviewed upstream revision: AltTab `v11.4.4` (`081f3ee4014e03557c2ab39e9e168dac308fa49b`). Applicable reliability, capture, gesture, shortcut, Space, and tracked-window changes from that range are selectively integrated on `main`; AlTab is not automatically synchronized and may still lag behind future upstream work. See [UPSTREAM.md](UPSTREAM.md) for the commit matrix, deferred/skipped decisions, and integration policy.
 
 ## License and attribution
 
