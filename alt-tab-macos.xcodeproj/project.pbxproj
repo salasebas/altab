@@ -120,6 +120,9 @@
 		5FC5980000000000000A0002 /* NativeHotkeyResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC5980000000000000A0001 /* NativeHotkeyResolver.swift */; };
 		5FC5980000000000000A0003 /* NativeHotkeyResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC5980000000000000A0001 /* NativeHotkeyResolver.swift */; };
 		5FC5980000000000000A0102 /* NativeHotkeyResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FC5980000000000000A0101 /* NativeHotkeyResolverTests.swift */; };
+		5F48UN000000000000000002 /* ShortcutUnassign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F48UN000000000000000001 /* ShortcutUnassign.swift */; };
+		5F48UN000000000000000003 /* ShortcutUnassign.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F48UN000000000000000001 /* ShortcutUnassign.swift */; };
+		5F48UN000000000000000102 /* ShortcutUnassignTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F48UN000000000000000101 /* ShortcutUnassignTests.swift */; };
 		5E2A571E000000000000A202 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2A571E000000000000A201 /* ApplicationState.swift */; };
 		5E2A571E000000000000A203 /* ApplicationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E2A571E000000000000A201 /* ApplicationState.swift */; };
 		D04BAE2200000000ED004T11 /* SettingsSearchHighlightTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D04BAE2200000000ED004T12 /* SettingsSearchHighlightTests.swift */; };
@@ -543,6 +546,8 @@
 		5FC5980000000000000C0001 /* CGSSymbolicHotKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CGSSymbolicHotKey.swift; sourceTree = "<group>"; };
 		5FC5980000000000000A0001 /* NativeHotkeyResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeHotkeyResolver.swift; sourceTree = "<group>"; };
 		5FC5980000000000000A0101 /* NativeHotkeyResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NativeHotkeyResolverTests.swift; sourceTree = "<group>"; };
+		5F48UN000000000000000001 /* ShortcutUnassign.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutUnassign.swift; sourceTree = "<group>"; };
+		5F48UN000000000000000101 /* ShortcutUnassignTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutUnassignTests.swift; sourceTree = "<group>"; };
 		BF0C8BA452332236D972C60E /* ATShortcut.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ATShortcut.swift; sourceTree = "<group>"; };
 		BF0C8C0FF1B21F5F7CE16B79 /* print_env.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = print_env.sh; sourceTree = "<group>"; };
 		BF0C8C5B74E5DA2CC31E52F4 /* extract_l10n_strings.sh */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.sh; path = extract_l10n_strings.sh; sourceTree = "<group>"; };
@@ -853,6 +858,8 @@
 				4B4409E4B3D98C491503CE5D /* OverrideClickResolverTests.swift */,
 				5FC5980000000000000A0001 /* NativeHotkeyResolver.swift */,
 				5FC5980000000000000A0101 /* NativeHotkeyResolverTests.swift */,
+				5F48UN000000000000000001 /* ShortcutUnassign.swift */,
+				5F48UN000000000000000101 /* ShortcutUnassignTests.swift */,
 				5F21C9DF2C6E94240091F72F /* ShortcutsWhenActiveSheet.swift */,
 				5F21C9E12C6E94410091F72F /* AdditionalControlsSheet.swift */,
 			);
@@ -1813,6 +1820,8 @@
 				DC06402457ECCE6C902FEAE4 /* OverrideClickResolver.swift in Sources */,
 				5FC5980000000000000A0003 /* NativeHotkeyResolver.swift in Sources */,
 				5FC5980000000000000A0102 /* NativeHotkeyResolverTests.swift in Sources */,
+				5F48UN000000000000000003 /* ShortcutUnassign.swift in Sources */,
+				5F48UN000000000000000102 /* ShortcutUnassignTests.swift in Sources */,
 				5E1EC110000000000000C003 /* SelectionResolver.swift in Sources */,
 				5E1EC110000000000000C102 /* SelectionResolverTests.swift in Sources */,
 				5E2700000000000000000003 /* ContinuousNavigationResolver.swift in Sources */,
@@ -1979,6 +1988,7 @@
 				6E800CF06EE430DCCF9CE47B /* ObjCExceptionCatcher.m in Sources */,
 				D04BAA16F21AC41A23DDA63D /* ControlsTab.swift in Sources */,
 				5FC5980000000000000A0002 /* NativeHotkeyResolver.swift in Sources */,
+				5F48UN000000000000000002 /* ShortcutUnassign.swift in Sources */,
 				D04BAE1F00000000ED001001 /* ShortcutEditor.swift in Sources */,
 				DD6771EE8ACE714C2599FEB7 /* OverrideClickResolver.swift in Sources */,
 				D04BADE4DDF7597749FB13BD /* SettingsWindow.swift in Sources */,
