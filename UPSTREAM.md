@@ -12,7 +12,7 @@ This log records how far upstream has been reviewed. “Reviewed” does not mea
 | Last reviewed commit | `081f3ee4014e03557c2ab39e9e168dac308fa49b` (`v11.4.4`) |
 | Last review date | 2026-08-09 |
 | Selective product integration of that range | **Complete** (tracker #61; see matrix below) |
-| AlTab source milestone at this baseline | `altab-v1.0.0` (product `1.0.0`); post-milestone ports land on `main` until the next `altab-v*` tag |
+| AlTab product version at this baseline | `1.0.0` (planned first public tag `altab-v1.0.0`; **not** numbered like upstream `v11.4.x`) |
 
 “Reviewed”, “selectively integrated”, and “source milestone” do **not** mean AlTab has automatic security updates or feature parity with upstream. `git cherry` may still report adapted ports as unintegrated by patch identity; that is expected.
 

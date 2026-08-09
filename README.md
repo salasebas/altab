@@ -11,16 +11,14 @@ An independent, community-maintained fork of [AltTab for macOS](https://github.c
 > [!IMPORTANT]
 > This repository is not affiliated with or endorsed by the AltTab maintainers. Please report problems with this fork in [AlTab Issues](https://github.com/salasebas/altab/issues), not to the upstream project. This repository does **not** publish official binaries and has **no** in-app updater.
 
-## Current source milestone
+## Version and first public milestone
 
-The latest published **source-only** milestone is **[AlTab 1.1.0](https://github.com/salasebas/altab/releases/tag/altab-v1.1.0)** (`altab-v1.1.0`): a Git tag plus GitHub release notes—no `.app`, DMG, PKG, or update feed is attached. The first audited baseline tag is `altab-v1.0.0`. Product versioning, future milestones, and update/rebuild steps are documented in [docs/releasing.md](docs/releasing.md).
-
-Pin a clean checkout to a milestone when you want a frozen, reviewed revision:
+AlTab’s product version is **1.0.0** (independent of upstream AltTab’s `v11.x` line). The first public **source-only** milestone will be **`altab-v1.0.0`**: a Git tag plus release notes—no `.app`, DMG, PKG, or update feed. Until that milestone is intentionally published, build from `main` or a pinned commit. Versioning policy: [docs/releasing.md](docs/releasing.md).
 
 ```bash
 git clone https://github.com/salasebas/altab.git
 cd altab
-git checkout altab-v1.1.0
+# After the first public milestone: git checkout altab-v1.0.0
 scripts/codesign/setup_local.sh   # once per Mac
 scripts/build_local.sh
 ```

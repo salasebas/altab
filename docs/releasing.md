@@ -60,6 +60,16 @@ AlTab public product versions use [Semantic Versioning](https://semver.org/) `MA
 | Git tag | `altab-vMAJOR.MINOR.PATCH` | `altab-v1.0.0` |
 | GitHub release | Same name as the tag; **no** binary assets required | `altab-v1.0.0` |
 
+### Do not match upstream AltTab version numbers
+
+Upstream tags such as `v11.4.3` / `v11.4.4` describe **AltTab**, not AlTab. AlTab starts its own line at **`1.0.0`** for the first public product milestone. Using `11.x` for AlTab would imply parity with that upstream release and confuse users who clone this fork.
+
+Prefer:
+
+- **`1.0.0`** for the first public, usable source milestone (recommended).
+- **`0.y.z`** only if you want to advertise “pre-1.0 / may break freely” before any public milestone.
+- Never renumber AlTab to track upstream’s major.
+
 ### Why the `altab-v` prefix
 
 This repository retains the full upstream AltTab Git history, including tags such as `v1.0.0` … `v11.4.x`. Those tags remain provenance for the fork point and must never be moved or reused. AlTab milestones therefore use the distinct `altab-v*` namespace.
@@ -115,12 +125,15 @@ Manual path (when you need a human-gated milestone):
 5. Optionally flesh out the GitHub Release body with wording from [`.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md`](../.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md). Attach **no** binaries unless you intentionally run the optional packaging path below and review the artifacts.
 6. Verify the public tag resolves to the intended commit and that a clean clone of the tag builds after `scripts/codesign/setup_local.sh` (once per Mac) and `scripts/build_local.sh`.
 
-Bootstrap (one-time): create and push the first tag so the bot has a floor and does not walk the entire upstream history:
+Bootstrap (one-time): create and push the first **intentional** public tag so the bot has a floor and does not walk the entire upstream history:
 
 ```bash
-git tag -a altab-v1.0.0 e0f169207890686cfa084bdbf58859b8ddc50475 -m "AlTab source milestone 1.0.0"
+# Point at the commit you actually want as the public 1.0.0 floor.
+git tag -a altab-v1.0.0 <full-commit-sha> -m "AlTab source milestone 1.0.0"
 git push origin altab-v1.0.0
 ```
+
+If a provisional `altab-v1.1.0` (or other) tag/release was created by automation before the public launch, delete that GitHub Release and tag **before** advertising `1.0.0`, then retag `altab-v1.0.0` at the chosen commit. Do not leave a higher public SemVer than the first intentional milestone.
 
 ### How users update after a milestone
 

@@ -1,7 +1,49 @@
-# [1.1.0](https://github.com/salasebas/altab/compare/altab-v1.0.0...altab-v1.1.0) (2026-08-09)
+# Changelog
 
+AlTab **source milestones** are listed first. They use Git tags of the form `altab-vMAJOR.MINOR.PATCH` and publish source-only GitHub release notes ([`.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md`](.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md)). No official compiled application binary is attached. AlTab product versions start at **1.0.0** and are **not** numbered like upstream AltTab `v11.x`.
 
-### Bug Fixes
+Entries below the AlTab fork point are retained upstream AltTab history. They document inherited provenance and must not be presented as AlTab release notes. Optional unsigned redistribution packaging (not used for official milestones) uses [`.github/RELEASE_NOTES_TEMPLATE.md`](.github/RELEASE_NOTES_TEMPLATE.md).
+
+## Unreleased (toward first public `altab-v1.0.0`)
+
+Work on `main` before the intentional first public source milestone. Product / bundle version remains **1.0.0**.
+
+### Selective ports from upstream AltTab v11.4.4
+
+Selective product ports from upstream AltTab **v11.4.4** (`081f3ee4`). Full commit classification, local PR map, deferrals, and hard skips: [UPSTREAM.md](UPSTREAM.md) and tracker [#61](https://github.com/salasebas/altab/issues/61). No automatic parity claimed.
+
+#### Reliability and compatibility
+
+* Restore Ignore shortcuts on app activation and launch (#43 / PR #68; upstream `e2db26d4`)
+* Weak-link ScreenCaptureKit and route macOS 26 screenshots safely (#44 / PR #67; upstream `893673cf`)
+* Lazy, session-scoped full-resolution Preview captures (#45 / PR #72; upstream `499006c1`)
+* Guard Customize Style illustration loading (#46 / PR #63; upstream `726c5fd1`)
+* Keep the switcher viewport still under mouse hover (#47 / PR #62; upstream `a2d05275`)
+* Persist Vim/arrow shortcut conflict resolution (#48 / PR #70; upstream `1014601a`)
+* Prevent synthetic focus from resizing windows (#49 / PR #65; upstream `ec30bb13`)
+* Remove Dock/menu-bar lag from gesture detection (#50 / PR #64; upstream `1a85669b`)
+* Refresh Space topology before the first switcher frame during transitions (#52 / PR #83; upstream `767b96fc`)
+
+#### Tracked-window state (upstream `c14960bb`, parent #51)
+
+* Harden AX root-window matching (#54 / PR #66)
+* Pure tracked-window reducer and offline replay harness (#55 / PR #73)
+* Route tab, phantom, and liveness through the reducer (#56 / PR #77)
+* Move focus, MRU, selection, and reopen onto the reducer (#57 / PR #76)
+* Restore-safe minimized thumbnails (#58 / PR #75)
+* Harden CLI replies and local QA diagnostics (#59 / PR #71)
+* Settle lost modifier releases before navigation (#60 / PR #69)
+
+#### Intentionally not taken from v11.4.4
+
+* Default Space number labels remain visible (`e20c3277` deferred)
+* Appcast license-tier analytics, semantic-release README stats, and upstream release metadata skipped (`3c095716`, `0af0336d`, `081f3ee4`)
+
+### Other pre-1.0 development (folded from premature bot notes)
+
+Semantic-release once emitted a provisional `1.1.0` section before any intentional public AlTab milestone. That work is **not** a published AlTab release; it stays unreleased until `altab-v1.0.0` is cut deliberately.
+
+#### Bug Fixes
 
 * allow source-only release-notes workflow in compliance checks ([02887de](https://github.com/salasebas/altab/commit/02887de9940bb5a4a26eb3623191deb49b86a439))
 * avoid crash when Customize Style illustrations fail to load ([#63](https://github.com/salasebas/altab/issues/63)) ([a33c35a](https://github.com/salasebas/altab/commit/a33c35ad0488d8302f7c62099d34d5c4782da2e5))
@@ -12,7 +54,7 @@
 * harden CLI replies and add local QA diagnostics ([#71](https://github.com/salasebas/altab/issues/71)) ([489b976](https://github.com/salasebas/altab/commit/489b976aed8a14b25ef288020e0a4c234fc32ece)), closes [#59](https://github.com/salasebas/altab/issues/59)
 * keep the switcher still when hovering tiles ([b5ae76c](https://github.com/salasebas/altab/commit/b5ae76c17b702c5b00b56d61aaf3af047c26d622))
 * keep the switcher still when hovering tiles ([#62](https://github.com/salasebas/altab/issues/62)) ([e337734](https://github.com/salasebas/altab/commit/e3377346466177ce9d93a38b8ec3b839da4a1b3e))
-* make Preview full-resolution captures lazy and session-scoped ([#72](https://github.com/salasebas/altab/issues/72)) ([eb6cd25](https://github.com/salasebas/altab/commit/eb6cd25f083c4ac440ea05ea6cbb6d02f1b92398)), closes [#45](https://github.com/salasebas/altab/issues/45)
+* make Preview full-resolution captures lazy and session-scoped ([#72](https://github.com/salasebas/altab/issues/72)) ([eb6cd25](https://github.com/salasebas/altab/commit/eb6cd25f083c4ac440ea05ea6f60cb1c54b768b3f9d)), closes [#45](https://github.com/salasebas/altab/issues/45)
 * prevent synthetic activation from resizing windows ([#65](https://github.com/salasebas/altab/issues/65)) ([3056afb](https://github.com/salasebas/altab/commit/3056afb2ce4bd1d68151345b057d9a7b9a362278)), closes [#49](https://github.com/salasebas/altab/issues/49)
 * preview hover controls without symbols ([e765cda](https://github.com/salasebas/altab/commit/e765cdaf6e6babf6e42b704729a8a256ab97aaca))
 * **release:** harden notarized artifact publication ([e5568af](https://github.com/salasebas/altab/commit/e5568af7de218f6e1839c92ef711bb7196434fb7))
@@ -25,8 +67,7 @@
 * shortcut conflicts were not properly remembered (closes [#5897](https://github.com/salasebas/altab/issues/5897)) ([67f5d29](https://github.com/salasebas/altab/commit/67f5d2933a41f4f19aa882130659d4c48fdc68cf))
 * switcher might show previous space briefly (closes [#5864](https://github.com/salasebas/altab/issues/5864)) ([9e8c36e](https://github.com/salasebas/altab/commit/9e8c36ec2028d7ec7bc2b70664ec0a89a1503c50))
 
-
-### Features
+#### Features
 
 * add bring-your-own Developer ID release packaging ([580c3ed](https://github.com/salasebas/altab/commit/580c3ed81ebe2e1129572ff3cf86dfeccc5d6696))
 * add optional continuous navigation wrapping ([e2b9d59](https://github.com/salasebas/altab/commit/e2b9d5908074a21d9901cceb078932f354f1f387))
@@ -42,46 +83,9 @@
 * optionally hide symbols in hover controls ([a4f7439](https://github.com/salasebas/altab/commit/a4f7439fde0301d9283248120f0d2f44fb822518))
 * restore semantic-release for changelog and source tags ([e1d400c](https://github.com/salasebas/altab/commit/e1d400c524ccb71e28982bc7e44ddc65b3286d6f))
 
-# Changelog
+## [1.0.0] — planned first public source milestone
 
-AlTab **source milestones** are listed first. They use Git tags of the form `altab-vMAJOR.MINOR.PATCH` and publish source-only GitHub release notes ([`.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md`](.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md)). No official compiled application binary is attached.
-
-Entries below the AlTab fork point are retained upstream AltTab history. They document inherited provenance and must not be presented as AlTab release notes. Optional unsigned redistribution packaging (not used for official milestones) uses [`.github/RELEASE_NOTES_TEMPLATE.md`](.github/RELEASE_NOTES_TEMPLATE.md).
-
-## Unreleased (on `main` after `altab-v1.0.0`)
-
-Selective product ports from upstream AltTab **v11.4.4** (`081f3ee4`). Full commit classification, local PR map, deferrals, and hard skips: [UPSTREAM.md](UPSTREAM.md) and tracker [#61](https://github.com/salasebas/altab/issues/61). No automatic parity claimed.
-
-### Reliability and compatibility
-
-* Restore Ignore shortcuts on app activation and launch (#43 / PR #68; upstream `e2db26d4`)
-* Weak-link ScreenCaptureKit and route macOS 26 screenshots safely (#44 / PR #67; upstream `893673cf`)
-* Lazy, session-scoped full-resolution Preview captures (#45 / PR #72; upstream `499006c1`)
-* Guard Customize Style illustration loading (#46 / PR #63; upstream `726c5fd1`)
-* Keep the switcher viewport still under mouse hover (#47 / PR #62; upstream `a2d05275`)
-* Persist Vim/arrow shortcut conflict resolution (#48 / PR #70; upstream `1014601a`)
-* Prevent synthetic focus from resizing windows (#49 / PR #65; upstream `ec30bb13`)
-* Remove Dock/menu-bar lag from gesture detection (#50 / PR #64; upstream `1a85669b`)
-* Refresh Space topology before the first switcher frame during transitions (#52 / PR #83; upstream `767b96fc`)
-
-### Tracked-window state (upstream `c14960bb`, parent #51)
-
-* Harden AX root-window matching (#54 / PR #66)
-* Pure tracked-window reducer and offline replay harness (#55 / PR #73)
-* Route tab, phantom, and liveness through the reducer (#56 / PR #77)
-* Move focus, MRU, selection, and reopen onto the reducer (#57 / PR #76)
-* Restore-safe minimized thumbnails (#58 / PR #75)
-* Harden CLI replies and local QA diagnostics (#59 / PR #71)
-* Settle lost modifier releases before navigation (#60 / PR #69)
-
-### Intentionally not taken from v11.4.4
-
-* Default Space number labels remain visible (`e20c3277` deferred)
-* Appcast license-tier analytics, semantic-release README stats, and upstream release metadata skipped (`3c095716`, `0af0336d`, `081f3ee4`)
-
-## [1.0.0](https://github.com/salasebas/altab/releases/tag/altab-v1.0.0) — source milestone (2026-08-07)
-
-First audited **source-only** AlTab baseline. Tag: `altab-v1.0.0` (Git tag; later milestones also publish source-only GitHub Release notes via semantic-release).
+First public **source-only** AlTab milestone when intentionally tagged `altab-v1.0.0`. Product / Xcode marketing version: **1.0.0**. Independent of upstream AltTab `v11.x` numbering.
 
 ### Product
 
@@ -100,8 +104,9 @@ First audited **source-only** AlTab baseline. Tag: `altab-v1.0.0` (Git tag; late
 ### Provenance
 
 * Fork point: upstream AltTab `v11.4.3` (`10af70aaaaac0a2dbb7d0aaa61cda21b065c203f`)
-* Last reviewed upstream at milestone: `081f3ee4014e03557c2ab39e9e168dac308fa49b` (`v11.4.4`); no automatic parity claimed
+* Last reviewed upstream at this line: `081f3ee4014e03557c2ab39e9e168dac308fa49b` (`v11.4.4`); no automatic parity claimed
 * Versioning and update policy: [docs/releasing.md](docs/releasing.md)
+
 
 ## Upstream history (not AlTab milestones)
 
