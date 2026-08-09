@@ -2,7 +2,7 @@
 # https://git-cliff.org/docs/configuration
 #
 # Only altab-v* tags count as product milestones (upstream v* tags are ignored).
-# Unreleased notes accumulate on merge; the maintainer cuts a version deliberately.
+# Changelog sections are written on intentional maintainer cut (not on every merge).
 
 [remote.github]
 owner = "salasebas"

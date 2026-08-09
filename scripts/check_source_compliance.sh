@@ -133,14 +133,21 @@ if [[ -f .github/workflows/release.yml ]]; then
     [[ $scanStatus -eq 1 ]] || fail "could not scan release workflow for hardcoded credentials"
   fi
 fi
-# Source-only changelog / milestone workflow (git-cliff): may use GITHUB_TOKEN to
-# commit changelog.md (Unreleased), and on explicit workflow_dispatch also bump
-# package.json, tag altab-v*, and open notes-only GitHub Releases.
-# Must never package, sign, notarize, or touch appcast/AppCenter/Sparkle.
+# Source-only changelog / milestone workflow (git-cliff): only on explicit
+# workflow_dispatch — promote changelog, bump package.json, tag altab-v*, open
+# notes-only GitHub Releases. Must never run on push-to-main, package, sign,
+# notarize, or touch appcast/AppCenter/Sparkle.
 if [[ -f .github/workflows/release-notes.yml ]]; then
   require_text .github/workflows/release-notes.yml 'git-cliff'
   require_text .github/workflows/release-notes.yml 'scripts/changelog_milestone.sh'
   require_text .github/workflows/release-notes.yml 'workflow_dispatch'
+  # No automatic Unreleased bot on merge (issue #101): cut is workflow_dispatch only.
+  if rg -n '^\s*push:' .github/workflows/release-notes.yml; then
+    fail "release-notes workflow must not run on push (cut is workflow_dispatch only)"
+  fi
+  if rg -n 'chore\(changelog\)|Update Unreleased' .github/workflows/release-notes.yml; then
+    fail "release-notes workflow must not commit Unreleased updates on merge"
+  fi
   # Ignore comment-only lines so the file can document what it deliberately omits.
   if rg -n -i \
     'scripts/package_release\.sh|scripts/package_notarized_release\.sh|codesign|notarytool|CODE_SIGN|DEVELOPMENT_TEAM|xcodebuild[[:space:]]+archive|action-gh-release|appcast|AppCenter|Sparkle|APPLE_|SPARKLE_|NOTARY_|semantic-release' \

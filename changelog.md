@@ -2,7 +2,7 @@
 
 AlTab product milestones use Git tags `altab-vMAJOR.MINOR.PATCH` and optional GitHub Releases. Versions are **independent** of upstream AltTab (`v11.x` and earlier). Upstream release notes are **not** copied here; see [lwouis/alt-tab-macos](https://github.com/lwouis/alt-tab-macos) for that history.
 
-Conventional commits merged to `main` accumulate under **Unreleased**. A maintainer promotes them to a versioned section only when cutting an intentional milestone (see [docs/releasing.md](docs/releasing.md)).
+Conventional commits merged to `main` stay in git history until a maintainer cuts a milestone. The cut rewrites **Unreleased** / the new version section via git-cliff (see [docs/releasing.md](docs/releasing.md)). CI does not commit changelog updates on every merge.
 
 <!-- altab-changelog:unreleased-start -->
 ## Unreleased

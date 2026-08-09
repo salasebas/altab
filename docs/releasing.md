@@ -96,33 +96,21 @@ Tooling (reuse, not a custom bot):
 | --- | --- |
 | [git-cliff](https://git-cliff.org/) | Parses [Conventional Commits](https://www.conventionalcommits.org/) (commitlint + husky) into changelog sections |
 | [cliff.toml](../cliff.toml) | Groups, `altab-v*` tag pattern, templates |
-| [scripts/changelog_milestone.sh](../scripts/changelog_milestone.sh) | Thin splice of `## Unreleased` / promote-to-version into [changelog.md](../changelog.md) |
-| [`.github/workflows/release-notes.yml`](../.github/workflows/release-notes.yml) | CI entry: Unreleased on push; cut on `workflow_dispatch` |
+| [scripts/changelog_milestone.sh](../scripts/changelog_milestone.sh) | Thin splice of versioned sections into [changelog.md](../changelog.md); optional local `update` for Unreleased preview |
+| [`.github/workflows/release-notes.yml`](../.github/workflows/release-notes.yml) | **Manual only** (`workflow_dispatch`): cut `altab-vX.Y.Z` (no job on push to `main`) |
 
-**Why git-cliff (options considered for issue #93):**
+**Why git-cliff (options considered for issue #93 / #101):**
 
 | Option | Fit | Why not / why yes |
 | --- | --- | --- |
-| Keep semantic-release on every `main` push | Continuous ship | Wrong product model; auto tags/Releases (what #93 removes) |
-| semantic-release only on `workflow_dispatch` | Explicit cut | Still release-centric; awkward Unreleased-only path; heavy Node plugin stack |
-| [release-please](https://github.com/googleapis/release-please) | release-plz-like PR | Strong, but version is inferred from commits unless overridden; less natural for keep-a-changelog `## Unreleased` |
-| **git-cliff + thin script + Actions** | Unreleased on merge, version chosen at cut | **Chosen:** maintained CLI, no greenfield bot, matches desired model with ~one splice script |
+| Keep semantic-release on every `main` push | Continuous ship | Wrong product model; auto tags/Releases |
+| Bot commit of Unreleased on every merge | Live Unreleased on `main` | Clutters history; release still only on cut |
+| [release-please](https://github.com/googleapis/release-please) | release-plz-like PR | Version inferred from commits; heavier than needed |
+| **git-cliff + thin script + manual cut** | Version chosen at cut; no bot on merge | **Chosen:** clean `main`, maintainer-chosen SemVer |
 
-#### On merge to `main` (automatic)
+#### On merge to `main`
 
-On every push to `main` (except commits marked `[skip ci]`), CI:
-
-1. Runs git-cliff for commits since the last `altab-v*` tag
-2. Rewrites **only** the `## Unreleased` block in `changelog.md` (markers `<!-- altab-changelog:unreleased-start/end -->`)
-3. Commits `chore(changelog): update Unreleased [skip ci]` when the file changed
-
-It deliberately does **not**:
-
-- Bump SemVer / `package.json`
-- Create `altab-v*` tags
-- Open a GitHub Release
-- Rewrite `config/base.xcconfig` marketing version
-- Package, sign, notarize, or touch appcast / AppCenter / Sparkle
+Merges do **not** rewrite `changelog.md`, create tags, or open GitHub Releases. Conventional commits sit in git history until the next intentional cut. The optional local command `scripts/changelog_milestone.sh update` can preview Unreleased in a dirty worktree; it is not run by CI on push.
 
 #### When the maintainer cuts a milestone (explicit)
 
@@ -132,7 +120,7 @@ Preferred path: GitHub Actions → **Release notes** → **Run workflow** → en
 
 That cut:
 
-1. Promotes `## Unreleased` → `## [X.Y.Z] (date)` and clears Unreleased
+1. Runs git-cliff for conventional commits **since the last `altab-v*` tag**, writes `## [X.Y.Z]`, and clears `## Unreleased`
 2. Aligns `package.json` `version` (tooling metadata only)
 3. Commits `chore(release): X.Y.Z [skip ci]`
 4. Creates annotated tag `altab-vX.Y.Z` and a **source-only** GitHub Release (notes, no binaries)
@@ -142,7 +130,7 @@ Optional **unsigned binary packaging** stays a separate explicit path (`scripts/
 Local equivalents (requires [git-cliff](https://git-cliff.org/) on `PATH`, e.g. `brew install git-cliff`):
 
 ```bash
-# Refresh Unreleased only (no tag / no publish)
+# Optional: preview Unreleased only (no tag / no publish; not run on merge)
 scripts/changelog_milestone.sh update
 
 # Dry-run promote in a dirty worktree (inspect diff; do not push)
