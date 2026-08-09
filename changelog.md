@@ -1,3 +1,5 @@
+## [1.1.1](https://github.com/salasebas/altab/compare/altab-v1.1.0...altab-v1.1.1) (2026-08-09)
+
 # Changelog
 
 AlTab **source milestones** are listed first. They use Git tags of the form `altab-vMAJOR.MINOR.PATCH` and publish source-only GitHub release notes ([`.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md`](.github/SOURCE_MILESTONE_NOTES_TEMPLATE.md)). No official compiled application binary is attached. AlTab product versions start at **1.0.0** and are **not** numbered like upstream AltTab `v11.x`.
