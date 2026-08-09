@@ -23,6 +23,7 @@ scripts/check_legacy_preferences_import.sh
 scripts/check_local_codesign_setup.sh
 scripts/check_local_build.sh
 scripts/check_debug_install.sh
+scripts/check_local_install.sh
 scripts/run_tests.sh "$derivedDataPath"
 git diff --check
 git diff --exit-code
