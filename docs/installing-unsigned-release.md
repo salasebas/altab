@@ -29,7 +29,9 @@ Continue only when the result ends with `OK`. A colocated checksum proves that t
 
 Open the DMG and drag **AlTab** onto the **Applications** shortcut. Launch only the copy at `/Applications/AlTab.app`; do not run the copy inside the DMG.
 
-![AlTab DMG with the app and Applications shortcut](images/installing-unsigned-release/01-drag-to-applications.png)
+<p align="center">
+  <a href="images/installing-unsigned-release/01-drag-to-applications.png"><img src="images/installing-unsigned-release/01-drag-to-applications.png" alt="AlTab DMG with the app and Applications shortcut" width="760"></a>
+</p>
 
 Before opening it, you can verify that the app has the complete version-specific seal required by the optional binary channel:
 
@@ -44,19 +46,27 @@ The first command is silent on success. The second reports a `designated => cdha
 
 Open `/Applications/AlTab.app`. macOS first explains that Apple could not verify the app. Choose **Done**; do not move the app to Trash if you intend to continue.
 
-![Gatekeeper blocks AlTab because Apple cannot verify it](images/installing-unsigned-release/02-gatekeeper-blocked.png)
+<p align="center">
+  <a href="images/installing-unsigned-release/02-gatekeeper-blocked.png"><img src="images/installing-unsigned-release/02-gatekeeper-blocked.png" alt="Gatekeeper blocks AlTab because Apple cannot verify it" width="360"></a>
+</p>
 
 Open **Apple menu → System Settings → Privacy & Security**, scroll to **Security**, and select **Open Anyway** beside the AlTab message. Apple makes this control available for about one hour after the blocked launch attempt.
 
-![Open Anyway for AlTab in Privacy and Security settings](images/installing-unsigned-release/03-open-anyway-setting.png)
+<p align="center">
+  <a href="images/installing-unsigned-release/03-open-anyway-setting.png"><img src="images/installing-unsigned-release/03-open-anyway-setting.png" alt="Open Anyway for AlTab in Privacy and Security settings" width="640"></a>
+</p>
 
 Confirm **Open Anyway** in the second warning.
 
-![Gatekeeper confirmation with Open Anyway](images/installing-unsigned-release/04-confirm-open-anyway.png)
+<p align="center">
+  <a href="images/installing-unsigned-release/04-confirm-open-anyway.png"><img src="images/installing-unsigned-release/04-confirm-open-anyway.png" alt="Gatekeeper confirmation with Open Anyway" width="340"></a>
+</p>
 
 Authenticate with an administrator's Touch ID or password when macOS asks. Authentication happens entirely in System Settings; do not share the password with AlTab, a script, or an issue report.
 
-![Administrator authentication required by Privacy and Security](images/installing-unsigned-release/05-admin-approval.png)
+<p align="center">
+  <a href="images/installing-unsigned-release/05-admin-approval.png"><img src="images/installing-unsigned-release/05-admin-approval.png" alt="Administrator authentication required by Privacy and Security" width="360"></a>
+</p>
 
 This creates an exception only for this copy of AlTab. Do not disable Gatekeeper globally and do not remove quarantine attributes manually.
 
@@ -64,7 +74,9 @@ This creates an exception only for this copy of AlTab. Do not disable Gatekeeper
 
 AlTab then shows its permissions window:
 
-![AlTab permission window showing Accessibility and Screen Recording](images/installing-unsigned-release/06-permissions-window.png)
+<p align="center">
+  <a href="images/installing-unsigned-release/06-permissions-window.png"><img src="images/installing-unsigned-release/06-permissions-window.png" alt="AlTab permission window showing Accessibility and Screen Recording" width="700"></a>
+</p>
 
 ### Accessibility — required
 
