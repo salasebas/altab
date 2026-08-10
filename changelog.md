@@ -9,6 +9,21 @@ Conventional commits merged to `main` stay in git history until a maintainer cut
 
 <!-- altab-changelog:unreleased-end -->
 
+## [1.0.2](https://github.com/salasebas/altab/compare/altab-v1.0.1...altab-v1.0.2) (2026-08-10)
+
+
+
+### Bug Fixes
+
+* **release:** Preserve permissions in unsigned builds ([f294dfa](https://github.com/salasebas/altab/commit/f294dfa7e979963a515e7037dff347307a5f8c64)) by @salasebas
+* **release:** Stop Unreleased bot commits on main ([3670798](https://github.com/salasebas/altab/commit/3670798de27c4ee12b7bd19a99b1543516ea6cb4)) by @salasebas
+
+
+### Documentation
+
+* Compact unsigned install screenshots ([5db147f](https://github.com/salasebas/altab/commit/5db147f64a0188b1e47881eccdb38ad20a7467b3)) by @salasebas
+
+
 ## [1.0.1](https://github.com/salasebas/altab/compare/altab-v1.0.0...altab-v1.0.1) (2026-08-09)
 
 
