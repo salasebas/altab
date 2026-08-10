@@ -9,7 +9,7 @@ Optional tools in this repository help **anyone** assemble redistribution artifa
 | Path | Command | Signing | Secrets |
 | --- | --- | --- | --- |
 | Local run | `scripts/build_local.sh` | Local Self-Signed | None (once-per-Mac setup) |
-| Unsigned redistribution | `scripts/package_release.sh` | **unsigned** / not notarized | None |
+| Unsigned redistribution | `scripts/package_release.sh` | Version-specific **ad-hoc signature** / not notarized | None |
 | Notarized redistribution | `scripts/package_notarized_release.sh` | Caller-owned **Developer ID Application** + Apple notarization | Caller-provided only |
 | GitHub Actions helper | `.github/workflows/release.yml` | Explicit `unsigned` **or** `notarized` mode | See [secrets checklist](#github-actions-releaseyml) |
 
@@ -47,7 +47,7 @@ Reasons (summary):
 
 Supported binary channels when someone packages a binary:
 
-1. **Unsigned** redistribution (`scripts/package_release.sh`) — must be labeled **unsigned and not notarized**.
+1. **Unsigned** redistribution (`scripts/package_release.sh`) — ad-hoc signed as a complete bundle for same-build privacy permissions, but still labeled **unsigned and not notarized** because it has no Developer ID identity.
 2. **Developer ID signed and notarized** redistribution (`scripts/package_notarized_release.sh`) with a distributor-owned identity.
 
 Do **not** claim Mac App Store availability. Do **not** flip `com.apple.security.app-sandbox` to `true` in this tree without that separate feasibility track.
@@ -225,6 +225,8 @@ The helper is `release_artifact_label` in `scripts/release_artifact_contracts.sh
 
 ### Unsigned artifacts
 
+The word `unsigned` in artifact filenames means that no Apple-recognized Developer ID identity signed the app. The packager still applies a complete ad-hoc bundle signature. That seal gives this exact build a `cdhash` designated requirement so users can grant Accessibility and Screen Recording, but it does not authenticate the publisher, satisfy Gatekeeper, or remain compatible after the binary changes.
+
 The command creates `dist/AlTab-<release>/` containing (human-facing priority order):
 
 1. `AlTab-<release>-macOS-unsigned.dmg`: **light casual download** — only `AlTab.app` plus a drag-to-Applications symlink (no dSYM, no notices). Prefer this for end users who just want to run the app. Example: `AlTab-1.0.0-macOS-unsigned.dmg`.
@@ -235,9 +237,9 @@ The command creates `dist/AlTab-<release>/` containing (human-facing priority or
 
 **Decision (issue #91):** keep generating and attaching `RELEASE-NOTES.md` so publish/verify contracts stay coherent and the full ZIP still contains notes, but de-emphasize it in Download tables and README copy.
 
-Anyone who redistributes those artifacts must label them **unsigned and not notarized** and must not tell users to disable system-wide security protections. The light `.dmg` never replaces the GPL corresponding-source set: when a binary is published, the full ZIP, packager source tarball, manifest, notes, and `SHA256SUMS` remain required on the same Release.
+Anyone who redistributes those artifacts must label them **ad-hoc signed only, not signed by an identified developer, and not notarized** and must not tell users to disable system-wide security protections. Link end users to the [unsigned-release installation guide](installing-unsigned-release.md). The light `.dmg` never replaces the GPL corresponding-source set: when a binary is published, the full ZIP, packager source tarball, manifest, notes, and `SHA256SUMS` remain required on the same Release.
 
-The script verifies arm64 and x86_64 slices, matching app/dSYM UUIDs, absence of a Developer ID authority and Team ID, complete checksums and notices, source-archive identity, light-DMG layout (app + Applications link, no dSYM, same app binary as the ZIP), and both service-isolation and unrestricted-feature guards after extracting the final ZIP. Xcode may emit a non-identifying Mach-O signature even when code signing is disabled; the verifier accepts only that state or a fully unsigned bundle. It rejects known upstream signing identities, update or licensing endpoints, analytics credentials, and release-secret markers.
+The script verifies arm64 and x86_64 slices, matching app/dSYM UUIDs, a valid complete ad-hoc bundle signature with a version-specific `cdhash` requirement, absence of a Developer ID authority and Team ID, complete checksums and notices, source-archive identity, light-DMG layout (app + Applications link, no dSYM, same app binary as the ZIP), and both service-isolation and unrestricted-feature guards after extracting the final ZIP. It rejects a fully unsigned or linker-signature-only app because macOS cannot reliably associate privacy permissions with code that has no designated requirement. It also rejects known upstream signing identities, update or licensing endpoints, analytics credentials, and release-secret markers.
 
 ## Bring-your-own Developer ID (notarized) packaging
 

@@ -157,7 +157,7 @@ if [[ "$packageMode" == "unsigned" ]]; then
   release_validate_unsigned_app "$appPath" "$signatureDetails"
   for field in "${releaseManifestFields[@]}"; do require_text "$manifest" "$field"; done
   require_text "$manifest" "Light download artifact: \`$dmgFilename\`"
-  require_text "$notes" 'Signing status: **unsigned**'
+  require_text "$notes" 'Signing status: **ad hoc**'
   require_text "$notes" 'Notarization status: **not notarized**'
   require_text "$notes" "$dmgFilename"
   release_validate_light_unsigned_dmg \

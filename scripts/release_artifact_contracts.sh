@@ -23,6 +23,13 @@ releaseRequiredSourcePaths=(
   Info.plist
   LICENCE.md
   NOTICE.md
+  docs/installing-unsigned-release.md
+  docs/images/installing-unsigned-release/01-drag-to-applications.png
+  docs/images/installing-unsigned-release/02-gatekeeper-blocked.png
+  docs/images/installing-unsigned-release/03-open-anyway-setting.png
+  docs/images/installing-unsigned-release/04-confirm-open-anyway.png
+  docs/images/installing-unsigned-release/05-admin-approval.png
+  docs/images/installing-unsigned-release/06-permissions-window.png
   docs/acknowledgments.md
   docs/contributors.md
   docs/brand/README.md
@@ -56,7 +63,7 @@ releaseManifestFieldsCommon=(
 )
 releaseManifestFields=(
   "${releaseManifestFieldsCommon[@]}"
-  'Signing status: **unsigned**'
+  'Signing status: **ad hoc**'
   'Notarization status: **not notarized**'
 )
 releaseNotarizedManifestFields=(
@@ -302,24 +309,22 @@ release_validate_binaries() {
 release_validate_unsigned_app() {
   local appPath="$1"
   local signatureDetails="$2"
-  if codesign --display --verbose=4 "$appPath" >/dev/null 2>"$signatureDetails"; then
-    rg -q '^Signature=adhoc$' "$signatureDetails" || fail "app has a non-ad-hoc signature"
-    if rg -q '^Authority=' "$signatureDetails"; then
-      fail "app has a signing authority"
-    else
-      local authorityStatus=$?
-      [[ $authorityStatus -eq 1 ]] || fail "could not inspect app signing authority"
-    fi
-    local teamIdentifier
-    teamIdentifier="$(sed -n 's/^TeamIdentifier=//p' "$signatureDetails")"
-    [[ -z "$teamIdentifier" || "$teamIdentifier" == "not set" ]] || fail "app has TeamIdentifier $teamIdentifier"
-    local verificationDetails="$signatureDetails.verify"
-    if ! codesign --verify --deep --strict "$appPath" 2>"$verificationDetails"; then
-      rg -q 'code object is not signed at all' "$verificationDetails" || fail "app signature integrity validation failed"
-    fi
+  codesign --display --verbose=4 "$appPath" >/dev/null 2>"$signatureDetails" || fail "unsigned package lacks a complete ad-hoc bundle signature"
+  rg -q '^Signature=adhoc$' "$signatureDetails" || fail "app has a non-ad-hoc signature"
+  if rg -q '^Authority=' "$signatureDetails"; then
+    fail "app has a signing authority"
   else
-    rg -q 'code object is not signed at all' "$signatureDetails" || fail "codesign could not establish that the app is unsigned"
+    local authorityStatus=$?
+    [[ $authorityStatus -eq 1 ]] || fail "could not inspect app signing authority"
   fi
+  local teamIdentifier
+  teamIdentifier="$(sed -n 's/^TeamIdentifier=//p' "$signatureDetails")"
+  [[ -z "$teamIdentifier" || "$teamIdentifier" == "not set" ]] || fail "app has TeamIdentifier $teamIdentifier"
+  local verificationDetails="$signatureDetails.verify"
+  codesign --verify --deep --strict "$appPath" 2>"$verificationDetails" || fail "ad-hoc bundle signature integrity validation failed"
+  local requirementDetails="$signatureDetails.requirements"
+  codesign --display -r- "$appPath" >"$requirementDetails" 2>&1 || fail "ad-hoc bundle has no designated requirement"
+  rg -q 'designated => .*cdhash ' "$requirementDetails" || fail "ad-hoc bundle requirement is not tied to this packaged version"
 }
 
 release_validate_developer_id_inputs() {
