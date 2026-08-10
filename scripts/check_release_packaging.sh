@@ -104,6 +104,10 @@ require_text README.md 'macOS-unsigned.dmg'
 require_text README.md 'AlTab-1.0.0-macOS-unsigned.dmg'
 require_text .github/RELEASE_NOTES_TEMPLATE.md 'automatic Source code'
 require_text .github/RELEASE_NOTES_TEMPLATE.md '{{DMG_ARTIFACT}}'
+require_text scripts/package_release.sh 'CODE_SIGNING_ALLOWED=YES'
+require_text scripts/package_release.sh 'CODE_SIGNING_REQUIRED=YES'
+require_text scripts/package_release.sh 'CODE_SIGN_IDENTITY=-'
+require_text scripts/package_release.sh 'OTHER_CODE_SIGN_FLAGS=--timestamp=none'
 [[ "$(release_artifact_label altab-v1.0.1)" == "1.0.1" ]] || fail "artifact label must strip altab-v prefix for milestone tags"
 [[ "$(release_artifact_label altab-v2)" == "2" ]] || fail "artifact label must accept altab-vMAJOR tags"
 [[ "$(release_artifact_label v1.0.1)" == "v1.0.1" ]] || fail "artifact label must leave non-altab tags unchanged"
@@ -157,6 +161,12 @@ cat >"$fixtureApp/Contents/Info.plist" <<'PLIST'
   <key>CFBundleExecutable</key><string>AlTab</string>
 </dict></plist>
 PLIST
+if (release_validate_unsigned_app "$fixtureApp" "$testRoot/unsigned-codesign.txt") >"$testRoot/unsigned-validate.log" 2>&1; then
+  fail "unsigned package validator must reject a bundle without a complete ad-hoc signature"
+fi
+rg -q 'complete ad-hoc bundle signature' "$testRoot/unsigned-validate.log" \
+  || fail "unsigned package validator did not explain the missing app-level signature"
+codesign --force --sign - --timestamp=none "$fixtureApp"
 dmgPath="$testRoot/AlTab-test-macOS-unsigned.dmg"
 [[ "$(release_light_dmg_name test)" == "AlTab-test-macOS-unsigned.dmg" ]] || fail "light DMG name helper is incorrect"
 release_create_light_unsigned_dmg \

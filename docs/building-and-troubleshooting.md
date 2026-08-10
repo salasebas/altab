@@ -174,7 +174,7 @@ Use `scripts/run_debug.sh` while developing and testing. Use `scripts/install_lo
 
 ### Can I share a compiled build?
 
-Yes, but do not redistribute the `Local Self-Signed` app produced for your own Mac. For an unsigned build, use the optional [unsigned redistribution packager](releasing.md#optional-unsigned-redistribution-packaging), which creates a universal app ZIP, matching dSYM, exact source archive, build manifest, release notes, and checksums from an explicit tag or full commit. Its output is intentionally **unsigned and not notarized**, so label it that way and expect macOS Gatekeeper to warn or block it.
+Yes, but do not redistribute the `Local Self-Signed` app produced for your own Mac. For an unsigned build, use the optional [unsigned redistribution packager](releasing.md#optional-unsigned-redistribution-packaging), which creates a universal app ZIP, matching dSYM, exact source archive, build manifest, release notes, and checksums from an explicit tag or full commit. Its app has a complete version-specific ad-hoc seal but no Developer ID identity or notarization, so label it that way and expect macOS Gatekeeper to warn or block it. End users should follow the [illustrated unsigned-release installation guide](installing-unsigned-release.md).
 
 A trusted Gatekeeper-friendly binary requires **your** Developer ID Application identity and Apple notarization. Use `scripts/package_notarized_release.sh` or the manual `.github/workflows/release.yml` workflow (`notarized` mode) documented in [releasing.md](releasing.md). Official milestones may remain source-only; the tooling never silently falls back to unsigned output and never reuses upstream credentials, Team IDs, update feeds, signing identities, or release infrastructure.
 
@@ -185,6 +185,7 @@ Tracked source, documentation, build configuration, and non-secret test fixtures
 ## Related documentation
 
 - [README](../README.md): supported product and source-milestone overview.
+- [Installing an unsigned release](installing-unsigned-release.md): checksum, Gatekeeper, and same-build privacy-permission walkthrough.
 - [Contributing](contributing.md): development architecture and full validation dependencies.
 - [Releasing](releasing.md): source-only milestone and optional redistribution rules.
 - [Fork policy](../FORK.md): identity, infrastructure, and upstream-maintenance restrictions.

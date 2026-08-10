@@ -11,9 +11,24 @@ Fast window switching for macOS — built from source, fully unrestricted, no li
 </div>
 
 > [!IMPORTANT]
-> This repository is not affiliated with or endorsed by the AltTab maintainers. Report problems with this fork in [AlTab Issues](https://github.com/salasebas/altab/issues), not upstream. There is **no** in-app updater. Prefer building from source; optional GitHub binaries (when attached) are **unsigned and not notarized**.
+> This repository is not affiliated with or endorsed by the AltTab maintainers. Report problems with this fork in [AlTab Issues](https://github.com/salasebas/altab/issues), not upstream. There is **no** in-app updater. Prefer building from source; optional GitHub binaries (when attached) have only a version-specific **ad-hoc signature** and are not notarized.
 
 ## Quick start
+
+Choose the path that matches your Mac:
+
+| Path | Requirements | Tradeoff |
+| --- | --- | --- |
+| **Download an unsigned release** | No Xcode or Apple Account | Fastest install, but Gatekeeper requires a manual exception and macOS privacy permissions must be granted again after an unsigned update. |
+| **Build from source (recommended)** | Full Xcode 26 and Git | One local certificate setup; Accessibility and Screen Recording grants survive normal rebuilds and updates. |
+
+### Download an unsigned release
+
+When a reviewed GitHub Release includes `AlTab-<version>-macOS-unsigned.dmg`, download that DMG and its `SHA256SUMS`, then follow the illustrated [unsigned-release installation guide](docs/installing-unsigned-release.md). It covers checksum verification, drag-to-Applications, Gatekeeper's **Open Anyway** flow, and AlTab's Accessibility and Screen Recording permissions.
+
+The binary has no Developer ID identity and is not notarized. Do not disable Gatekeeper globally. Its ad-hoc signature identifies only that exact build, so expect to repeat the permission steps after updating it.
+
+### Build from source (recommended)
 
 You need a Mac with full [Xcode 26](https://developer.apple.com/xcode/) selected and Git. Command Line Tools alone are not enough. No Apple Account, Team ID, or Developer ID is required.
 
@@ -24,9 +39,9 @@ scripts/codesign/setup_local.sh   # once per Mac (shared by every clone/worktree
 scripts/install_local.sh          # build + install /Applications/AlTab.app + open
 ```
 
-That is the recommended everyday path. Grant **Accessibility** when prompted (required). **Screen Recording** is optional (live thumbnails).
+Grant **Accessibility** when prompted (required). **Screen Recording** is optional (live thumbnails).
 
-### Setup once, then choose how to run
+### Source-build commands
 
 | Step | Command | What it does |
 | --- | --- | --- |
@@ -83,7 +98,7 @@ Product version **1.0.1** · tag **`altab-v1.0.1`** · independent of upstream A
 
 - **Notes:** [GitHub Release altab-v1.0.1](https://github.com/salasebas/altab/releases/tag/altab-v1.0.1)
 - **Supported path:** clone the tag (or `main`) and use Quick start above.
-- **Optional binaries:** when attached, packages such as `AlTab-1.0.0-macOS-unsigned.dmg` / `AlTab-1.0.1-macOS-unsigned.dmg` are **unsigned and not notarized** (Gatekeeper will warn). Prefer source builds.
+- **Optional binaries:** when attached, packages such as `AlTab-1.0.0-macOS-unsigned.dmg` / `AlTab-1.0.1-macOS-unsigned.dmg` are ad-hoc signed only and **not notarized** (Gatekeeper will warn). Older assets may predate the complete app-level seal; verify them with the [unsigned-release guide](docs/installing-unsigned-release.md). Prefer source builds.
 
 Pin a milestone:
 
@@ -111,7 +126,7 @@ Debug builds use `dev.salasebas.AlTabDev` with the same pattern. AlTab never del
 
 ## Troubleshooting
 
-Use the guide’s [three visual examples](docs/building-and-troubleshooting.md#example-1-prepare-a-mac-and-run-the-right-app) and [decision table](docs/building-and-troubleshooting.md#troubleshooting-table).
+For downloads, use the illustrated [unsigned-release installation guide](docs/installing-unsigned-release.md). For source builds, use the [three visual examples](docs/building-and-troubleshooting.md#example-1-prepare-a-mac-and-run-the-right-app) and [decision table](docs/building-and-troubleshooting.md#troubleshooting-table).
 
 Do not disable Gatekeeper or other system-wide security protections, and never use upstream credentials or release infrastructure to make a local build run.
 
@@ -126,7 +141,7 @@ On first launch, AlTab may locally import compatible settings from the official 
 Official milestones ship **source only** (Git tag + release notes) unless a distributor intentionally attaches reviewed artifacts. Optional packaging tools (separate from the normal local build):
 
 ```bash
-# Unsigned universal ZIP + exact source + checksums (no Apple credentials)
+# Ad-hoc-signed universal ZIP + exact source + checksums (no Apple credentials; unsigned filenames)
 scripts/package_release.sh <tag-or-commit>
 
 # Bring-your-own Developer ID + notarization (never silently falls back to unsigned)
@@ -149,6 +164,6 @@ Last reviewed upstream revision: AltTab `v11.4.4` (`081f3ee4014e03557c2ab39e9e16
 
 The application is licensed **GPL-3.0-only** ([GNU General Public License v3](LICENCE.md)). Distributions of modified binaries must satisfy the GPL’s source and notice requirements. Copyright and provenance are summarized in [NOTICE.md](NOTICE.md), and third-party acknowledgments and license locations are in [docs/acknowledgments.md](docs/acknowledgments.md).
 
-App Sandbox is disabled in this project (same retained entitlement as upstream). The supported binary channel—if you package one yourself—is direct distribution (unsigned with a warning, or Developer ID signed/notarized with your identity). Mac App Store distribution is not supported.
+App Sandbox is disabled in this project (same retained entitlement as upstream). The supported binary channel—if you package one yourself—is direct distribution (ad-hoc signed with a warning, or Developer ID signed/notarized with your identity). Mac App Store distribution is not supported.
 
 The AlTab icon used on this page comes from the maintainer’s [earlier AlTab codebase](https://github.com/salasebas/altab-archived) and is separate from the upstream AltTab branding. Its provenance and license are recorded in [docs/brand/README.md](docs/brand/README.md).

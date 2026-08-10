@@ -94,10 +94,11 @@ buildCommand=(
   -derivedDataPath "$derivedDataArgument"
   "ARCHS=arm64 x86_64"
   ONLY_ACTIVE_ARCH=NO
-  CODE_SIGNING_ALLOWED=NO
-  CODE_SIGNING_REQUIRED=NO
-  CODE_SIGN_IDENTITY=
+  CODE_SIGNING_ALLOWED=YES
+  CODE_SIGNING_REQUIRED=YES
+  CODE_SIGN_IDENTITY=-
   DEVELOPMENT_TEAM=
+  OTHER_CODE_SIGN_FLAGS=--timestamp=none
   "CURRENT_PROJECT_VERSION=$releaseBundleVersion"
   clean build
 )
@@ -148,7 +149,7 @@ cat > "$publishRoot/$manifestFilename" <<EOF
 - Commit timestamp: \`$commitTimestamp\`
 - Repository and retained Git history: https://github.com/salasebas/altab
 - Binary artifact: \`$binaryFilename\`
-- Light download artifact: \`$dmgFilename\` (\`AlTab.app\` only, drag-to-Applications layout; **unsigned**)
+- Light download artifact: \`$dmgFilename\` (\`AlTab.app\` only, drag-to-Applications layout; **ad-hoc signed, not Developer ID signed**)
 - Corresponding source artifact: \`$sourceFilename\`
 - Xcode: \`$xcodeVersion\`
 - Swift: \`$swiftVersion\`
@@ -160,7 +161,7 @@ cat > "$publishRoot/$manifestFilename" <<EOF
 - Bundle version: \`$bundleVersion\`
 - Deployment target: \`$deploymentTarget\`
 - Build command: \`$recordedBuildCommand\`
-- Signing status: **unsigned** (no Developer ID authority or Team ID; Xcode may emit a non-identifying ad hoc Mach-O signature)
+- Signing status: **ad hoc** (complete bundle seal, no Developer ID authority or Team ID; privacy grants are version-specific)
 - Notarization status: **not notarized** (not requested)
 - Service-isolation guard: **passed against the packaged app**
 - Unrestricted-feature guard: **passed against the packaged app**

@@ -1,9 +1,9 @@
 # AlTab {{RELEASE}}
 
 > [!WARNING]
-> This build is **unsigned and not notarized**. macOS Gatekeeper may block it. Do not disable system-wide security protections; build from the corresponding source if you do not want to run an unsigned binary.
+> This build has only a version-specific **ad-hoc signature**. It has no Developer ID identity and is **not notarized**, so macOS Gatekeeper may block it. Do not disable system-wide security protections; build from the corresponding source if you do not want to run an unverified binary.
 
-Signing status: **unsigned**
+Signing status: **ad hoc**
 
 Notarization status: **not notarized**
 
@@ -11,12 +11,14 @@ Notarization status: **not notarized**
 
 | Priority | Asset | Purpose |
 | --- | --- | --- |
-| 1 | `{{DMG_ARTIFACT}}` | **Just run AlTab** — light install image (`AlTab.app` + Applications shortcut). **Unsigned and not notarized.** |
-| 2 | `{{BINARY_ARTIFACT}}` | Full redistribution ZIP: app + dSYM + notices (**unsigned**) |
+| 1 | `{{DMG_ARTIFACT}}` | **Just run AlTab** — light install image (`AlTab.app` + Applications shortcut). **Ad-hoc signed and not notarized.** |
+| 2 | `{{BINARY_ARTIFACT}}` | Full redistribution ZIP: app + dSYM + notices (**ad-hoc signed**) |
 | 3 | `{{SOURCE_ARTIFACT}}` + `SHA256SUMS` | Exact corresponding source for this binary, plus checksums |
 | 4 | `{{MANIFEST}}` | Toolchain / provenance (secondary) |
 
 Prefer the `.dmg` if you only want to run AlTab. Prefer the full ZIP (or build from source) when you need symbols, notices, or redistribution provenance.
+
+Install the DMG with the [unsigned-release guide](https://github.com/salasebas/altab/blob/{{COMMIT}}/docs/installing-unsigned-release.md). It covers checksum verification, Gatekeeper, and the version-specific Accessibility and Screen Recording grants.
 
 For this binary, the corresponding source is `{{SOURCE_ARTIFACT}}` (not GitHub’s automatic Source code zip/tar.gz archives attached to the tag).
 
